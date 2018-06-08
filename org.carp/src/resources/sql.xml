@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"  ?>
+<modules>
+	<module name="m1">
+		<sql name="s1">
+			select cat_id,cat_name,cat_age,sts_time from carp_cat
+			
+		</sql>
+	</module>
+	<module name="m1">
+		<sql name="s2">
+			select cat_id,cat_name,cat_age,sts_time from carp_cat
+			<where preTrim="and" suffTrim="or">
+				<if test="po.catWeight!=-1">cat_weight > #{po.catWeight} or </if>
+				<if test="po.catAge!=-1"> cat_age > 0</if>
+			</where>
+			
+		</sql>
+	</module>
+	<module name="m1">
+		<sql name="s3">
+			select cat_id,cat_name,cat_age,sts_time from carp_cat
+				<if test="po.catWeight!=-1">where cat_id = #{po.catId}</if>
+		</sql>
+		<sql name="s4">
+			select cat_id,cat_name,cat_age,sts_time from carp_cat
+			<where suffTrim="or">
+				<loop var="o" list="catid" filter="o >=4 and o &lt;=8" separator="or">
+					cat_id = #{o}
+				</loop>
+			</where>
+		</sql>
+		<sql name="s5">
+			select cat_id,cat_name,cat_age,sts_time from carp_cat
+			<where>
+				cat_id in
+				<loop var="o" list="catid" filter="o >=4" separator="," bsign="(" esign=")">
+					#{o}
+				</loop>
+			</where>
+		</sql>
+	</module>
+</modules>

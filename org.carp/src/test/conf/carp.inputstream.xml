@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<carp>
+	<!-- DataSource 
+	<property name="carp.datasource">jdbc/admsdb</property>
+	-->
+	<property name="carp.pool">dbcp</property>
+	<property name="show.sql">true</property>
+	<property name="carp.user">root</property>
+	<property name="carp.password">654321</property>
+	-->
+	<!-- Oracle 		   
+	 --> 
+	<property name="carp.driver">oracle.jdbc.driver.OracleDriver</property>
+	<property name="carp.url">jdbc:oracle:thin:@localhost:1521:orcl</property>
+
+</carp>

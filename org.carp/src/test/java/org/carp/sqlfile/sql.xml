@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"  ?>
+<modules>
+	<module name="m3">
+		<sql name="s1">
+			select aa,bbb,ccc from abcd 
+			<if test="c.catId==1"> 
+				where  c == #{c}
+			    <if test="c.catName=='cat'"> and 1=1 </if>
+				<if test="c.catWeight==1">
+				and name in <loop var="" test="" filter="">
+				ddd
+				</loop>
+				</if>
+			</if>
+			order by 
+			<loop var="" test="" filter="">
+			 #{dd}
+			</loop>
+		</sql>
+	</module>
+	<module name="m4">
+		<sql name="s1">
+			select aa,bbb,ccc from abcd 
+			<if test="c.catId==1"> 
+				where  c == #{c}
+			    <if test="c.catName=='cat'"> and 1=1 </if>
+				<if test="c.catWeight==1">
+				and name in <loop var="" test="" filter="">
+				ddd
+				</loop>
+				</if>
+			</if>
+			order by 
+			<loop var="" test="" filter="">
+			 #{dd}
+			</loop>
+		</sql>
+	</module>
+</modules>

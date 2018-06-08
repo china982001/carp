@@ -1,0 +1,3 @@
+<!ELEMENT carp (property+)>
+<!ELEMENT property (#PCDATA)>
+<!ATTLIST property name CDATA #REQUIRED>

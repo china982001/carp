@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<carp>
+	<!-- DataSource 
+	<property name="carp.datasource">jdbc/admsdb</property>
+	-->
+	<property name="carp.pool">dbcp</property>
+	<!-- MySql      
+	-->
+	<property name="carp.driver">com.mysql.jdbc.Driver</property>
+	<property name="carp.url">jdbc:mysql://localhost:3306/adms</property>
+	<property name="property.useCursorFetch">true</property>
+	<property name="carp.jdbc.fetch_size">20</property>
+	
+	
+	
+	<!-- HSQL       
+	<property name="carp.driver">org.hsqldb.jdbcDriver</property>
+	<property name="carp.url">jdbc:hsqldb:file:doc/hsql/testdb;shutdown=true</property>
+	-->
+
+	<!-- HSQL     
+	<property name="carp.driver">org.hsqldb.jdbcDriver</property>
+	<property name="carp.url">jdbc:hsqldb:hsql://localhost/vdpdb</property>
+	 -->
+	<!-- PostgreSQL     
+	<property name="carp.driver">org.postgresql.Driver</property>
+	<property name="carp.url">jdbc:postgresql://localhost:5432/postgres</property>
+	<property name="carp.pool">dbcp</property>
+	
+	<property name="property.shutdown">true</property>
+	<property name="property.driver.encoding">utf-8</property>
+	-->
+	<!-- 
+	-->
+	<property name="carp.user">adms</property>
+	<property name="carp.password">ZTfjrr4/gh439yGuIm8jvQ==</property>
+	<property name="carp.password.encode">true</property>
+ 	
+	
+	<property name="show.sql">true</property>
+	<!-- 连接池属性定义 -->
+	<property name="pool.initialSize">2</property>
+	<property name="pool.maxTotal">20</property>
+	<property name="pool.maxIdle">10</property>
+	<property name="pool.minIdle">0</property>
+	<property name="pool.validationQuery">select 1</property>
+	<property name="pool.validationQueryTimeout">1</property>
+	<property name="pool.testWhileIdle">true</property>
+	<property name="pool.testOnBorrow">false</property>
+	<property name="pool.timeBetweenEvictionRunsMillis">3600000</property>
+	<property name="pool.minEvictableIdleTimeMillis">3600000</property>
+	
+	<sqlfile>
+	<!-- 
+		<sql classpath="org/carp/sqlfile/sql.xml"></sql>
+		<sql url="file:///D:/work/eclipse/Carp/org.carp/src/resources/sql.xml"></sql>
+	 -->
+		<sql file="D:/work/eclipse/Carp/org.carp/src/resources/sql.xml"></sql>
+	</sqlfile>
+</carp>
