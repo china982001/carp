@@ -80,7 +80,8 @@ public class DBCPConnectionProvider extends AbstractConnectionProvider {
 		try {
 			carp.getConnPoolProperty().put("username", carp.getUserName());
 			carp.getConnPoolProperty().put("url", carp.getUrl());
-			carp.getConnPoolProperty().put("driverClassName", carp.getDriverClass());
+			if(carp.getDriverClass() != null)
+				carp.getConnPoolProperty().put("driverClassName", carp.getDriverClass());
 			String password = carp.getPassword();
 			if(carp.isPwdEncode()){
 				IPasswordDecryptor decryptor = carp.getDecryptor();

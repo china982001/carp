@@ -55,54 +55,54 @@ public class OracleCarpSql extends AbstractSql {
 	 * @param table
 	 * @return
 	 */
-	public String getInsertSql(){
-		String insertSql = getInsertmap().get(getBeanInfo().getTable());
-		if(insertSql == null){
-			List<ColumnsMetadata> cms = getBeanInfo().getColumns();
-			List<PrimarysMetadata> pks = getBeanInfo().getPrimarys();
-			StringBuilder sql = new StringBuilder("insert into ");
-			if(getBeanInfo().getSchema() !=null && !getBeanInfo().getSchema().trim().equals(""))
-				sql.append(getBeanInfo().getSchema()).append(".");
-			else if(getSchema() !=null && !getSchema().trim().equals(""))
-				sql.append(getSchema()).append(".");
-			sql.append(getBeanInfo().getTable()).append("(");
-			for(int i=0,count = cms.size(); i<count; ++i){
-				if(i!=0)
-					sql.append(",");
-				sql.append(cms.get(i).getColName());
-			}
-			for(PrimarysMetadata pk:pks){
-				if(pk.getBuild() != Generate.auto){
-					sql.append(",");
-					sql.append(pk.getColName());
-				}
-			}
-			sql.append(") values(");
-			for(int i=0,count = cms.size(); i<count; ++i){
-				if(i!=0)
-					sql.append(",");
-				if(cms.get(i).getFieldType().equals(Blob.class)){
-					sql.append("empty_blob()");
-				}else if(cms.get(i).getFieldType().equals(Clob.class)){
-					sql.append("empty_clob()");
-				}else
-					sql.append("?");
-				
-			}
-			
-			for(int i=0, count = pks.size(); i < count; ++i){
-				PrimarysMetadata pk = pks.get(i);
-				if(pk.getBuild() != Generate.auto){
-					sql.append(",");
-					sql.append("?");
-				}
-			}
-			sql.append(")");
-			insertSql = sql.toString();
-			getInsertmap().put(getBeanInfo().getTable(), insertSql);
-		}
-		return insertSql;
-	}
+//	public String getInsertSql(){
+//		String insertSql = getInsertmap().get(getBeanInfo().getTable());
+//		if(insertSql == null){
+//			List<ColumnsMetadata> cms = getBeanInfo().getColumns();
+//			List<PrimarysMetadata> pks = getBeanInfo().getPrimarys();
+//			StringBuilder sql = new StringBuilder("insert into ");
+//			if(getBeanInfo().getSchema() !=null && !getBeanInfo().getSchema().trim().equals(""))
+//				sql.append(getBeanInfo().getSchema()).append(".");
+//			else if(getSchema() !=null && !getSchema().trim().equals(""))
+//				sql.append(getSchema()).append(".");
+//			sql.append(getBeanInfo().getTable()).append("(");
+//			for(int i=0,count = cms.size(); i<count; ++i){
+//				if(i!=0)
+//					sql.append(",");
+//				sql.append(cms.get(i).getColName());
+//			}
+//			for(PrimarysMetadata pk:pks){
+//				if(pk.getBuild() != Generate.auto){
+//					sql.append(",");
+//					sql.append(pk.getColName());
+//				}
+//			}
+//			sql.append(") values(");
+//			for(int i=0,count = cms.size(); i<count; ++i){
+//				if(i!=0)
+//					sql.append(",");
+//				if(cms.get(i).getFieldType().equals(Blob.class)){
+//					sql.append("?");
+//				}else if(cms.get(i).getFieldType().equals(Clob.class)){
+//					sql.append("?");
+//				}else
+//					sql.append("?");
+//				
+//			}
+//			
+//			for(int i=0, count = pks.size(); i < count; ++i){
+//				PrimarysMetadata pk = pks.get(i);
+//				if(pk.getBuild() != Generate.auto){
+//					sql.append(",");
+//					sql.append("?");
+//				}
+//			}
+//			sql.append(")");
+//			insertSql = sql.toString();
+//			getInsertmap().put(getBeanInfo().getTable(), insertSql);
+//		}
+//		return insertSql;
+//	}
 	
 	/**
 	 * 取得执行update时候update sql语句
@@ -110,39 +110,39 @@ public class OracleCarpSql extends AbstractSql {
 	 * @param table
 	 * @return
 	 */
-	public String getUpdateSql(){
-		String updateSql = getUpdatemap().get(getBeanInfo().getTable());
-		if(updateSql == null){
-			List<ColumnsMetadata> cms = getBeanInfo().getColumns();
-			List<PrimarysMetadata> pks = getBeanInfo().getPrimarys();
-			StringBuilder sql = new StringBuilder("update ");
-			if(getBeanInfo().getSchema() !=null && !getBeanInfo().getSchema().trim().equals(""))
-				sql.append(getBeanInfo().getSchema()).append(".");
-			else if(getSchema() !=null && !getSchema().trim().equals(""))
-				sql.append(getSchema()).append(".");
-			sql.append(getBeanInfo().getTable()).append(" set ");
-			for(int i = 0, count = cms.size(); i < count; ++i){
-				if(i!=0) sql.append(",");
-				sql.append(cms.get(i).getColName());
-				if(cms.get(i).getFieldType().equals(Blob.class)){
-					sql.append("= empty_blob()");
-				}else if(cms.get(i).getFieldType().equals(Clob.class)){
-					sql.append("= empty_clob()");
-				}else
-					sql.append("=?");
-			}
-			sql.append(" where ");
-			for(int i = 0, count = pks.size(); i < count; ++i){
-				if(i!=0)
-					sql.append(" and ");
-				sql.append(pks.get(i).getColName());
-				sql.append("=?");
-			}
-			updateSql = sql.toString();
-			getUpdatemap().put(getBeanInfo().getTable(), updateSql);
-		}
-		return updateSql;
-	}
+//	public String getUpdateSql(){
+//		String updateSql = getUpdatemap().get(getBeanInfo().getTable());
+//		if(updateSql == null){
+//			List<ColumnsMetadata> cms = getBeanInfo().getColumns();
+//			List<PrimarysMetadata> pks = getBeanInfo().getPrimarys();
+//			StringBuilder sql = new StringBuilder("update ");
+//			if(getBeanInfo().getSchema() !=null && !getBeanInfo().getSchema().trim().equals(""))
+//				sql.append(getBeanInfo().getSchema()).append(".");
+//			else if(getSchema() !=null && !getSchema().trim().equals(""))
+//				sql.append(getSchema()).append(".");
+//			sql.append(getBeanInfo().getTable()).append(" set ");
+//			for(int i = 0, count = cms.size(); i < count; ++i){
+//				if(i!=0) sql.append(",");
+//				sql.append(cms.get(i).getColName());
+//				if(cms.get(i).getFieldType().equals(Blob.class)){
+//					sql.append("= empty_blob()");
+//				}else if(cms.get(i).getFieldType().equals(Clob.class)){
+//					sql.append("= empty_clob()");
+//				}else
+//					sql.append("=?");
+//			}
+//			sql.append(" where ");
+//			for(int i = 0, count = pks.size(); i < count; ++i){
+//				if(i!=0)
+//					sql.append(" and ");
+//				sql.append(pks.get(i).getColName());
+//				sql.append("=?");
+//			}
+//			updateSql = sql.toString();
+//			getUpdatemap().put(getBeanInfo().getTable(), updateSql);
+//		}
+//		return updateSql;
+//	}
 	
 	public String getSequenceSql(String seq) {
 		return "select "+seq+".nextval as nextid from dual";

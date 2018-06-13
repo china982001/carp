@@ -23,17 +23,18 @@ import org.slf4j.LoggerFactory;
 import org.carp.exception.CarpException;
 import org.carp.impl.CarpQueryImpl;
 
-public class PostgreSqlCarpSql extends AbstractSql {
-	private static final Logger logger = LoggerFactory.getLogger(PostgreSqlCarpSql.class);
+public class DerbyCarpSql extends AbstractSql {
+	private static final Logger logger = LoggerFactory.getLogger(DerbyCarpSql.class);
 	/**
-	 * 取得执行分页查询时，select查询的分页sql语句
+	 * 取得执行分页查询时，select查询的分页sql语句兴汉龙腾三国兵锋 
 	 * @param sql
 	 * @return
 	 * @throws Exception
 	 */
+	@Override
 	public String getPageSql(String sql){
 		StringBuffer carpSQL = new StringBuffer(sql);
-		carpSQL.append("  limit ? offset ? ");
+		carpSQL.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ");
 		sql = carpSQL.toString();
 		if(logger.isDebugEnabled())
 			logger.debug(sql);
@@ -41,16 +42,17 @@ public class PostgreSqlCarpSql extends AbstractSql {
 	}
 
 	public int position() {
-		return 0;
+		// TODO Auto-generated method stub
+		return 2;
 	}
 
 	public String getSequenceSql(String seq) throws CarpException {
-		return "select nextval('"+seq+"')";
+		throw new CarpException("HSQLDB not support sequences!");
 	}
 
 	public void setQueryParameters(CarpQueryImpl query) throws SQLException {
 		PreparedStatement ps = query.getStatement();
-		ps.setInt(query.getParameters().count()+1,  query.getMaxCount());
-		ps.setInt(query.getParameters().count()+2, query.getFirstIndex());
+		ps.setInt(1, query.getFirstIndex());
+		ps.setInt(2, query.getMaxCount());
 	}
 }

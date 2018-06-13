@@ -16,6 +16,7 @@
 package org.carp.assemble;
 
 import java.lang.reflect.Field;
+import java.sql.Clob;
 import java.sql.ResultSet;
 import java.util.List;
 

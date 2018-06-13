@@ -23,11 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.carp.engine.ParametersProcessor;
 import org.carp.exception.CarpException;
 import org.carp.impl.CarpSessionImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 将Map对象的值保存的对应的数据库表中
@@ -82,17 +82,26 @@ public class MapEvent{
 		Table t = tableMap.get(table);
 		columns = this.map.keySet().toArray();
 		if(t == null){
-			Connection conn = this.session.getConnection();
-			DatabaseMetaData dmd = conn.getMetaData();
-			ResultSet rs = dmd.getColumns(null,null, table.toUpperCase(), "%");
-			t = new Table();
-			while(rs.next()){
-				String column = rs.getString(4).toUpperCase();
-				t.addColumn(column);
-				t.addType(rs.getInt(5));
-				logger.debug("Column:"+column+" , ColumnType:"+rs.getInt(5));
-			}
+			t = initTableColumns(table);
+			if(t.columns.isEmpty())
+				t = initTableColumns(table.toUpperCase());
 			tableMap.put(table, t);
+		}
+		return t;
+	}
+	
+	private Table initTableColumns(String table)throws Exception{
+		Connection conn = this.session.getConnection();
+		DatabaseMetaData dmd = conn.getMetaData();
+		ResultSet rs = dmd.getColumns(this.session.getJdbcContext().getConfig().getCatalog(),
+				this.session.getJdbcContext().getConfig().getSchema(), table, "%");
+		Table t = new Table();
+		logger.debug("Get Table: {}, ColumnsInfo.",table);
+		while(rs.next()){
+			String column = rs.getString(4).toUpperCase();
+			t.addColumn(column);
+			t.addType(rs.getInt(5));
+			logger.debug("Column:"+column+" , ColumnType:"+rs.getInt(5));
 		}
 		return t;
 	}

@@ -34,7 +34,6 @@ import org.carp.engine.exec.QueryExecutor;
 import org.carp.engine.exec.UpdateExecutor;
 import org.carp.exception.CarpException;
 import org.carp.parameter.Parameter;
-import org.carp.script.SQL;
 import org.carp.sql.AbstractSql;
 import org.carp.sql.CarpSql;
 
@@ -101,6 +100,8 @@ public class CarpQueryImpl implements CarpQuery{
 			list = executor.list();
 		} catch (Exception ex) {
 			throw new CarpException("Query error,may sql or parameters incorrect.", ex);
+		}finally{
+//			if(ps != null)try{ps.close();}catch(Exception e){}
 		}
 		return list;
 	}
@@ -112,6 +113,8 @@ public class CarpQueryImpl implements CarpQuery{
 			return ds;
 		} catch (Exception ex) {
 			throw new CarpException("Query error,may sql or parameters incorrect.", ex);
+		}finally{
+			if(ps != null)try{ps.close();}catch(Exception e){}
 		}
 	}
 	
@@ -122,6 +125,8 @@ public class CarpQueryImpl implements CarpQuery{
 			return rs;
 		} catch (Exception ex) {
 			throw new CarpException("Query error,may sql or parameters incorrect.", ex);
+		}finally{
+			if(ps != null)try{ps.close();}catch(Exception e){}
 		}
 	}
 	
@@ -158,8 +163,14 @@ public class CarpQueryImpl implements CarpQuery{
 			code = new UpdateExecutor(this).getRowCount();
 		}catch(Exception ex){
 			throw new CarpException("执行错误，请检查Sql语句以及参数是否正确！",ex);
+		}finally{
+			if(ps != null)try{ps.close();}catch(Exception e){}
 		}
 		return code;
+	}
+	
+	public void closeStatement(){
+		try{if(ps != null && !ps.isClosed())ps.close();}catch(Exception e){}
 	}
 
 	public String getQueryString() {

@@ -113,6 +113,11 @@ public interface CarpQuery{
      * @throws SQLException
      */
     CarpQuery clearParameters() throws SQLException;
+
+    /**
+     * close used PreparedStatement
+     */
+    void closeStatement();
     /**
      * 
      * @param index

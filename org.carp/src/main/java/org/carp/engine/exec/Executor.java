@@ -51,7 +51,6 @@ public abstract class Executor {
 		SqlHelper helper = new QuerySqlHelper(this._query);
 		helper.buildSql();
 		helper.showSql();
-//		new Sql(this._query).showSql();//构建Sql语句
 		new CarpStatement(this._query).createQueryStatement(); //创建Statement对象
 		//设置Statement参数
 		new SQLParameter(this._query).processSQLParameters();

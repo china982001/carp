@@ -74,15 +74,6 @@ public class Carp {
 		return null;
 	}
 
-	public static Clob createClob(Reader reader) {
-		try {
-			return new CarpClobImpl(reader);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return null;
-	}
-
 	public static java.sql.Date dateFromUtilToSql(java.util.Date date) {
 		if (date == null)
 			return null;

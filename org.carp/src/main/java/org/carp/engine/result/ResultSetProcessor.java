@@ -157,19 +157,11 @@ public class ResultSetProcessor {
 		
 		for(String col: cqmd.getColumnsMap().keySet())
 		{
-			if(col.equals("ROW_NUM"))
+			if(col.equals("CARP_ROW_NUM"))
 				continue;
 			ColumnInfo info = cqmd.getColumnsMap().get(col);
 			info.getAssemble().setFieldValue(rs, vo, info.getField(),col);
 		}
-//		for(int i=0; i<cqmd.getColumnCount(); ++i){
-//			
-//			String col = cqmd.getColumnName(i);
-//			if(col.equals("ROW_NUM")){
-//				continue;
-//			}
-//			cqmd.getAssemble(col).setFieldValue(rs, vo, cqmd.getField(col), col);
-//		}
 		return vo;
 	}
 	

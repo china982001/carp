@@ -20,6 +20,7 @@ import java.sql.ResultSet;
 import java.util.List;
 
 /**
+ * Assign the table column value to the property value of the corresponding object
  * 
  * @author zhou
  * @since 0.1

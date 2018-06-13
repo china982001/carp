@@ -92,8 +92,9 @@
         <!-- The following jar package is used for testing -->
 		<dependency>
 			<groupId>com.oracle</groupId>
-			<artifactId>ojdbc5</artifactId>
-			<version>5.0</version>
+			<artifactId>ojdbc</artifactId>
+			<version>7</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
@@ -113,6 +114,36 @@
 		    <version>2.4.1</version>
 		    <scope>test</scope>
 		</dependency>
-		
+		<dependency>
+		  <groupId>com.ibm.db2</groupId>
+		  <artifactId>jdbc.db2jcc4</artifactId>
+		  <version>4</version>
+		  <scope>test</scope>
+		</dependency>
+		<dependency>
+		  <groupId>com.ibm.db2</groupId>
+		  <artifactId>jdbc.db2_license</artifactId>
+		  <version>3</version>
+		  <scope>test</scope>
+		</dependency>
+		<dependency>
+		  <groupId>org.postgres</groupId>
+		  <artifactId>jdbc</artifactId>
+		  <version>42</version>
+		  <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.derby</groupId>
+		    <artifactId>derby</artifactId>
+		    <version>10.14.2.0</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>com.h2database</groupId>
+		    <artifactId>h2</artifactId>
+		    <version>1.4.197</version>
+		    <scope>test</scope>
+		</dependency>
+				
 	</dependencies>
 </project>

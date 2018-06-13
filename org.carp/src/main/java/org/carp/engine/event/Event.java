@@ -78,20 +78,6 @@ public abstract class Event{
 		helper.showSql();
 	}
 	
-	
-//	/**
-//	 * 创建需要的Statement对象
-//	 * @throws Exception
-//	 */
-//	protected void buildStatement()throws Exception{
-//		if(!sql.equals(this.session.getSql())){
-//			this.session.setPs(this.session.getConnection().prepareStatement(sql));
-//			if(this.session.getJdbcContext().getConfig().getTimeout() != null)
-//			this.session.getPs().setQueryTimeout(this.session.getJdbcContext().getConfig().getTimeout());
-//			this.session.setSql(sql);
-//		}
-//	}
-	
 	/**
 	 * 执行Update操作
 	 * @throws Exception
@@ -160,13 +146,9 @@ public abstract class Event{
 	 */
 	protected void processFieldValues(ParametersProcessor psProcess) throws Exception{
 		List<ColumnsMetadata> columns = bean.getColumns();
-		boolean b = false;
-		if(session.getJdbcContext().getContext().getCarpSqlClass().equals(OracleCarpSql.class))b=true;
 		for(int i = 0, count = columns.size(); i < count; ++i){
 			ColumnsMetadata column = columns.get(i);
 			Class<?> ft = column.getFieldType();
-			if(b && (ft.equals(Blob.class) || ft.equals(Clob.class)))
-				continue;
 			Object value = column.getValue(entity);
 			int _index = this.getNextIndex();
 			if(logger.isDebugEnabled()){

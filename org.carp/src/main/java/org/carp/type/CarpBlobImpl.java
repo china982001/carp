@@ -17,7 +17,6 @@ package org.carp.type;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Blob;
@@ -28,43 +27,34 @@ import java.sql.SQLException;
  * @author zhou
  */
 public class CarpBlobImpl implements Blob {
-
-	private InputStream stream;
-	private int length;
-	private boolean needsReset = false;
-
-	public CarpBlobImpl(byte[] bytes) {
-		this.stream = new ByteArrayInputStream(bytes);
-		this.length = bytes.length;
-	}
-
-	public CarpBlobImpl(InputStream stream, int length) {
-		this.stream = stream;
-		this.length = length;
-	}
 	
+	private byte[] _data;
+	
+	
+	public CarpBlobImpl(byte[] bytes) {
+		_data = bytes;
+	}
+
 	public CarpBlobImpl(InputStream stream) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		this.length = 0;
 		try{
 			if(stream == null)
 				return;
 			byte[] b = new byte[4096];
 			for(int len = -1; (len = stream.read(b, 0, 4096)) != -1;){
-				this.length += len;
 				baos.write(b, 0, len);
 			}
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
-		this.stream = new ByteArrayInputStream(baos.toByteArray());
+		this._data = baos.toByteArray();
 	}
 
 	/**
 	 * @see java.sql.Blob#length()
 	 */
 	public long length() throws SQLException {
-		return length;
+		return this._data.length;
 	}
 
 	/**
@@ -77,14 +67,14 @@ public class CarpBlobImpl implements Blob {
 	 * @see java.sql.Blob#getBytes(long, int)
 	 */
 	public byte[] getBytes(long pos, int len) throws SQLException {
-		byte[] b = new byte[len-(int)pos];
-		try {
-			this.stream.read(b, (int)pos, len);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return b;
+		if(pos < 1 || this._data.length < pos -1)
+			throw new SQLException("OutOfRangeArgument. pos: " + pos);
+		int idx = (int)pos - 1;
+		if(len < 0 || len > this._data.length - idx)
+			throw new SQLException("OutOfRangeArgument. len: " + len);
+		byte[] tmp = new byte[len];
+		System.arraycopy(_data, idx, tmp, 0, len);
+		return tmp;
 	}
 
 	/**
@@ -97,8 +87,7 @@ public class CarpBlobImpl implements Blob {
 	/**
 	 * @see java.sql.Blob#setBytes(long, byte[], int, int)
 	 */
-	public int setBytes(long pos, byte[] bytes, int i, int j)
-	throws SQLException {
+	public int setBytes(long pos, byte[] bytes, int i, int j) throws SQLException {
 		return 0;
 	}
 
@@ -113,14 +102,7 @@ public class CarpBlobImpl implements Blob {
 	 * @see java.sql.Blob#getBinaryStream()
 	 */
 	public InputStream getBinaryStream() throws SQLException {
-		try {
-			if (needsReset) stream.reset();
-		}
-		catch (IOException ioe) {
-			throw new SQLException("could not reset reader");
-		}
-		needsReset = true;
-		return stream;
+		return new ByteArrayInputStream(this._data);
 	}
 
 	/**
@@ -140,18 +122,16 @@ public class CarpBlobImpl implements Blob {
 	 * @see java.sql.Blob#free()
 	 */
 	public void free() throws SQLException {
-		this.stream = null;
-		this.length = 0;
+		this._data = null;
 	}
 
 	/**
 	 * @see java.sql.Blob#getBinaryStream(long,long)
 	 */
-	public InputStream getBinaryStream(long pos, long length)
-			throws SQLException {
-		return this.stream;
+	public InputStream getBinaryStream(long pos, long length)throws SQLException {
+		byte[] tmp = this.getBytes(pos, (int)length);
+		return new ByteArrayInputStream(tmp);
 	}
-
 }
 
 

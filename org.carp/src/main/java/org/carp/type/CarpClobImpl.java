@@ -15,12 +15,12 @@
  */
 package org.carp.type;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.sql.Clob;
 import java.sql.SQLException;
@@ -32,49 +32,30 @@ import java.sql.SQLException;
  */
 public class CarpClobImpl implements Clob {
 
-	private Reader reader;
-	private int length;
-	private boolean needsReset = false;
+	private String _data = ""; //default empty string， length be 0
 
-	public CarpClobImpl(String string) {
-		reader = new StringReader(string);
-		length = string.length();
-	}
-
-	public CarpClobImpl(Reader reader, int length) {
-		this.reader = reader;
-		this.length = length;
-	}
-	
-	public CarpClobImpl(Reader reader) {
-		if(reader == null)
-			return;
-		this.length = 0;
-		java.io.StringWriter writer = new StringWriter();
-		char[] c = new char[2048];
-		try{
-			for(int len = -1; (len = reader.read(c, 0, 2048)) != -1;){
-				this.length += len;
-				writer.write(c, 0, len);
-			}
-			this.reader = new StringReader(writer.toString());
-		}catch(Exception ex){
-			ex.printStackTrace();
-		}
+	public CarpClobImpl(final String data) throws SQLException {
+		if(data == null)
+			throw new SQLException("Argument be null. data:"+data);
+		_data = data;
 	}
 
 	/**
 	 * @see java.sql.Clob#length()
 	 */
 	public long length() throws SQLException {
-		return length;
+		return this._data.length();
 	}
 
 	/**
 	 * @see java.sql.Clob#truncate(long)
 	 */
 	public void truncate(long pos) throws SQLException {
-		excep();
+		if(pos == this._data.length())
+			return;
+		if(pos < 0 || pos > this._data.length())
+			throw new SQLException("OutOfRangeArgument. pos: " +pos);
+		this._data = this._data.substring(0, (int)pos);
 	}
 
 	/**
@@ -82,26 +63,12 @@ public class CarpClobImpl implements Clob {
 	 */
 	public InputStream getAsciiStream() throws SQLException {
 		try {
-			if (needsReset) reader.reset();
+			return new ByteArrayInputStream(_data.getBytes("US-ASCII"));
+		} catch (UnsupportedEncodingException e) {
+			throw new SQLException(e);
 		}
-		catch (IOException ioe) {
-			throw new SQLException("could not reset reader");
-		}
-		needsReset = true;
-		return new ReaderInputStream(reader);
 	}
 
-	public class ReaderInputStream extends InputStream{
-		private Reader read;
-		public ReaderInputStream(Reader reader){
-			this.read = reader;
-		}
-		@Override
-		public int read() throws IOException {
-			return read.read();
-		}
-		
-	}
 	/**
 	 * @see java.sql.Clob#setAsciiStream(long)
 	 */
@@ -113,14 +80,7 @@ public class CarpClobImpl implements Clob {
 	 * @see java.sql.Clob#getCharacterStream()
 	 */
 	public Reader getCharacterStream() throws SQLException {
-		try {
-			if (needsReset) reader.reset();
-		}
-		catch (IOException ioe) {
-			throw new SQLException("could not reset reader");
-		}
-		needsReset = true;
-		return reader;
+		return new StringReader(this._data);
 	}
 
 	/**
@@ -134,7 +94,14 @@ public class CarpClobImpl implements Clob {
 	 * @see java.sql.Clob#getSubString(long, int)
 	 */
 	public String getSubString(long pos, int len) throws SQLException {
-		excep(); return null;
+		if(pos == 1 && len == this._data.length())
+			return this._data;
+		if(pos < 1 || pos > this._data.length())
+			throw new SQLException("OutOfRangeArgument. pos: " +pos);
+		int idx = (int)pos - 1;  //The start index of clob is 1 more than that of string
+		if(len < 0 || len >_data.length() -idx)
+			throw new SQLException("OutOfRangeArgument. len: "+len);
+		return this._data.substring(idx, idx+len);
 	}
 
 	/**
@@ -147,8 +114,7 @@ public class CarpClobImpl implements Clob {
 	/**
 	 * @see java.sql.Clob#setString(long, String, int, int)
 	 */
-	public int setString(long pos, String string, int i, int j)
-	throws SQLException {
+	public int setString(long pos, String string, int i, int j) throws SQLException {
 		excep(); return 0;
 	}
 
@@ -174,15 +140,13 @@ public class CarpClobImpl implements Clob {
 	 * @see java.sql.Clob#free()
 	 */
 	public void free() throws SQLException {
-		// TODO Auto-generated method stub
-		
+		this._data = null;
 	}
 	/**
 	 * @see java.sql.Clob#getCharacterStream(long, long)
 	 */
 	public Reader getCharacterStream(long pos, long length) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return new StringReader(this.getSubString(pos, (int)length));
 	}
 
 }

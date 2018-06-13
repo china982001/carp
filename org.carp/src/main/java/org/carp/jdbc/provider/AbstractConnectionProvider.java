@@ -19,17 +19,19 @@ import java.sql.Connection;
 
 import javax.sql.DataSource;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import org.carp.exception.CarpException;
 import org.carp.sql.CarpSql;
 import org.carp.sql.DB2CarpSql;
 import org.carp.sql.DefaultSql;
+import org.carp.sql.DerbyCarpSql;
+import org.carp.sql.H2CarpSql;
 import org.carp.sql.HSQLCarpSql;
 import org.carp.sql.MySqlCarpSql;
 import org.carp.sql.OracleCarpSql;
 import org.carp.sql.PostgreSqlCarpSql;
 import org.carp.sql.SqlServer2005CarpSql;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ConnectionProvider接口实现类
@@ -78,12 +80,13 @@ public abstract class AbstractConnectionProvider implements ConnectionProvider {
 				carpSqlClass = HSQLCarpSql.class;
 			}else if(this.databaseName.indexOf("POSTGRE") != -1){//PostgreSql
 				carpSqlClass = PostgreSqlCarpSql.class;
+			}else if(this.databaseName.indexOf("DERBY") != -1){//PostgreSql
+				carpSqlClass = DerbyCarpSql.class;
+			}else if(this.databaseName.indexOf("H2") != -1){//PostgreSql
+				carpSqlClass = H2CarpSql.class;
 			}else if(this.databaseName.indexOf("SQL SERVER") != -1){
 				carpSqlClass = SqlServer2005CarpSql.class;
-				// Unsupported Sql Server 2000
-//				if(this.databaseVersion >= 9)//sql server 2005
-//				else//sql server 2000
-//					carpSqlClass = MsSqlServerCarpSql.class;
+				// Unsupported Sql Server 2000 and below
 			}else{//默认sql产生类
 				carpSqlClass = DefaultSql.class;
 			}

@@ -15,14 +15,9 @@
  */
 package org.carp.engine.event;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.Writer;
 import java.sql.Blob;
 import java.sql.Clob;
-import java.sql.ResultSet;
 import java.util.List;
 
 import org.carp.annotation.CarpAnnotation.Generate;
@@ -143,82 +138,53 @@ public class SaveEvent extends Event {
 
 	@Override
 	public void executeBefore() throws Exception {
+		processBlob();// process oracle blob/clob 
 		if(this.getSession().getJdbcContext().getContext().getConfig().getInterceptor() != null)
 			this.getSession().getJdbcContext().getContext().getConfig().getInterceptor().onBeforeSave(getEntity(), getSession());
 		if(this.getSession().getInterceptor() != null)
 			this.getSession().getInterceptor().onBeforeSave(getEntity(), getSession());
-	}
-
-	@Override
-	public void executeAfter() throws Exception {
-		//如果主键生成方式为 auto ,需要取得自动生成的主键值，设置实体对象的Primary Key值
-		generateKeyAfter();
-		this.processBlob();
-		if(this.getSession().getJdbcContext().getContext().getConfig().getInterceptor() != null)
-			this.getSession().getJdbcContext().getContext().getConfig().getInterceptor().onAfterSave(getEntity(), getSession());
-		if(this.getSession().getInterceptor() != null)
-			this.getSession().getInterceptor().onAfterSave(getEntity(), getSession());
 	}
 	
 	/**
 	 * 如果数据库为oracle的情况下，单独处理blob和clob类型的字段
 	 * @throws Exception
 	 */
-	
 	private void processBlob()throws Exception{
-		String updateSql = "select ";
-		if(this.getSession().getJdbcContext().getContext().getCarpSqlClass().equals(OracleCarpSql.class)){
-			List<ColumnsMetadata>  cols = this.getBean().getColumns();
-			for(int i=0; i<cols.size(); ++i){
-				ColumnsMetadata col = cols.get(i);
-				if(col.getFieldType().equals(Blob.class) || col.getFieldType().equals(Clob.class)){
-					updateSql += col.getColName()+" ,";
-				}
+		
+		if(!this.getSession().getJdbcContext().getContext().getCarpSqlClass().equals(OracleCarpSql.class))
+			return;
+		List<ColumnsMetadata>  cols = this.getBean().getColumns();
+		for(ColumnsMetadata col : cols){
+			if(col.getFieldType().equals(Blob.class)){
+				Object value = col.getValue(this.getEntity());
+				if(value == null)
+					continue;
+				Blob blob = (Blob)value;
+				byte[] bytes = blob.getBytes(1, (int)blob.length());
+				blob = this.getSession().getConnection().createBlob();
+				blob.setBytes(1, bytes);
+				col.setValue(this.getEntity(), blob);
+			}else if(col.getFieldType().equals(Clob.class)){
+				Object value = col.getValue(this.getEntity());
+				if(value == null)
+					continue;
+				Clob clob = (Clob)value;
+				String tmp = clob.getSubString(1, (int)clob.length());
+				clob = this.getSession().getConnection().createClob();
+				clob.setString(1, tmp);
+				col.setValue(this.getEntity(), clob);
 			}
-			if(updateSql.equals("select "))
-				return;
-			updateSql = updateSql.substring(0, updateSql.length()-2)+" from "+this.getBean().getTable()+" where ";
-			PrimarysMetadata pm = this.getBean().getPrimarys().get(0);
-			if(pm.getFieldType().equals(String.class)){
-				updateSql +=  pm.getColName() +" = '"+id+"' for update";
-			}else{
-				updateSql +=  pm.getColName() +" = "+id +" for update";
-			}
-			
-			ResultSet rs = this.getSession().creatDataSetQuery(updateSql).resultSet();
-			//this.getSession().getConnection().prepareStatement(updateSql).executeQuery();
-			while(rs!=null && rs.next()){
-				for(int i=0, index = 0; i<cols.size(); ++i){
-					ColumnsMetadata col = cols.get(i);
-					if(col.getValue(getEntity()) == null)
-						continue;
-					if(col.getFieldType().equals(Blob.class)){
-						oracle.sql.BLOB blob = (oracle.sql.BLOB)rs.getBlob(++index);;
-						this.setBlobValue(blob.getBinaryOutputStream(),(java.sql.Blob)col.getValue(getEntity()));
-					}
-					if(col.getFieldType().equals(Clob.class)){
-						oracle.sql.CLOB clob = (oracle.sql.CLOB)rs.getClob(++index);
-						setClobValue(clob.getCharacterOutputStream() ,(java.sql.Clob)col.getValue(getEntity()));
-					}
-				}
-			}
-			rs.close();
 		}
 	}
 	
-	private void setBlobValue(OutputStream src,java.sql.Blob blob)throws Exception{
-		InputStream  stream = blob.getBinaryStream();
-		byte[] b = new byte[4096];
-		for(int len = -1; (len = stream.read(b, 0, 4096))!=-1;)
-			src.write(b, 0, len);
-		src.flush();src.close();stream.close();
-	}
-	private void setClobValue(Writer src,java.sql.Clob clob)throws Exception{
-		Reader  stream = clob.getCharacterStream();
-		char[] b = new char[4096];
-		for(int len = -1; (len = stream.read(b, 0, 4096))!=-1;)
-			src.write(b, 0, len);
-		src.flush();src.close();stream.close();
+	@Override
+	public void executeAfter() throws Exception {
+		//如果主键生成方式为 auto ,需要取得自动生成的主键值，设置实体对象的Primary Key值
+		generateKeyAfter();
+		if(this.getSession().getJdbcContext().getContext().getConfig().getInterceptor() != null)
+			this.getSession().getJdbcContext().getContext().getConfig().getInterceptor().onAfterSave(getEntity(), getSession());
+		if(this.getSession().getInterceptor() != null)
+			this.getSession().getInterceptor().onAfterSave(getEntity(), getSession());
 	}
 
 	@Override
@@ -230,7 +196,7 @@ public class SaveEvent extends Event {
 			if(!m.isNull() && value == null)
 				throw new CarpException("Field: "+m.getFieldName()+" could not was NULL.");
 			if(m.getLength() != 0 && value.toString().length() > m.getLength())
-				throw new CarpException("The length of field '"+m.getFieldName()+"' value: "+ value.toString().length() +" > "+m.getLength());
+				throw new CarpException("Data too long. The length of field '"+m.getFieldName()+"' value: "+ value.toString().length() +" > "+m.getLength());
 		}
 		return true;
 	}

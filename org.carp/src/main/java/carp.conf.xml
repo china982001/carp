@@ -2,18 +2,34 @@
 <carp>
 	<!-- DataSource 
 	<property name="carp.datasource">jdbc/admsdb</property> -->
-	<!-- DB2 <property name="carp.driver">com.ibm.db2.jcc.DB2Driver</property> 
-		<property name="carp.url">jdbc:db2://localhost:50000/adms</property> -->
-	<!-- Oracle <property name="carp.driver">oracle.jdbc.driver.OracleDriver</property> 
-		<property name="carp.url">jdbc:oracle:thin:@192.168.0.251:1521:orcl</property> -->
+	
+	<!-- DB2  url后面设置的参数为解决blob&clob类读取错误的问题。  
+	<property name="carp.driver">com.ibm.db2.jcc.DB2Driver</property> 
+	<property name="carp.url">jdbc:db2://192.168.1.251:50000/sample:driverType=4;fullyMaterializeLobData=true;fullyMaterializeInputStreams=true;progressiveStreaming=2;progresssiveLocators=2;</property>
+	-->
+	<!-- Oracle 
+	<property name="carp.driver">oracle.jdbc.driver.OracleDriver</property> 
+	<property name="carp.url">jdbc:oracle:thin:@192.168.1.251:1521:orcl</property>
+	-->
+	
 	<!-- Sql Server <property name="carp.driver">net.sourceforge.jtds.jdbc.Driver</property> 
 		<property name="carp.url">jdbc:jtds:sqlserver://192.168.0.104;DatabaseName=ADMSIFP</property> -->
-	<!-- MySql 
+		
+	<!-- Derby 
+	<property name="carp.driver">org.apache.derby.jdbc.AutoloadedDriver</property> 
+	<property name="carp.url">jdbc:derby:doc/derby/testCarp;create=true</property> 
+	-->
+	<!-- Derby 
+	<property name="carp.driver">org.h2.Driver</property> 
+	<property name="carp.url">jdbc:h2:file:D:/work/git_repo/carp/org.carp/doc/h2/testCarp</property> 
+	-->
+	
+	<!-- MySql -->
 	<property name="carp.driver">com.mysql.jdbc.Driver</property>
 	<property name="carp.url">jdbc:mysql://localhost:3306/adms</property>
 	<property name="property.useCursorFetch">true</property>
 	<property name="carp.jdbc.fetch_size">20</property>
-	-->
+	 
 
 
 
@@ -22,40 +38,45 @@
 		name="carp.jdbc.fetch_size">1000</property> -->
 
 	<!-- HSQL 
-		-->
 	<property name="carp.driver">org.hsqldb.jdbcDriver</property> 
-		<property name="carp.url">jdbc:hsqldb:file:doc/hsql/testdb;shutdown=true</property> 
+	<property name="carp.url">jdbc:hsqldb:file:doc/hsql/testdb;shutdown=true</property> 
+	-->
 
 	<!-- HSQL <property name="carp.driver">org.hsqldb.jdbcDriver</property> 
 		<property name="carp.url">jdbc:hsqldb:hsql://localhost/vdpdb</property> -->
-	<!-- PostgreSQL <property name="carp.driver">org.postgresql.Driver</property> 
-		<property name="carp.url">jdbc:postgresql://localhost:5432/postgres</property> 
-		<property name="carp.pool">dbcp</property> <property name="property.shutdown">true</property> 
-		<property name="property.driver.encoding">utf-8</property> <property name="carp.pool">dbcp</property> -->
+		
+		
+	<!-- PostgreSQL 
+	<property name="carp.driver">org.postgresql.Driver</property> 
+	<property name="carp.url">jdbc:postgresql://localhost:5432/postgres</property> 
+	<property name="carp.pool">dbcp</property> <property name="property.shutdown">true</property> 
+	<property name="property.driver.encoding">utf-8</property>
+	-->
 	<!-- -->
 	<property name="carp.user">adms</property>
 	<property name="carp.password">ZTfjrr4/gh439yGuIm8jvQ==</property>
 	<property name="carp.password.encode">true</property>
 
 
-	<!-- <property name="carp.user">adms</property> <property name="carp.password">adms</property> 
-		<property name="carp.user">root</property> <property name="carp.password"></property> 
-		<property name="carp.password.encode">false</property> -->
-
+	<!--  
+	<property name="carp.user">adms</property> <property name="carp.password">adms</property> 
+	<property name="carp.user">root</property> <property name="carp.password"></property> 
+	<property name="carp.password.encode">false</property>
+-->
 
 	<property name="show.sql">true</property>
-	<!-- DBCP 连接池属性定义 
-		-->
-		<property name="carp.pool">dbcp</property>
-		<property name="pool.initialSize">10</property>
-		<property name="pool.maxTotal">20</property>
-		<property name="pool.maxIdle">10</property> 
-		<property name="pool.minIdle">6</property> <property name="pool.minIdle">0</property> 
-		<property name="pool.validationQuery"></property> <property name="pool.validationQueryTimeout">0</property> 
-		<property name="pool.testWhileIdle">true</property> <property name="pool.testOnBorrow">false</property> 
-		<property name="pool.timeBetweenEvictionRunsMillis">-1</property> <property 
-		name="pool.numTestsPerEvictionRun">5</property> <property name="pool.minEvictableIdleTimeMillis">1800000</property> 
-		<property name="pool.softMinEvictableIdleTimeMillis">-1</property> 
+	<!-- DBCP 连接池属性定义  	-->
+	<property name="carp.pool">dbcp</property>
+	<property name="pool.initialSize">10</property>
+	<property name="pool.maxTotal">20</property>
+	<property name="pool.maxIdle">10</property> 
+	<property name="pool.minIdle">6</property> <property name="pool.minIdle">0</property> 
+	<property name="pool.validationQuery"></property> <property name="pool.validationQueryTimeout">0</property> 
+	<property name="pool.testWhileIdle">true</property> <property name="pool.testOnBorrow">false</property> 
+	<property name="pool.timeBetweenEvictionRunsMillis">-1</property> <property 
+	name="pool.numTestsPerEvictionRun">5</property> <property name="pool.minEvictableIdleTimeMillis">1800000</property> 
+	<property name="pool.softMinEvictableIdleTimeMillis">-1</property> 
+		
 	<!-- C3P0 连接池属性定义 
 	<property name="carp.pool">c3p0</property>
 	<property name="pool.initialPoolSize">5</property>
@@ -71,6 +92,6 @@
 
 	<sqlfile>
 		<!-- <sql classpath="org/carp/sqlfile/sql.xml"></sql> <sql url="file:///D:/work/eclipse/Carp/org.carp/src/resources/sql.xml"></sql> -->
-		<sql file="D:/work/eclipse/Carp/org.carp/src/resources/sql.xml"></sql>
+		<sql file="src/resources/sql.xml"></sql>
 	</sqlfile>
 </carp>
