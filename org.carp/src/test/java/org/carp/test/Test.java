@@ -1,7 +1,13 @@
 package org.carp.test;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLType;
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +20,7 @@ import org.apache.commons.dbcp2.PoolableConnectionFactory;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.carp.CarpSession;
 import org.carp.CarpSessionBuilder;
 import org.carp.script.SQLFactory;
 import org.carp.test.pojo.CarpCat;
@@ -26,8 +33,47 @@ public class Test {
 	static ObjectPool<PoolableConnection> pool;
 	public static void main(String[] strs) throws Exception {
 		//System.out.println(System.getenv());
-		testPoolDataSource();
+//		testPoolDataSource();
+//		testH2Database();
+		testProc();
+		
 	}
+	
+	public static void testProc()throws Exception{
+		CarpSessionBuilder builder = CarpSessionBuilder.getSessionBuilder();
+		CarpSession s = builder.getSession();
+		Connection c = s.getConnection();
+		CallableStatement st = c.prepareCall("call proc4(?,?)");
+		st.setString(1, "all");
+		st.registerOutParameter(2, Types.VARCHAR);
+		boolean bool = st.execute();
+		System.out.println("是否有结果集 ： "+bool);
+		System.out.println("=========== "+st.getString(2));
+//		ResultSet rs = st.executeQuery();
+		ResultSet rs = st.getResultSet();
+		if(rs == null)
+			return;
+		ResultSetMetaData rsmd = rs.getMetaData();
+		int count = rsmd.getColumnCount();
+		for(int i=1; i<=count;++i){
+			System.out.println(rsmd.getColumnLabel(i)+"  --  "+rsmd.getColumnType(i));
+			
+		}
+		while(rs.next()){
+		
+			System.out.println("------------"+rs.getString(1));
+		}
+		rs.close();
+		st.close();
+		s.close();
+	}
+	
+	public static void testH2Database()throws Exception{
+		Class.forName("org.h2.Driver");
+		Connection c = DriverManager.getConnection("jdbc:h2:file:D:/work/git_repo/carp/org.carp/doc/h2/testCarp","sa","");
+		c.close();
+	}
+	
 	
 	public static void testPoolDataSource()throws Exception{
 		createDatasource();

@@ -5,6 +5,7 @@ import org.carp.jdbc.provider.DBCPConnectionProvider;
 import org.carp.test.anno.AnnoTest;
 import org.carp.test.batch.BatchObjectTest;
 import org.carp.test.batch.BatchSQLTest;
+import org.carp.test.blob.TestBlobClob;
 import org.carp.test.config.ConfigTest;
 import org.carp.test.delete.DeleteCase;
 import org.carp.test.dynamicsql.DynamicSqlTest;
@@ -24,6 +25,9 @@ public class TestMain {
 	public static void main(String[] args) throws Exception {
 		//构建sessionBuilder
 		CarpSessionBuilder  builder = CarpSessionBuilder.getSessionBuilder();
+		/**
+		 * 
+		 */
 		// 注解测试
 		AnnoTest.test();
 		
@@ -39,6 +43,8 @@ public class TestMain {
 		// Sql 执行测试，创建测试表。
 		TableTest.test(builder);
 		
+		// BlOB,Clob类型测试
+		TestBlobClob.test(builder);
 		
 		// 对象插入测试
 		BatchObjectTest.test(builder);

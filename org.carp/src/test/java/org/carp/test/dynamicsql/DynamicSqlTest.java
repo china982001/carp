@@ -25,7 +25,7 @@ public class DynamicSqlTest {
 		testLoopConditionByList(builder);
 		testLoopCondWithIntArray(builder);
 		testLoopCondWithIntegerArray(builder);
-		testLoopCondWithStringArray(builder);
+		testLoopCondWithStringArray(builder);//注意，这里在postgresql数据库上测试不通过，因为postgre不能隐式的自动转换类型，因此会抛出异常
 		testLoopCondWithSet(builder);
 		testLoopCond_In(builder);
 	}
