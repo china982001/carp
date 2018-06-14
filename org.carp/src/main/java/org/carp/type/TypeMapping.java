@@ -182,18 +182,19 @@ public class TypeMapping {
 		sqlTypeMap.put(java.sql.Types.BINARY, new BytesMapParameter());
 		sqlTypeMap.put(java.sql.Types.BLOB, new BlobMapParameter());
 		sqlTypeMap.put(java.sql.Types.BOOLEAN, new BooleanMapParameter());
+		sqlTypeMap.put(java.sql.Types.BIT, new BooleanMapParameter());
 		sqlTypeMap.put(java.sql.Types.CHAR, new StringMapParameter());
 		sqlTypeMap.put(java.sql.Types.CLOB, new ClobMapParameter());
 		sqlTypeMap.put(java.sql.Types.DATE, new DateMapParameter());
 		sqlTypeMap.put(java.sql.Types.DECIMAL, new DecimalMapParameter());
 		sqlTypeMap.put(java.sql.Types.DOUBLE, new DoubleMapParameter());
-		sqlTypeMap.put(java.sql.Types.FLOAT, new FloatMapParameter());
+		sqlTypeMap.put(java.sql.Types.FLOAT, new DoubleMapParameter());
 		sqlTypeMap.put(java.sql.Types.INTEGER, new IntegerMapParameter());
 		sqlTypeMap.put(java.sql.Types.JAVA_OBJECT, new ObjectMapParameter());
 		sqlTypeMap.put(java.sql.Types.LONGVARBINARY, new BytesMapParameter());
-		sqlTypeMap.put(java.sql.Types.LONGVARCHAR, new BytesMapParameter());
+		sqlTypeMap.put(java.sql.Types.LONGVARCHAR, new StringMapParameter());
 		sqlTypeMap.put(java.sql.Types.NUMERIC, new DecimalMapParameter());
-		sqlTypeMap.put(java.sql.Types.REAL, new DoubleMapParameter());
+		sqlTypeMap.put(java.sql.Types.REAL, new FloatMapParameter());
 		sqlTypeMap.put(java.sql.Types.REF, new RefMapParameter());
 		sqlTypeMap.put(java.sql.Types.SMALLINT, new ShortMapParameter());
 		sqlTypeMap.put(java.sql.Types.TIME, new TimeMapParameter());
@@ -203,7 +204,7 @@ public class TypeMapping {
 		sqlTypeMap.put(java.sql.Types.VARCHAR, new StringMapParameter());
 		
 		//sql types to java class mapping
-		sqlJavaMap.put(Types.BIT, Byte.class);
+		sqlJavaMap.put(Types.BIT, Boolean.class);
 		sqlJavaMap.put(Types.BIGINT, Long.class);
 		sqlJavaMap.put(Types.BINARY, InputStream.class);
 		sqlJavaMap.put(Types.BLOB, InputStream.class);

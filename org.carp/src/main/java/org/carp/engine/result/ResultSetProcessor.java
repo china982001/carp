@@ -127,7 +127,9 @@ public class ResultSetProcessor {
 	 */
 	public List<Object> list()throws Exception{
 		List<Object> list = new ArrayList<Object>();
-		PageSupport mode = this.query.getCarpSql().pageMode();
+		PageSupport mode = CarpSql.PageSupport.COMPLETE;
+		if(this.query != null)
+			mode = this.query.getCarpSql().pageMode();
 		if(mode == CarpSql.PageSupport.COMPLETE){// mode = 0 支持分页
 			while(rs.next())
 				list.add(processResultSet());

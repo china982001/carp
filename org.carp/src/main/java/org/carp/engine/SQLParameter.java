@@ -15,15 +15,13 @@
  */
 package org.carp.engine;
 
-import java.util.Iterator;
-
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import org.carp.impl.CarpQueryImpl;
 import org.carp.parameter.Parameter;
 import org.carp.parameter.Parameter.Param;
 import org.carp.sql.AbstractSql;
 import org.carp.sql.CarpSql;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 设置sql语句的参数
@@ -43,15 +41,15 @@ public class SQLParameter {
 	 * @throws Exception
 	 */
 	public void processSQLParameters() throws Exception{
-		setParameterValue();
-		setQueryParameters();
+		setSQLParameterValue();
+		setLimitQueryParameters();
 	}
 	
 	/**
 	 * 设置Statement参数
 	 * @throws Exception
 	 */
-	private void setParameterValue() throws Exception{
+	private void setSQLParameterValue() throws Exception{
 		Parameter param = query.getParameters();
 		ParametersProcessor psp = new ParametersProcessor(query.getStatement());
 		int pos = 0;
@@ -62,18 +60,13 @@ public class SQLParameter {
 			Param p = param.getParamList().get(idx);
 			psp.setStatementParameters(p.getValue(), p.getCls(), p.getIndex()+pos);
 		}
-//		for(Iterator<Integer> it = param.getKeys(); it.hasNext();){
-//			Integer key = it.next();
-//			Class<?> cls = param.getType(key);
-//			psp.setStatementParameters(param.getValue(key), cls, key+pos);
-//		}
 	}
 	
 	/**
 	 * 设置Statement查询参数，如果是带有分页的sql
 	 * @throws Exception
 	 */
-	private void setQueryParameters() throws Exception{
+	private void setLimitQueryParameters() throws Exception{
 		if(query.getFetchSize() != 0){
 			if(logger.isDebugEnabled())
 				logger.debug("fetch size : "+query.getFetchSize());
@@ -89,9 +82,8 @@ public class SQLParameter {
 				logger.debug("first index : "+query.getFirstIndex());
 				logger.debug("max rownum : "+query.getMaxCount());
 			}
-			CarpSql carpSql = AbstractSql.getCarpSql(query.getSession().getJdbcContext().getConfig(), query.getCls());//query.getSession().getJdbcContext().getContext().getCarpSql(query.getCls());
+			CarpSql carpSql = AbstractSql.getCarpSql(query.getSession().getJdbcContext().getConfig(), query.getCls());
 			carpSql.setQueryParameters(query);
-//			carpSql.setQueryParameters(query.getPreparedStatement(), query.getFirstIndex(), query.getMaxCount(), query.getParameters().count());
 		}
 	}
 }

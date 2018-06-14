@@ -26,6 +26,7 @@ import java.util.List;
  */
 public final class Parameter {
 	private List<Param> params = new ArrayList<Param>(5);
+	private List<Param> outparams = new ArrayList<Param>(2);
 	
 	/**
 	 * 设置查询参数
@@ -38,12 +39,21 @@ public final class Parameter {
 		params.add(p);
 	}
 	
+	public void setOutParameter(Integer index,int sqlType){
+		Param p = new Param(index,sqlType);
+		outparams.add(p);
+	}
+	
 	public List<Param> getParamList(){
 		return params;
+	}
+	public List<Param> getOUTParamList(){
+		return this.outparams;
 	}
 	
 	public void clear(){
 		params.clear();
+		outparams.clear();
 	}
 	public int count(){
 		return params.size();//valueMap.size();
@@ -53,10 +63,17 @@ public final class Parameter {
 		Integer index;
 		Object value;
 		Class<?> cls;
+		int sqlType = 0; // out parameter's sqlType
+		byte type = 0; //Procedure Parameter IN/OUT type IN be 0 , OUT be 1. default 0
 		public Param(Integer idx,Object value, Class<?> cls){
 			this.index = idx;
 			this.value = value;
 			this.cls = cls;
+		}
+		public Param(Integer idx, int sqlType){
+			this.index = idx;
+			this.sqlType = sqlType;
+			this.type = 1;
 		}
 		public Integer getIndex() {
 			return index;
@@ -66,6 +83,12 @@ public final class Parameter {
 		}
 		public Class<?> getCls() {
 			return cls;
+		}
+		public int getSqlType(){
+			return sqlType;
+		}
+		public byte getType(){
+			return type;
 		}
 	}
 }

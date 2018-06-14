@@ -30,9 +30,11 @@ import org.carp.DataSet;
 import org.carp.engine.exec.BatchExecutor;
 import org.carp.engine.exec.CarpQueryExecutor;
 import org.carp.engine.exec.DatasetQueryExecutor;
+import org.carp.engine.exec.ProcedureExecutor;
 import org.carp.engine.exec.QueryExecutor;
 import org.carp.engine.exec.UpdateExecutor;
 import org.carp.exception.CarpException;
+import org.carp.parameter.OUTParameter;
 import org.carp.parameter.Parameter;
 import org.carp.sql.AbstractSql;
 import org.carp.sql.CarpSql;
@@ -51,7 +53,9 @@ public class CarpQueryImpl implements CarpQuery{
 	private String[]	      returnNames; //执行select语句，返回的select 字段列表
 	private Class<?>[]	      returnTypes; //执行select语句，
 	private Class<?>	      cls;
+	private Class<?>[]	      clazzes; //store procedure resultset to class array(maybe has more resultset) 
 	private Parameter	      param	     = new Parameter();
+	private OUTParameter  outParameter = new OUTParameter();
 	private int	              fetchSize	 = 20;
 	private int	              firstIndex	= -1;
 	private int	              maxCount	 = -1;
@@ -73,6 +77,20 @@ public class CarpQueryImpl implements CarpQuery{
 			this.sql = sql;
 			this.fetchSize = this.session.getJdbcContext().getContext().getConfig().getFetchSize();
 			this.carpSql = AbstractSql.getCarpSql(this.session.getJdbcContext().getConfig(), cls);//this.session.getJdbcContext().getContext().getCarpSql(cls);
+		} catch (Exception ex) {
+			throw new CarpException("数据库连接为空或者Sql语句错误，请检查！", ex);
+		}
+	}
+	
+	public CarpQueryImpl(CarpSessionImpl session, String sql,Class<?>... classes) throws CarpException {
+		try {
+			this.session = session;
+			this.sql = sql;
+			this.carpSql = AbstractSql.getCarpSql(this.session.getJdbcContext().getConfig(), null);
+			clazzes = new Class<?>[classes.length];
+			for(int i=0; i<classes.length;++i){
+				clazzes[i] = classes[i];
+			}
 		} catch (Exception ex) {
 			throw new CarpException("数据库连接为空或者Sql语句错误，请检查！", ex);
 		}
@@ -130,6 +148,14 @@ public class CarpQueryImpl implements CarpQuery{
 		}
 	}
 	
+	@Override
+	public List<Object> listProcedureRs() throws Exception {
+		ProcedureExecutor executor = new ProcedureExecutor(this);
+		executor.executeStatement();
+		return executor.getRSObjectList();
+	}
+	
+	
 	public CarpQuery addBatch() throws CarpException {
 		try{
 			new BatchExecutor(this).addBatch();
@@ -170,7 +196,13 @@ public class CarpQueryImpl implements CarpQuery{
 	}
 	
 	public void closeStatement(){
-		try{if(ps != null && !ps.isClosed())ps.close();}catch(Exception e){}
+		carpSql = null;
+//		sql = null;
+//		returnNames = null; //执行select语句，返回的select 字段列表
+//		returnTypes = null; //执行select语句，
+//		cls = null;
+		param = null;
+		try{if(ps != null && !ps.isClosed())ps.close();ps = null;}catch(Exception e){}
 	}
 
 	public String getQueryString() {
@@ -375,5 +407,19 @@ public class CarpQueryImpl implements CarpQuery{
 
 	public void setReturnTypes(Class<?>[] returnTypes) {
 		this.returnTypes = returnTypes;
+	}
+
+	@Override
+	public CarpQuery registerOutParameter(int index, int sqlType) throws SQLException {
+		param.setOutParameter(index, sqlType);
+		return this;
+	}
+	
+	public Class<?>[] getClazzes(){
+		return this.clazzes;
+	}
+	@Override
+	public OUTParameter getOutParameter(){
+		return this.outParameter;
 	}
 }

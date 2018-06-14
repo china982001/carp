@@ -144,6 +144,22 @@ public interface CarpSession extends AutoCloseable{
 	 * @throws CarpException
 	 */
 	CarpQuery creatQuery(Class<?> cls,SQL sql)throws CarpException;
+	
+	/**
+	 * Create stored procedure query objects to execute stored procedures.
+	 * If a stored procedure has a return result set and the returned result set can be converted to an object collection, 
+	 * you need to pass in the class of object to support multiple result sets, Each result set corresponds to a class. 
+	 * Make sure that the field name in the class matches the field name in the result set. 
+	 * Carp will automatically encapsulate each result set into an object collection.
+	 * 
+	 * @param sql  stored procedure
+	 * @param classes  Object's class
+	 * @return CarpQuery object
+	 * @throws CarpException
+	 */
+	CarpQuery createProcedureQuery(String sql,Class<?>... classes)throws CarpException;
+	
+	
 	//void flush() throws CarpException;
 	/**
 	 * 启动事务

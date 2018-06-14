@@ -270,11 +270,21 @@ public class CarpSessionImpl implements CarpSession{
 			}
 			return query;  //new CarpQueryImpl(this,cls,sql);//CarpQueryFactory.createCarpQuery(this, cls, sql);
 		}catch(Exception ex){
-			throw new CarpException("query failed！",ex);
+			throw new CarpException("query failed. Cause:",ex);
 		}
 	}
 	
-	
+	public CarpQuery createProcedureQuery(String sql,Class<?>... classes)throws CarpException{
+		if(!isOpen())
+			throw new CarpException("Connection can't used！could not create Query");
+		if(sql == null || sql.isEmpty())
+			throw new CarpException("Parameter sql is null.");
+		try{
+			return  new CarpQueryImpl(this, sql, classes);
+		}catch(Exception ex){
+			throw new CarpException("query failed. Caust: ",ex);
+		}
+	}
 	
 	public String getSql() {
 		return sql;

@@ -57,6 +57,5 @@ public class DefaultSql extends AbstractSql{
 
 	public void setQueryParameters(CarpQueryImpl query) throws SQLException {
 		// TODO Auto-generated method stub
-		
 	}
 }

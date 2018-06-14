@@ -82,4 +82,11 @@ public @interface Id {
 	 */
 	String remark() default ""; //字段说明
 	
+	/**
+	 * The sqltype type of this field, which tells carp a precise carp type.
+	 * whose value definition refers to java.sql.Types
+	 * @return default 0
+	 */
+	int jdbcType() default 0; 
+	
 }

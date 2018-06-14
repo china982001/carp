@@ -15,12 +15,13 @@
  */
 package org.carp.engine;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import org.carp.exception.CarpException;
 import org.carp.type.TypeMapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 参数处理类
@@ -47,9 +48,7 @@ public class ParametersProcessor {
 		if(TypeMapping.getParameterByFieldType(typeCls) == null){
 			throw new CarpException("Unsupported parameter type:" + typeCls);
 		}
-		if(logger.isDebugEnabled()){
-			logger.debug("ParameterType : "+typeCls+" ,  ParameterIndex ： "+index+" ,  Value  : "+value);
-		}
+		logger.debug("ParameterType: {} , ParameterIndex: {} , Value: {}",typeCls,index,value);
 		TypeMapping.getParameterByFieldType(typeCls).setValue(ps, value, index);
 	}
 	
@@ -64,9 +63,7 @@ public class ParametersProcessor {
 		if(TypeMapping.getParameterBySqlType(javaType)== null){
 			throw new CarpException("Unsupported parameter type:" + javaType);
 		}
-		if(logger.isDebugEnabled()){
-			logger.debug("ParameterIndex ： "+index+" ,  Value  : "+value);
-		}
+		logger.debug("ParameterIndex: {}, Value: {}",index,value);
 		TypeMapping.getParameterBySqlType(javaType).setValue(ps, value, index);
 	}
 }

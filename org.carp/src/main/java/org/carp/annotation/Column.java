@@ -49,4 +49,11 @@ public @interface Column{
 	 * 精度。仅对浮点数有效，为小数位的长度 
 	 * */
 	int precision() default 0;//精度
+	
+	/**
+	 * The sqltype type of this field, which tells carp a precise carp type.
+	 * whose value definition refers to java.sql.Types
+	 * @return default 0
+	 */
+	int jdbcType() default 0; 
 }

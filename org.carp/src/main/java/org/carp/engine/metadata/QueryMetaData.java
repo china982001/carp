@@ -49,6 +49,7 @@ public class QueryMetaData extends MetaData{
 	 */
 	private void processMetadata(Class<?> cls)throws Exception{
 		Set<String> cols = this.getColumnsMap().keySet();
+		logger.debug("Parsing field information for the class: [{}]",cls.getName());
 		for(String col : cols){
 			if("CARP_ROW_NUM".equals(col))
 				continue;
@@ -64,7 +65,7 @@ public class QueryMetaData extends MetaData{
 			info.setJavaType(f.getType());
 			info.setAssemble(TypeMapping.getAssembleByFieldType(f.getType()));
 			if(logger.isDebugEnabled())
-				logger.debug("Field : "+name +", FieldType : "+ f.getType());
+				logger.debug("ColumnName: {} , FieldName: {} , FieldType: {}",col,name,f.getType().getName());
 		}
 	}
 	

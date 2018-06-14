@@ -23,29 +23,32 @@ import java.util.Date;
 import java.util.List;
 
 import org.carp.exception.CarpException;
+import org.carp.parameter.OUTParameter;
 
 /**
+ * Carp query definition interface for defining SQL creation, parameter injection, execution, result set or out parameter acquisition.
  * 查询接口定义类
- * 定义批量查询接口，返回数据集合
  * @author zhou
  * @version 0.1
  */
 public interface CarpQuery{
 	/**
+	 * When SQL's select statement is executed, the result set record is converted to a collection of object objects,
+	 * and the object collection is returned.
 	 * 
-	 * @return
+	 * @return Object Collection
 	 * @throws CarpException
 	 */
 	List<?> list()throws CarpException ;
 	
 	/**
-	 * 
-	 * @return
+	 * When SQL's select statement is executed, the result set record is converted to a DataSet.
+	 * @return DataSet
 	 * @throws CarpException
 	 */
 	DataSet dataSet() throws CarpException;
 	/**
-	 * 查询字符串
+	 * Review SQL statements to be executed.
 	 * @return
 	 */
 	String getQueryString();
@@ -190,4 +193,29 @@ public interface CarpQuery{
     CarpQuery setCharacterStream(int index, java.io.Reader reader) throws SQLException;
     CarpQuery setRef (int index, Ref x) throws SQLException;
     CarpQuery setURL(int index, java.net.URL x) throws SQLException;
+    
+    ////////////////      Procedure Call Method Defined           ///////////
+    /**
+     * Register parameters of type out to get the returned parameter values
+     * @param index 
+     * @param sqlType 
+     * @return
+     * @throws SQLException
+     */
+    CarpQuery registerOutParameter(int index, int sqlType) throws SQLException;
+    
+    /**
+     * After the stored procedure is executed, 
+     * the set of out type parameter values is obtained from the parameter index
+     * @return
+     * @throws Exception
+     */
+    OUTParameter getOutParameter() throws Exception;
+    
+    /**
+     * Execute a stored procedure that returns the result set collection of stored procedures (there may be no or more than 1 result set)
+     * @return
+     * @throws Exception
+     */
+    List<Object> listProcedureRs() throws Exception;
 }
