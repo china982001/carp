@@ -20,10 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.carp.script.SQLParam;
+import org.mvel2.MVEL;
 import org.w3c.dom.Node;
-
-import ognl.Ognl;
-import ognl.OgnlContext;
 
 /**
  * The underlying definition class for the SQL fragment, which all sql definition nodes inherit
@@ -32,6 +30,7 @@ import ognl.OgnlContext;
  */
 public abstract class BaseNode implements Cloneable{
 	public List<BaseNode> childNodes = new ArrayList<BaseNode>(2);
+	private boolean condition = false; //Verify that the condition is valid
 	
 	public void putChildNode(BaseNode node){
 		childNodes.add(node);
@@ -46,10 +45,10 @@ public abstract class BaseNode implements Cloneable{
 	 * @return
 	 * @throws Exception
 	 */
-	public abstract String parser(Map<String,Object> paramMap, List<Object> values,OgnlContext context)throws Exception;
+	public abstract String parser(Map<String,Object> paramMap, List<Object> values)throws Exception;
 	
 	/**
-	 * expression evaluation
+	 * expression evaluation，Verify that the condition is valid
 	 * @param param  parameter values
 	 * @return  true/false
 	 * @throws Exception
@@ -60,20 +59,19 @@ public abstract class BaseNode implements Cloneable{
 	 * Parse the sql node, initializing the node property value
 	 * @param node
 	 */
-	public abstract void initValue(Node node);
+	public abstract void initValue(Node node)throws Exception;
 
 	/**
 	 * Gets the value from the parameter collection based on the paramname.
 	 * The corresponding value is obtained from the parameter set according to paramname, 
 	 * and the SQLParam object is generated for parsing the dynamic condition of the sql statement.
-	 * @param context
 	 * @param paramname
+	 * @param params   Map<String,Object>
 	 * @return
 	 * @throws Exception
 	 */
-	protected SQLParam getParam(OgnlContext context,String paramname) throws Exception{
-		Object field = Ognl.parseExpression("#"+paramname.trim());
-		Object value= ognl.Ognl.getValue(field, context, context.getRoot());
+	protected SQLParam getParam(String paramname, Map<String,Object> params) throws Exception{
+		Object value= MVEL.eval(paramname.trim(), params);
 		SQLParam p = new SQLParam();
 		p.setValue(value);
 		p.setName(paramname);
@@ -81,7 +79,22 @@ public abstract class BaseNode implements Cloneable{
 			p.setClz(value.getClass());
 		return p;
 	}
-
+	
+	/**
+	 * get node attributeValue by attributename.
+	 * if attributeValue == null, return defaultValue
+	 * @param node
+	 * @param attrName
+	 * @param defaultValue
+	 * @return
+	 */
+	protected String getAttrValue(Node node,String attrName,String defaultValue){
+		Node attrNode = node.getAttributes().getNamedItem(attrName);
+		if(attrNode != null){
+			return attrNode.getNodeValue().trim();
+		}
+		return defaultValue;
+	}
 	/**
 	 * Clone a node object for the parsing of the current SQL statement.
 	 */
@@ -101,4 +114,12 @@ public abstract class BaseNode implements Cloneable{
 	 * @return
 	 */
 	public abstract BaseNode onClone();
+
+	public boolean isConditionValiad() {
+		return condition;
+	}
+
+	public void setCondition(boolean condition) {
+		this.condition = condition;
+	}
 }

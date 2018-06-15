@@ -21,14 +21,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.carp.exception.CarpException;
+import org.mvel2.MVEL;
 import org.w3c.dom.Node;
-
-import ognl.OgnlContext;
 
 public class LoopNode extends BaseNode {
 	private String var; //变量名称
 	private String list; // 集合
 	private String filter; //过滤条件
+	private Object filterExp; // filter expression condition
 	private String bsign;  //起始符号
 	private String esign;  //结束符号
 	private int bindex = 0; //起始索引值，对于list、或数组来说
@@ -47,50 +47,44 @@ public class LoopNode extends BaseNode {
 		if(getAttrValue(node,"eindex",null) != null)
 			eindex = Integer.valueOf(getAttrValue(node,"eindex","-1"));
 		separator = getAttrValue(node,"separator","");
+		if(filter != null)
+			this.filterExp = MVEL.compileExpression(filter);
 	}
 	
-	private String getAttrValue(Node node,String attrName,String defaultValue){
-		Node attrNode = node.getAttributes().getNamedItem(attrName);
-		if(attrNode != null){
-			return attrNode.getNodeValue();
-		}
-		return defaultValue;
-	}
-
 	@Override
-	public String parser(Map<String, Object> paramMap, List<Object> values,OgnlContext context)  throws Exception{
+	public String parser(Map<String, Object> paramMap, List<Object> values)  throws Exception{
 		Object collection = paramMap.get(list);
 		String content = "";
 		content += bsign;
 		if(collection instanceof List){
 			List<?> data = (List<?>)collection;
-			content = processLoopBody(content,data.toArray(),paramMap,values,context);
+			content = processLoopBody(content,data.toArray(),paramMap,values);
 		}else if(collection instanceof Integer[]){
-			content = processLoopBody(content,(Integer[])collection,paramMap,values,context);
+			content = processLoopBody(content,(Integer[])collection,paramMap,values);
 		}else if(collection instanceof int[]){
 			int[] tmp = (int[])collection;
 			Integer[] data = new Integer[tmp.length];
 			for(int i=0;i<tmp.length; ++i)data[i] = tmp[i];
-			content = processLoopBody(content,data,paramMap,values,context);
+			content = processLoopBody(content,data,paramMap,values);
 		}else if(collection instanceof String[]){
-			content = processLoopBody(content,(String[])collection,paramMap,values,context);
+			content = processLoopBody(content,(String[])collection,paramMap,values);
 		}else if(collection instanceof Long[]){
-			content = processLoopBody(content,(Long[])collection,paramMap,values,context);
+			content = processLoopBody(content,(Long[])collection,paramMap,values);
 		}else if(collection instanceof long[]){
 			long[] tmp = (long[])collection;
 			Long[] data = new Long[tmp.length];
 			for(int i=0;i<tmp.length; ++i)data[i] = tmp[i];
-			content = processLoopBody(content,data,paramMap,values,context);
+			content = processLoopBody(content,data,paramMap,values);
 		}else if(collection instanceof Short[]){
-			content = processLoopBody(content,(Short[])collection,paramMap,values,context);
+			content = processLoopBody(content,(Short[])collection,paramMap,values);
 		}else if(collection instanceof short[]){
 			short[] tmp = (short[])collection;
 			Short[] data = new Short[tmp.length];
 			for(int i=0;i<tmp.length; ++i)data[i] = tmp[i];
-			content = processLoopBody(content,data,paramMap,values,context);
+			content = processLoopBody(content,data,paramMap,values);
 		}else if(collection instanceof Set){
 			Set<?> data = (Set<?>)collection;
-			content = processLoopBody(content,data.toArray(),paramMap,values,context);
+			content = processLoopBody(content,data.toArray(),paramMap,values);
 		}else{
 			throw new CarpException("Unsupported parameter type, only supports: list or map or array."
 					+ "For example: List list = ArrayList (); Set set = HashSet (); String[] strs = new String[20];");
@@ -98,20 +92,19 @@ public class LoopNode extends BaseNode {
 		content += esign;
 		return content;
 	}
-	
-	private String processLoopBody(String content, Object[] data,Map<String, Object> paramMap, List<Object> values,OgnlContext context) throws Exception{
+
+	private String processLoopBody(String content, Object[] data,Map<String, Object> paramMap, List<Object> values) throws Exception{
 		bindex = bindex < 0 ? 0 :(bindex >= data.length ? 0 : bindex); //ArrayIndexOutOfBoundsException
 		int count = eindex == -1 ? data.length : (eindex > data.length ? data.length : eindex );//ArrayIndexOutOfBoundsException
 		for(int i = bindex; i < count; ++i){
 			Object o = data[i];
 			paramMap.put(var, o);
-			context.put(var, o);
 			if(filter != null){
-				Boolean bool = (Boolean)ognl.Ognl.getValue(filter, paramMap);
+				Boolean bool = (Boolean)MVEL.executeExpression(filterExp, paramMap);
 				if(!bool) continue;           //bool == false
 			}
 			for(BaseNode node: this.childNodes){
-				content += node.parser(paramMap,values,context);
+				content += node.parser(paramMap,values);
 			}
 			content = content + " " + separator+" ";
 		}
@@ -137,7 +130,7 @@ public class LoopNode extends BaseNode {
 		loopnode.bindex = this.bindex;
 		loopnode.eindex = this.eindex;
 		loopnode.separator = this.separator;
-		
+		loopnode.filterExp = this.filterExp;
 		List<BaseNode> childs = new ArrayList<BaseNode>(2);
 		for(BaseNode node: this.childNodes){
 			childs.add(node.onClone());

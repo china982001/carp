@@ -19,11 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.mvel2.MVEL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
-
-import ognl.OgnlContext;
 
 /**
  * IF node definition class for dynamic SQL
@@ -36,37 +35,36 @@ import ognl.OgnlContext;
 public class IfNode extends BaseNode {
 	private static final Logger logger = LoggerFactory.getLogger(IfNode.class);
 	private String test;
-	private boolean conditon = false;
+	private Object testExp;
 
 	@Override
 	public void initValue(Node node) {
 		test =node.getAttributes().getNamedItem("test").getNodeValue().trim();
+		testExp = MVEL.compileExpression(test);
 	}
 
 	@Override
-	public String parser(Map<String, Object> paramMap, List<Object> values,OgnlContext context) throws Exception{
+	public String parser(Map<String, Object> paramMap, List<Object> values) throws Exception{
 		String content = "";
-		if(conditon){// bool == true
-			for(BaseNode node: this.childNodes){
-				if(node.verifyCondition(paramMap))
-					content += " " + node.parser(paramMap,values,context);
-			}
+		for(BaseNode node: this.childNodes){
+			if(node.verifyCondition(paramMap))
+				content += " " + node.parser(paramMap,values);
 		}
 		return content;
 	}
 
 	@Override
 	public boolean verifyCondition(Map<String, Object> paramMap) throws Exception {
-		conditon = (Boolean)ognl.Ognl.getValue(test, paramMap);
-		logger.debug("Express: "+test+" , condition: "+conditon);
-		return conditon;
+		this.setCondition((Boolean)MVEL.executeExpression(testExp, paramMap));
+		logger.debug("Express: "+test+" , condition: "+this.isConditionValiad());
+		return this.isConditionValiad();
 	}
 
 	@Override
 	public BaseNode onClone() {
 		IfNode ifnode = new IfNode();
 		ifnode.test = this.test;
-		ifnode.conditon = this.conditon;
+		ifnode.testExp = this.testExp;
 		List<BaseNode> childs = new ArrayList<BaseNode>(2);
 		for(BaseNode node: this.childNodes){
 			childs.add(node.onClone());

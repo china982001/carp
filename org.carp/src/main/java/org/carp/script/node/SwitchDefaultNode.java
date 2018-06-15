@@ -21,8 +21,6 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
-import ognl.OgnlContext;
-
 public class SwitchDefaultNode extends BaseNode {
 
 	@Override
@@ -30,10 +28,10 @@ public class SwitchDefaultNode extends BaseNode {
 	}
 
 	@Override
-	public String parser(Map<String, Object> params, List<Object> values,OgnlContext context) throws Exception{
+	public String parser(Map<String, Object> params, List<Object> values) throws Exception{
 		for(BaseNode node: this.childNodes){
 			if(node.verifyCondition(params))
-				return node.parser(params,values,context);
+				return node.parser(params,values);
 		}
 		return "";
 	}

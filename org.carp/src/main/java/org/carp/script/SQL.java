@@ -24,7 +24,6 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -32,8 +31,6 @@ import org.carp.CarpQuery;
 import org.carp.script.node.BaseNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ognl.OgnlContext;
 
 /**
  * A parse wrapper class for dynamic sql statements 
@@ -64,17 +61,10 @@ public class SQL {
 	 */
 	public void parser() throws Exception{
 		List<BaseNode> nodes = _sqlNode.getNodes();
-		OgnlContext context = new OgnlContext();
-		Iterator<String> it = params.keySet().iterator();
-		while(it.hasNext()){
-			String key = it.next();
-			Object value = params.get(key);
-			context.put(key, value);
-		}
 		logger.debug("Sql Parameters : "+ this.params);
 		for(BaseNode node : nodes){
 			if(node.verifyCondition(params))
-				buffer.append(" ").append(node.parser( params, values,context));
+				buffer.append(" ").append(node.parser(params, values));
 		}
 	}
 	

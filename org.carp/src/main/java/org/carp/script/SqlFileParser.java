@@ -37,7 +37,7 @@ public class SqlFileParser {
 	 * parser sql defined
 	 * @throws CarpException 
 	 */
-	public void process() throws CarpException{
+	public void process() throws Exception{
 		NodeList nodes = sqldoc.getElementsByTagName("module");
 		for(int idx = 0, count = nodes.getLength(); idx < count; ++idx){
 			Node n = nodes.item(idx);
@@ -66,7 +66,7 @@ public class SqlFileParser {
 	}
 	
 	
-	private void parserSqlPartNode(BaseNode sqlPartNode,Node node) throws CarpException{
+	private void parserSqlPartNode(BaseNode sqlPartNode,Node node) throws Exception{
 		NodeList childs = node.getChildNodes();
 		//System.out.println(node.getNodeValue()+ "= "+childs.getLength());
 		for(int i=0; i<childs.getLength(); ++i){

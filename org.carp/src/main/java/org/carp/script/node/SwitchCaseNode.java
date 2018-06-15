@@ -19,40 +19,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.mvel2.MVEL;
 import org.w3c.dom.Node;
-
-import ognl.OgnlContext;
 
 public class SwitchCaseNode extends BaseNode {
 	private String test;
-	private boolean condition = false;
-
+	private Object testExp;
 	@Override
 	public void initValue(Node node) {
 		test =node.getAttributes().getNamedItem("test").getNodeValue().trim();
+		testExp = MVEL.compileExpression(test);
 	}
 
 	@Override
-	public String parser(Map<String, Object> params, List<Object> values,OgnlContext context) throws Exception{
-		if(condition){// bool == true
-			for(BaseNode node: this.childNodes){
-				if(node.verifyCondition(params))
-					return node.parser(params,values,context);
-			}
+	public String parser(Map<String, Object> params, List<Object> values) throws Exception{
+		for(BaseNode node: this.childNodes){
+			if(node.verifyCondition(params))
+				return node.parser(params,values);
 		}
 		return "";
 	}
 
 	@Override
 	public boolean verifyCondition(Map<String, Object> param) throws Exception {
-		return condition = (Boolean)ognl.Ognl.getValue(test, param);
+		this.setCondition((Boolean)MVEL.executeExpression(testExp, param));
+		return this.isConditionValiad();
 	}
 
 	@Override
 	public BaseNode onClone() {
 		SwitchCaseNode scpnode = new SwitchCaseNode();
 		scpnode.test = this.test;
-		scpnode.condition = this.condition;
+		scpnode.testExp = this.testExp;
 		
 		List<BaseNode> childs = new ArrayList<BaseNode>(2);
 		for(BaseNode node: this.childNodes){

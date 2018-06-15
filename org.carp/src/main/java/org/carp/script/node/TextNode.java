@@ -23,8 +23,6 @@ import java.util.StringTokenizer;
 import org.carp.script.SQLParam;
 import org.w3c.dom.Node;
 
-import ognl.OgnlContext;
-
 public class TextNode extends BaseNode{
 	private String text;
 	
@@ -39,7 +37,7 @@ public class TextNode extends BaseNode{
 	}
 	
 	@Override
-	public String parser(Map<String, Object> params, List<Object> values,OgnlContext context)  throws Exception{
+	public String parser(Map<String, Object> params, List<Object> values)  throws Exception{
 		StringTokenizer tokenizer = new StringTokenizer(text,"#{}",true);
 		List<String> list = new ArrayList<String>();
 		while(tokenizer.hasMoreTokens()){
@@ -51,12 +49,9 @@ public class TextNode extends BaseNode{
 		String content = text;
 		for(String p : list){
 			content = content.replaceFirst("#\\{"+p+"\\}", "?");
-			SQLParam param = this.getParam(context, p.trim());
+			SQLParam param = this.getParam(p.trim(),params);
 			values.add(param);
 		}
-//		if(buffer.length() != 0)
-//			buffer.append(" ");
-		//buffer.append(text);
 		return content;
 	}
 

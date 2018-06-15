@@ -21,8 +21,6 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
-import ognl.OgnlContext;
-
 /**
  * 
  * @author zhou
@@ -40,11 +38,11 @@ public class WhereNode extends BaseNode {
 	}
 
 	@Override
-	public String parser(Map<String, Object> params, List<Object> values,OgnlContext context) throws Exception{
+	public String parser(Map<String, Object> params, List<Object> values) throws Exception{
 		String content = "";
 		for(BaseNode node: this.childNodes){
 			if(node.verifyCondition(params))
-				content +=" "+ node.parser(params,values,context);
+				content +=" "+ node.parser(params,values);
 		}
 		content = content.trim();
 		content = trimToArray(content,this.preTrim,true);
