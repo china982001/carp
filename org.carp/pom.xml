@@ -74,11 +74,7 @@
 			<version>1.1</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-            <groupId>opensymphony</groupId>
-            <artifactId>ognl</artifactId>
-            <version>2.6.11</version>
-        </dependency>
+    
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
@@ -89,6 +85,14 @@
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
+		<dependency>
+		    <groupId>org.mvel</groupId>
+		    <artifactId>mvel2</artifactId>
+		    <version>2.4.0.Final</version>
+		</dependency>
+
+
+        
         <!-- The following jar package is used for testing -->
 		<dependency>
 			<groupId>com.oracle</groupId>
