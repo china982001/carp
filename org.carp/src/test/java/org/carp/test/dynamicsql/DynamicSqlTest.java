@@ -18,6 +18,7 @@ import org.junit.Assert;
 public class DynamicSqlTest {
 	
 	public static void test(CarpSessionBuilder  builder)throws Exception{
+//		testLoopTime(builder);
 		testNoConditionNode(builder);
 		testWithWhereIfNode(builder);
 		testWithIFNode(builder);
@@ -28,6 +29,24 @@ public class DynamicSqlTest {
 		testLoopCondWithStringArray(builder);//注意，这里在postgresql数据库上测试不通过，因为postgre不能隐式的自动转换类型，因此会抛出异常
 		testLoopCondWithSet(builder);
 		testLoopCond_In(builder);
+		testAssignNode(builder);
+	}
+	public static void testLoopTime(CarpSessionBuilder  builder)throws Exception{
+		System.out.println();
+		System.out.println();
+		System.out.println("Begin testLoopTime   Condition String[]  ....");
+		long d = System.currentTimeMillis();
+		System.out.println();
+		System.out.print("循环100万次花费的时间: ");
+		for(int i=0; i<100000; ++i){
+			String[] ints = {"1","2","3","4","5","6","7","8","9","10"};
+			Map<String,Object> map =new HashMap<String,Object>();
+			map.put("catid", ints);
+			SQLFactory.getSQL("m1/s4",map);
+		}
+		long e = System.currentTimeMillis();
+		System.out.println((e-d)+" 毫秒\r\n");
+		System.out.println("End testLoopTime  Condition  String[] .....  SUCCESS!");
 	}
 	
 	
@@ -211,5 +230,21 @@ public class DynamicSqlTest {
 		
 		s.close();
 		System.out.println("End DynamicSQL Query  USE LOOP  Condition  Integer[] .....  SUCCESS!");
+	}
+	
+	public static void testAssignNode(CarpSessionBuilder  builder)throws Exception{
+		System.out.println();
+		System.out.println();
+		System.out.println("Begin DynamicSQL Assign   ....");
+		CarpSession s=builder.getSession();
+		CarpCat cat = new CarpCat();
+		Map<String,Object> map =new HashMap<String,Object>();
+		cat.setCatName("cat");
+		map.put("po", cat);
+		CarpQuery q = s.creatQuery(CarpCat.class,SQLFactory.getSQL("m1/s6",map));
+		Assert.assertEquals("record count:", q.list().size(),20);// like匹配查询
+		
+		s.close();
+		System.out.println("End DynamicSQL    Assign .....  SUCCESS!");
 	}
 }

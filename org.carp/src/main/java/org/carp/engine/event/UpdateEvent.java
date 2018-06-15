@@ -67,6 +67,7 @@ public class UpdateEvent extends Event {
 
 	@Override
 	protected void executeBefore() throws Exception {
+		this.processBlob();
 		if(this.getSession().getJdbcContext().getContext().getConfig().getInterceptor() != null)
 			this.getSession().getJdbcContext().getContext().getConfig().getInterceptor().onBeforeUpdate(getEntity(), getSession());
 		if(this.getSession().getInterceptor() != null)
@@ -75,55 +76,40 @@ public class UpdateEvent extends Event {
 
 	@Override
 	protected void executeAfter() throws Exception {
-		this.processBlob();
 		if(this.getSession().getJdbcContext().getContext().getConfig().getInterceptor() != null)
 			this.getSession().getJdbcContext().getContext().getConfig().getInterceptor().onAfterUpdate(getEntity(), getSession());
 		if(this.getSession().getInterceptor() != null)
 			this.getSession().getInterceptor().onAfterUpdate(getEntity(), getSession());
 	}
+	
 	/**
 	 * 如果数据库为oracle的情况下，单独处理blob和clob类型的字段
 	 * @throws Exception
 	 */
-	@SuppressWarnings("deprecation")
 	private void processBlob()throws Exception{
-		String updateSql = "select ";
-		if(this.getSession().getJdbcContext().getContext().getCarpSqlClass().equals(OracleCarpSql.class)){
-			List<ColumnsMetadata>  cols = this.getBean().getColumns();
-			for(int i=0; i<cols.size(); ++i){
-				ColumnsMetadata col = cols.get(i);
-				if(col.getFieldType().equals(Blob.class) || col.getFieldType().equals(Clob.class)){
-					updateSql += col.getColName()+" ,";
-				}
+		if(!this.getSession().getJdbcContext().getContext().getCarpSqlClass().equals(OracleCarpSql.class))
+			return;
+		List<ColumnsMetadata>  cols = this.getBean().getColumns();
+		for(ColumnsMetadata col : cols){
+			if(col.getFieldType().equals(Blob.class)){
+				Object value = col.getValue(this.getEntity());
+				if(value == null)
+					continue;
+				Blob blob = (Blob)value;
+				byte[] bytes = blob.getBytes(1, (int)blob.length());
+				blob = this.getSession().getConnection().createBlob();
+				blob.setBytes(1, bytes);
+				col.setValue(this.getEntity(), blob);
+			}else if(col.getFieldType().equals(Clob.class)){
+				Object value = col.getValue(this.getEntity());
+				if(value == null)
+					continue;
+				Clob clob = (Clob)value;
+				String tmp = clob.getSubString(1, (int)clob.length());
+				clob = this.getSession().getConnection().createClob();
+				clob.setString(1, tmp);
+				col.setValue(this.getEntity(), clob);
 			}
-			if(updateSql.equals("select "))
-				return;
-			updateSql = updateSql.substring(0, updateSql.length()-2)+" from "+this.getBean().getTable()+" where ";
-			PrimarysMetadata pm = this.getBean().getPrimarys().get(0);
-			Object id = pm.getValue(this.getEntity());
-			if(pm.getFieldType().equals(String.class)){
-				updateSql +=  pm.getColName() +" = '"+id+"' for update";
-			}else{
-				updateSql +=  pm.getColName() +" = "+id +" for update";
-			}
-			
-			ResultSet rs = this.getSession().creatDataSetQuery(updateSql).resultSet();
-			while(rs!=null && rs.next()){
-				for(int i=0, index = 0; i<cols.size(); ++i){
-					ColumnsMetadata col = cols.get(i);
-					if(col.getValue(getEntity()) == null)
-						continue;
-					if(col.getFieldType().equals(Blob.class)){
-						oracle.sql.BLOB blob = (oracle.sql.BLOB)rs.getBlob(++index);
-						this.setBlobValue(blob.getBinaryOutputStream(),(java.sql.Blob)col.getValue(getEntity()));
-					}
-					if(col.getFieldType().equals(Clob.class)){
-						oracle.sql.CLOB clob = (oracle.sql.CLOB)rs.getClob(++index);
-						setClobValue(clob.getCharacterOutputStream() ,(java.sql.Clob)col.getValue(getEntity()));
-					}
-				}
-			}
-			rs.close();
 		}
 	}
 	

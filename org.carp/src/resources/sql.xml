@@ -38,5 +38,13 @@
 				</loop>
 			</where>
 		</sql>
+		<sql name="s6">
+			select cat_id,cat_name,cat_age,sts_time from carp_cat
+			<if test="po.catName != null">
+				<assign var="name" value=" '%'+ po.catName + '%'" />
+				where cat_name like #{name}
+			</if>
+			order by cat_id asc
+		</sql>
 	</module>
 </modules>

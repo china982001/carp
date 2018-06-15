@@ -15,6 +15,7 @@ import org.carp.test.jdbc.JDBCTest;
 import org.carp.test.jdbc.TableTest;
 import org.carp.test.map.MapObjectTest;
 import org.carp.test.metadata.MetadataTest;
+import org.carp.test.procedure.TestProcedure;
 import org.carp.test.query.ClassQueryCase;
 import org.carp.test.query.DatasetQueryCase;
 import org.carp.test.save.SaveTest;
@@ -81,6 +82,9 @@ public class TestMain {
 		
 		//Get MetaData
 		MetadataTest.test(builder);
+		
+		//Store Procedure
+//		TestProcedure.test(builder);
 		
 	}
 	

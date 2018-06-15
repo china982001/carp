@@ -161,7 +161,7 @@ public class CarpSessionImpl implements CarpSession{
 	public Serializable save(Object obj)throws CarpException {
 		if(!isOpen())
 			throw new CarpException("connection was closed,could not execute save!");
-		try{
+		try{ 
 			Event event = new SaveEvent(this,obj);
 			event.execute();
 			return event.getPrimaryValue();

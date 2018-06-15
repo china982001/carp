@@ -55,6 +55,6 @@
 		<sql classpath="org/carp/sqlfile/sql.xml"></sql>
 		<sql url="file:///D:/work/eclipse/Carp/org.carp/src/resources/sql.xml"></sql>
 	 -->
-		<sql file="D:/work/eclipse/Carp/org.carp/src/resources/sql.xml"></sql>
+		<sql file="src/resources/sql.xml"></sql>
 	</sqlfile>
 </carp>

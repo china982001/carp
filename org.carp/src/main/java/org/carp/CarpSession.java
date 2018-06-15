@@ -159,8 +159,6 @@ public interface CarpSession extends AutoCloseable{
 	 */
 	CarpQuery createProcedureQuery(String sql,Class<?>... classes)throws CarpException;
 	
-	
-	//void flush() throws CarpException;
 	/**
 	 * 启动事务
 	 */
