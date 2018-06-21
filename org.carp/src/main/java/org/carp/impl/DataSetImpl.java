@@ -38,7 +38,7 @@ public class DataSetImpl  implements DataSet{
 	
 	public DataSetImpl(CarpQueryImpl query, MetaData cqmd,ResultSet rs)throws Exception{
 		try{
-			RSProcessor rsp = new RSProcessor(null,cqmd,rs);
+			RSProcessor rsp = new RSProcessor(query,null,cqmd,rs);
 			rsp.createDataSet(row);
 			dataCount = row.size()-1;
 			this.columns = cqmd.getColumnsMap().keySet().toArray(new String[0]);

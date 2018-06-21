@@ -108,7 +108,7 @@ public class FindEvent extends Event{
 		ResultSet rs =  null;
 		try{
 			rs = getSession().getStatement().executeQuery();
-			RSProcessor rsp = new RSProcessor(cls,new QueryMetaData(cls,rs),rs);
+			RSProcessor rsp = new RSProcessor(null,cls,new QueryMetaData(cls,rs),rs);
 			List<?> list= rsp.list();
 			if(list.size() != 1)
 				throw new CarpException("Object does not exist.");

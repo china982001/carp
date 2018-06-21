@@ -16,12 +16,15 @@
 package org.carp.engine.result;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.carp.engine.metadata.ColumnInfo;
 import org.carp.engine.metadata.MetaData;
 import org.carp.exception.CarpException;
+import org.carp.impl.CarpQueryImpl;
+import org.carp.sql.CarpSql;
 
 /**
  * java.sql.ResultSet 结果集记录的对象组装类
@@ -33,6 +36,8 @@ public class RSProcessor {
 	private Class<?> cls;
 	private ResultSet rs;
 	private MetaData cqmd;
+	private CarpQueryImpl query;
+	private int limitCount;
 	
 	/**
 	 * 构造函数
@@ -41,10 +46,12 @@ public class RSProcessor {
 	 * @param rs  结果集
 	 * @throws CarpException
 	 */
-	public RSProcessor(Class<?> cls,MetaData cqmd,ResultSet rs) throws CarpException{
+	public RSProcessor(CarpQueryImpl query, Class<?> cls, MetaData cqmd,ResultSet rs) throws CarpException{
+		this.query = query;
 		this.cls = cls;
 		this.rs = rs;
 		this.cqmd = cqmd;
+		limitCount = this.query != null && this.query.getMaxCount() != -1 ?  this.query.getMaxCount() :Integer.MAX_VALUE;
 	}
 	
 	/**
@@ -54,8 +61,12 @@ public class RSProcessor {
 	 */
 	public List<Object> list()throws Exception{
 		List<Object> list = new ArrayList<Object>();
-		while(rs.next())
+		moveResultSetCursor();
+		int count = 0;
+		while((rs.next()) && (count < limitCount)){
 			list.add(processResultSet());
+			count++;
+		}
 		return list;
 	}
 	
@@ -78,8 +89,11 @@ public class RSProcessor {
 	///////////////////////////////////////////
 	
 	public void createDataSet(List<List<Object>> row) throws Exception{
-		while(rs.next()){
+		moveResultSetCursor();
+		int count = 0;
+		while((rs.next()) && (count < limitCount)){
 			row.add(recodeToSingleRow());
+			count ++;
 		}
 	}
 	
@@ -89,5 +103,24 @@ public class RSProcessor {
 			data.add(rs.getObject(col.getIdx()+1));// column index from 1
 		}
 		return data;
+	}
+	
+	/////////////////////////////////////
+	
+	private void moveResultSetCursor() throws SQLException{
+		if(this.query == null)
+			return;
+		if(this.query.getSession().getDialect().pageMode() != CarpSql.PageSupport.COMPLETE 
+				&& this.query.getFirstIndex() != -1){
+			if(this.query.getSession().getJdbcContext().getConfig().isEnableScrollableResultSet()){
+				this.rs.absolute(this.query.getFirstIndex());
+			}else{
+				int idx = 0;
+				while(rs.next()){
+					if(idx++ >=this.query.getFirstIndex())
+						break;
+				}
+			}
+		}
 	}
 }

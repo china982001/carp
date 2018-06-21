@@ -40,7 +40,7 @@ public class ClassQueryExecutor extends QueryExecutor{
 	public List<Object> list()throws Exception{
 		List<Object> list = null;
 		try{
-			rsp = new RSProcessor(this.getQuery().getClazzes()[0],this.getMetadata(),this.getResultSet());
+			rsp = new RSProcessor(this.getQuery(),this.getQuery().getClazzes()[0],this.getMetadata(),this.getResultSet());
 			list = rsp.list();
 		}finally{
 			this.getResultSet().close();

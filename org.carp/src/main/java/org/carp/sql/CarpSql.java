@@ -56,7 +56,7 @@ public interface CarpSql {
 	String getPageSql(Class<?> cls) throws CarpException;
 	
 	/**
-	 * 确定绑定查询分页参数位置信息
+	 * 参数索引值偏移量，确定所绑定查询分页参数位置信息
 	 * @throws Exception
 	 */
 	int offset();

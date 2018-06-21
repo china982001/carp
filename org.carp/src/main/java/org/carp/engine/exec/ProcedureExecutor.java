@@ -79,7 +79,7 @@ public class ProcedureExecutor extends Executor{
 			try(ResultSet rs = this.getQuery().getStatement().getResultSet();){
 				if( idx < this.getQuery().getClazzes().length){
 					QueryMetaData metadata = new QueryMetaData(this.getQuery().getClazzes()[idx],rs);
-					RSProcessor processor = new RSProcessor(this.getQuery().getClazzes()[idx],metadata,rs);
+					RSProcessor processor = new RSProcessor(this.getQuery(),this.getQuery().getClazzes()[idx],metadata,rs);
 					list.add(processor.list());
 				}else{
 					MetaData metadata = new MetaData(rs);
