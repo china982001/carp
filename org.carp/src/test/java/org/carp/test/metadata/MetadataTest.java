@@ -26,7 +26,7 @@ public class MetadataTest {
 		System.out.println();
 		System.out.println("Begin ResultSet MetaData ....");
 		CarpSession s=builder.getSession();
-		CarpQuery q = s.creatDataSetQuery("select * from carp_cat");
+		CarpQuery q = s.createQuery("select * from carp_cat");
 		q.setMaxCount(2);
 		q.setFirstIndex(0);
 		ResultSet rs = q.resultSet();
@@ -40,7 +40,7 @@ public class MetadataTest {
 		System.out.println();
 		System.out.println("Begin DataSet MetaData ....");
 		CarpSession s=builder.getSession();
-		CarpQuery q = s.creatDataSetQuery("select * from carp_cat");
+		CarpQuery q = s.createQuery("select * from carp_cat");
 		q.setMaxCount(3);
 		q.setFirstIndex(0);
 		DataSet ds = q.dataSet();
@@ -53,7 +53,7 @@ public class MetadataTest {
 		System.out.println();
 		System.out.println("Begin ClassQuery MetaData by id ....");
 		CarpSession s=builder.getSession();
-		CarpQuery q = s.creatQuery(CarpCat.class,"select * from carp_cat");
+		CarpQuery q = s.createQuery("select * from carp_cat",CarpCat.class);
 		q.setMaxCount(3);
 		q.setFirstIndex(0);
 		List ds = q.list();

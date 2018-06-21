@@ -9,7 +9,7 @@ public class BaseCarp {
 
 	public static int count(CarpSessionBuilder  builder)throws Exception{
 		CarpSession s= builder.getSession();
-		CarpQuery q = s.creatDataSetQuery("select count(*) from carp_cat");
+		CarpQuery q = s.createQuery("select count(*) from carp_cat");
 		DataSet ds = q.dataSet();
 		int cnt = 0;
 		cnt = Integer.parseInt(ds.getData().get(0).get(0)+"");	

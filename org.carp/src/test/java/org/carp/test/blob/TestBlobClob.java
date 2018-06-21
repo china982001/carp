@@ -44,7 +44,7 @@ public class TestBlobClob {
 		tx.commit();
 		s.close();
 		s=builder.getSession();
-		List<?> list = s.creatQuery(CarpBlob.class).list();
+		List<?> list = s.createQuery(CarpBlob.class).list();
 		Assert.assertEquals("cat count +1  ", 1,list.size());
 		CarpBlob carp = (CarpBlob)list.get(0);
 //		Blob blob = carp.getCatImage();
@@ -73,7 +73,7 @@ public class TestBlobClob {
 		tx.commit();
 		s.close();
 		s=builder.getSession();
-		List<?> list = s.creatQuery(CarpBlob.class).list();
+		List<?> list = s.createQuery(CarpBlob.class).list();
 		Assert.assertEquals("cat count +1  ", 1,list.size());
 		CarpBlob carp = (CarpBlob)list.get(0);
 //		Blob blob = carp.getCatImage();

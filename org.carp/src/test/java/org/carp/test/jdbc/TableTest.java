@@ -81,13 +81,13 @@ public class TableTest {
 			flag = true;
 		System.out.println(tablename+" ============  "+flag);
 		if(flag)
-			s.creatUpdateQuery("DROP TABLE " + tablename).executeUpdate();
+			s.createQuery("DROP TABLE " + tablename).executeUpdate();
 		s.close();
 	}
 	
 	private static void createTable(CarpSessionBuilder  builder ,String sql)throws Exception{
 		CarpSession s = builder.getSession();
-		s.creatUpdateQuery(sql).executeUpdate();
+		s.createQuery(sql).executeUpdate();
 		s.close();
 	}
 }

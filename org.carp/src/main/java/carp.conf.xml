@@ -7,10 +7,10 @@
 	<property name="carp.driver">com.ibm.db2.jcc.DB2Driver</property> 
 	<property name="carp.url">jdbc:db2://192.168.1.251:50000/sample:driverType=4;fullyMaterializeLobData=true;fullyMaterializeInputStreams=true;progressiveStreaming=2;progresssiveLocators=2;</property>
 	-->
-	<!-- Oracle -->
+	<!-- Oracle 
 	<property name="carp.driver">oracle.jdbc.driver.OracleDriver</property> 
 	<property name="carp.url">jdbc:oracle:thin:@192.168.1.251:1521:orcl</property>
-	
+	-->
 	
 	<!-- Sql Server <property name="carp.driver">net.sourceforge.jtds.jdbc.Driver</property> 
 		<property name="carp.url">jdbc:jtds:sqlserver://192.168.0.104;DatabaseName=ADMSIFP</property> -->
@@ -24,12 +24,12 @@
 	<property name="carp.url">jdbc:h2:file:D:/work/git_repo/carp/org.carp/doc/h2/testCarp</property> 
 	-->
 	
-	<!-- MySql 
+	<!-- MySql -->
 	<property name="carp.driver">com.mysql.jdbc.Driver</property>
 	<property name="carp.url">jdbc:mysql://localhost:3306/adms</property>
 	<property name="property.useCursorFetch">true</property>
 	<property name="carp.jdbc.fetch_size">20</property>
-	 -->
+	 
 
 
 

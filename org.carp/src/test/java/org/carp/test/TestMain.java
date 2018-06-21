@@ -1,7 +1,7 @@
 package org.carp.test;
 
 import org.carp.CarpSessionBuilder;
-import org.carp.jdbc.provider.DBCPConnectionProvider;
+import org.carp.cfg.CarpConfig;
 import org.carp.test.anno.AnnoTest;
 import org.carp.test.batch.BatchObjectTest;
 import org.carp.test.batch.BatchSQLTest;
@@ -15,17 +15,16 @@ import org.carp.test.jdbc.JDBCTest;
 import org.carp.test.jdbc.TableTest;
 import org.carp.test.map.MapObjectTest;
 import org.carp.test.metadata.MetadataTest;
-import org.carp.test.procedure.TestProcedure;
 import org.carp.test.query.ClassQueryCase;
 import org.carp.test.query.DatasetQueryCase;
 import org.carp.test.save.SaveTest;
 import org.carp.test.update.CarpUpdateCase;
 
 public class TestMain {
-
+ 
 	public static void main(String[] args) throws Exception {
-		//构建sessionBuilder
-		CarpSessionBuilder  builder = CarpSessionBuilder.getSessionBuilder();
+		CarpConfig config = new CarpConfig("src/resources/carp.conf.xml");
+		CarpSessionBuilder  builder = config.getSessionBuilder();
 		/**
 		 * 
 		 */

@@ -31,7 +31,7 @@ public class BatchSQLTest {
 		System.out.println("begin time ....  "+begin);
 		CarpSession s = builder.getSession();
 		Transaction tx = s.beginTransaction();
-		CarpQuery q = s.creatUpdateQuery("insert into carp_cat values(?,?,?,?,?)");
+		CarpQuery q = s.createQuery("insert into carp_cat values(?,?,?,?,?)");
 		for(int i=40; i<50; ++i){
 			q.setInt(1, i);
 			q.setString(2, "名称--"+i);
@@ -56,7 +56,7 @@ public class BatchSQLTest {
 		long begin = System.currentTimeMillis();
 		System.out.println("begin time ....  "+begin);
 		CarpSession s = builder.getSession();
-		CarpQuery q = s.creatUpdateQuery("insert into carp_cat values(?,?,?,?,?)");
+		CarpQuery q = s.createQuery("insert into carp_cat values(?,?,?,?,?)");
 		for(int i=50; i<60; ++i){
 			q.setInt(1, i);
 			q.setString(2, "名称--"+i);
@@ -81,7 +81,7 @@ public class BatchSQLTest {
 		System.out.println("begin time ....  "+begin);
 		CarpSession s = builder.getSession();
 		Transaction tx = s.beginTransaction();
-		CarpQuery q = s.creatUpdateQuery("insert into carp_cat values(?,?,?,?,?)");
+		CarpQuery q = s.createQuery("insert into carp_cat values(?,?,?,?,?)");
 		for(int i=60; i<70; ++i){
 			q.setInt(1, i);
 			q.setString(2, "名称--"+i);

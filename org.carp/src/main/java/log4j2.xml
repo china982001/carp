@@ -38,7 +38,7 @@
             <appender-ref ref="app_info"/>  
             <appender-ref ref="app_error"/>  
         </Logger>  
-        <Root level="debug">
+        <Root level="info">
             <appender-ref ref="Console"/> 
             <!-- 
             <appender-ref ref="app_debug"/>  

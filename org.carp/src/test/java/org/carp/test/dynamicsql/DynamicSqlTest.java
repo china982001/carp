@@ -56,7 +56,7 @@ public class DynamicSqlTest {
 		System.out.println("Begin DynamicSQL Query No Condition ....");
 		int count = BaseCarp.count(builder);
 		CarpSession s=builder.getSession();
-		CarpQuery q = s.creatQuery(CarpCat.class,SQLFactory.getSQL("m1/s1"));
+		CarpQuery q = s.createQuery(SQLFactory.getSQL("m1/s1"),CarpCat.class);
 		Assert.assertEquals("record count:", q.list().size(),count);
 		s.close();
 		System.out.println("End DynamicSQL Query  No Condition.  SUCCESS!");
@@ -71,7 +71,7 @@ public class DynamicSqlTest {
 		cat.setCatAge((short) -1);
 		Map<String,Object> map =new HashMap<String,Object>();
 		map.put("po", cat);
-		CarpQuery q = s.creatQuery(CarpCat.class,SQLFactory.getSQL("m1/s2",map));
+		CarpQuery q = s.createQuery(SQLFactory.getSQL("m1/s2",map),CarpCat.class);
 		Assert.assertEquals("record count:", q.list().size(),47);
 		s.close();
 		System.out.println("End DynamicSQL Query  With WhereIFNode Condition.  SUCCESS!");
@@ -87,11 +87,11 @@ public class DynamicSqlTest {
 		cat.setCatId(1);
 		Map<String,Object> map =new HashMap<String,Object>();
 		map.put("po", cat);
-		CarpQuery q = s.creatQuery(CarpCat.class,SQLFactory.getSQL("m1/s3",map));
+		CarpQuery q = s.createQuery(SQLFactory.getSQL("m1/s3",map),CarpCat.class);
 		Assert.assertEquals("record count:", q.list().size(),1);
 		cat.setCatWeight(-1);
 		map.put("po", cat);
-		q = s.creatQuery(CarpCat.class,SQLFactory.getSQL("m1/s3",map));
+		q = s.createQuery(SQLFactory.getSQL("m1/s3",map),CarpCat.class);
 		Assert.assertEquals("record count:", q.list().size(),count);
 		
 		s.close();
@@ -110,7 +110,7 @@ public class DynamicSqlTest {
 		Map<String,Object> map =new HashMap<String,Object>();
 		map.put("po", cat);
 		System.out.println("map---------"+map);
-		CarpQuery q = s.creatQuery(CarpCat.class,SQLFactory.getSQL("m1/s2",map));
+		CarpQuery q = s.createQuery(SQLFactory.getSQL("m1/s2",map),CarpCat.class);
 		Assert.assertEquals("record count:", q.list().size(),47);
 		
 		cat = new CarpCat();
@@ -118,7 +118,7 @@ public class DynamicSqlTest {
 		cat.setCatId(1);
 		cat.setCatAge((short) -1);
 		map.put("po", cat);
-		q = s.creatQuery(CarpCat.class,SQLFactory.getSQL("m1/s2",map));
+		q = s.createQuery(SQLFactory.getSQL("m1/s2",map),CarpCat.class);
 		Assert.assertEquals("record count:", q.list().size(),count);
 		
 		
@@ -144,7 +144,7 @@ public class DynamicSqlTest {
 		list.add(10);
 		Map<String,Object> map =new HashMap<String,Object>();
 		map.put("catid", list);
-		CarpQuery q = s.creatQuery(CarpCat.class,SQLFactory.getSQL("m1/s4",map));
+		CarpQuery q = s.createQuery(SQLFactory.getSQL("m1/s4",map),CarpCat.class);
 		Assert.assertEquals("record count:", q.list().size(),5);// id=10的记录已被删除了，所以应该是7
 		
 		s.close();
@@ -158,7 +158,7 @@ public class DynamicSqlTest {
 		int[] ints = {1,2,3,4,5,6,7,8,9,10};
 		Map<String,Object> map =new HashMap<String,Object>();
 		map.put("catid", ints);
-		CarpQuery q = s.creatQuery(CarpCat.class,SQLFactory.getSQL("m1/s4",map));
+		CarpQuery q = s.createQuery(SQLFactory.getSQL("m1/s4",map),CarpCat.class);
 		Assert.assertEquals("record count:", q.list().size(),5);// id=10的记录已被删除了，所以应该是7
 		
 		s.close();
@@ -172,7 +172,7 @@ public class DynamicSqlTest {
 		Integer[] ints = {1,2,3,4,5,6,7,8,9,10};
 		Map<String,Object> map =new HashMap<String,Object>();
 		map.put("catid", ints);
-		CarpQuery q = s.creatQuery(CarpCat.class,SQLFactory.getSQL("m1/s4",map));
+		CarpQuery q = s.createQuery(SQLFactory.getSQL("m1/s4",map),CarpCat.class);
 		Assert.assertEquals("record count:", q.list().size(),5);// id=10的记录已被删除了，所以应该是7
 		
 		s.close();
@@ -186,7 +186,7 @@ public class DynamicSqlTest {
 		String[] ints = {"1","2","3","4","5","6","7","8","9","10"};
 		Map<String,Object> map =new HashMap<String,Object>();
 		map.put("catid", ints);
-		CarpQuery q = s.creatQuery(CarpCat.class,SQLFactory.getSQL("m1/s4",map));
+		CarpQuery q = s.createQuery(SQLFactory.getSQL("m1/s4",map),CarpCat.class);
 		Assert.assertEquals("record count:", q.list().size(),5);// id=10的记录已被删除了，所以应该是7
 		
 		s.close();
@@ -211,7 +211,7 @@ public class DynamicSqlTest {
 		p.add(10);
 		Map<String,Object> map =new HashMap<String,Object>();
 		map.put("catid", p);
-		CarpQuery q = s.creatQuery(CarpCat.class,SQLFactory.getSQL("m1/s4",map));
+		CarpQuery q = s.createQuery(SQLFactory.getSQL("m1/s4",map),CarpCat.class);
 		Assert.assertEquals("record count:", q.list().size(),5);// id=10的记录已被删除了，所以应该是7
 		
 		s.close();
@@ -225,7 +225,7 @@ public class DynamicSqlTest {
 		Integer[] ints = {1,2,3,4,5,6,7,8,9,10};
 		Map<String,Object> map =new HashMap<String,Object>();
 		map.put("catid", ints);
-		CarpQuery q = s.creatQuery(CarpCat.class,SQLFactory.getSQL("m1/s5",map));
+		CarpQuery q = s.createQuery(SQLFactory.getSQL("m1/s5",map),CarpCat.class);
 		Assert.assertEquals("record count:", q.list().size(),6);// id=10的记录已被删除了，所以应该是7
 		
 		s.close();
@@ -241,7 +241,7 @@ public class DynamicSqlTest {
 		Map<String,Object> map =new HashMap<String,Object>();
 		cat.setCatName("cat");
 		map.put("po", cat);
-		CarpQuery q = s.creatQuery(CarpCat.class,SQLFactory.getSQL("m1/s6",map));
+		CarpQuery q = s.createQuery(SQLFactory.getSQL("m1/s6",map),CarpCat.class);
 		Assert.assertEquals("record count:", q.list().size(),20);// like匹配查询
 		
 		s.close();

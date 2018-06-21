@@ -4,7 +4,6 @@ org\carp\beans\DICProcessor.class
 org\carp\engine\parameter\DateParameter.class
 org\carp\engine\parameter\DateMapParameter.class
 org\carp\engine\parameter\ReaderParameter.class
-org\carp\type\CarpClobImpl$ReaderInputStream.class
 org\carp\script\node\SwitchDefaultNode.class
 org\carp\assemble\ObjectAssemble.class
 org\carp\annotation\Id.class
@@ -35,8 +34,10 @@ org\carp\sql\DB2CarpSql.class
 org\carp\assemble\BTLongAssemble.class
 org\carp\assemble\RefAssemble.class
 org\carp\beans\CarpBean.class
+org\carp\engine\metadata\ClassMetadata$MethodInfo.class
 org\carp\engine\event\FindEvent.class
 org\carp\engine\parameter\BlobMapParameter.class
+org\carp\engine\exec\ClassQueryExecutor.class
 org\carp\assemble\FloatAssemble.class
 org\carp\engine\exec\Executor.class
 org\carp\annotation\OneToOne.class
@@ -75,7 +76,6 @@ org\carp\assemble\StringAssemble.class
 org\carp\engine\parameter\StructParameter.class
 org\carp\beans\AnnotationProcessor.class
 org\carp\jdbc\provider\DataSourceConnectionProvider.class
-org\carp\engine\exec\CarpQueryExecutor.class
 org\carp\engine\parameter\ArrayMapParameter.class
 org\carp\type\CarpBlobImpl.class
 org\carp\annotation\CarpAnnotation$Generate.class
@@ -85,6 +85,7 @@ org\carp\id\Generator.class
 org\carp\engine\event\MapEvent$Table.class
 org\carp\security\Base64.class
 org\carp\engine\helper\SessionSqlHelper.class
+org\carp\sql\DerbyCarpSql.class
 org\carp\transaction\TransactionState.class
 org\carp\assemble\BTShortAssemble.class
 org\carp\security\Base64$EncOutputStream.class
@@ -99,7 +100,6 @@ org\carp\script\node\BaseNode.class
 org\carp\engine\parameter\ClobParameter.class
 org\carp\engine\parameter\BooleanMapParameter.class
 org\carp\transaction\IsolationLevel.class
-org\carp\assemble\InputStreamAssemble.class
 org\carp\engine\parameter\ByteParameter.class
 org\carp\type\CarpClobImpl.class
 org\carp\engine\parameter\TimestampMapParameter.class
@@ -110,14 +110,13 @@ org\carp\security\Base64$1.class
 org\carp\engine\event\SaveEvent.class
 org\carp\CarpSession.class
 org\carp\transaction\Transaction.class
+org\carp\engine\result\RSProcessor.class
 org\carp\engine\SQLParameter.class
-org\carp\assemble\ReaderAssemble.class
 org\carp\engine\event\UpdateEvent.class
 org\carp\beans\TableProcessor.class
 org\carp\engine\cascade\SaveCascade.class
 org\carp\engine\ParametersProcessor.class
 org\carp\script\XmlSqlProcesser.class
-org\carp\engine\result\ResultSetProcessor.class
 org\carp\annotation\CarpAnnotation.class
 org\carp\assemble\ArrayAssemble.class
 org\carp\CarpQuery.class
@@ -136,6 +135,7 @@ org\carp\engine\parameter\RefMapParameter.class
 org\carp\security\Base64$Encoder.class
 org\carp\engine\parameter\LongMapParameter.class
 org\carp\annotation\Table.class
+org\carp\engine\metadata\ClassFactory.class
 org\carp\engine\event\DeleteEvent.class
 org\carp\sql\OracleCarpSql.class
 org\carp\script\SQLNode.class
@@ -166,11 +166,14 @@ org\carp\assemble\BigDecimalAssemble.class
 org\carp\engine\parameter\RefParameter.class
 org\carp\assemble\AbstractAssemble.class
 org\carp\jdbc\provider\ConnectionProvider.class
+org\carp\parameter\OUTParameter.class
 org\carp\engine\cascade\Cascade.class
 org\carp\impl\CarpSessionImpl.class
 org\carp\assemble\IntegerAssemble.class
+org\carp\engine\metadata\ClassMetadata$FieldInfo.class
 org\carp\engine\parameter\TimeParameter.class
 org\carp\engine\exec\BatchExecutor.class
+org\carp\engine\metadata\ClassMetadata.class
 org\carp\security\Base64$DecInputStream.class
 org\carp\assemble\TimeAssemble.class
 org\carp\sql\DefaultSql.class
@@ -179,6 +182,7 @@ org\carp\assemble\LongAssemble.class
 org\carp\engine\statement\CarpStatement.class
 org\carp\factory\BeansFactory.class
 org\carp\beans\Metadata.class
+org\carp\engine\exec\ProcedureExecutor.class
 org\carp\engine\parameter\TimestampParameter.class
 org\carp\sql\MySqlCarpSql.class
 org\carp\sql\CarpSql$PageSupport.class
@@ -199,7 +203,9 @@ org\carp\security\Base64$Decoder.class
 org\carp\beans\DICMetadata.class
 org\carp\beans\OTMProcessor.class
 org\carp\script\node\WhereNode.class
+org\carp\script\node\AssignNode.class
 org\carp\engine\parameter\ShortMapParameter.class
+org\carp\sql\H2CarpSql.class
 org\carp\annotation\OneToMany.class
 org\carp\beans\PrimarysProcessor.class
 org\carp\engine\cascade\UpdateCascade.class
