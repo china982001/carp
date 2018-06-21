@@ -18,11 +18,10 @@ package org.carp.sql;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import org.carp.exception.CarpException;
 import org.carp.impl.CarpQueryImpl;
-import org.carp.sql.CarpSql.PageSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MySqlCarpSql extends AbstractSql {
 	private static final Logger logger = LoggerFactory.getLogger(MySqlCarpSql.class);
@@ -39,9 +38,6 @@ public class MySqlCarpSql extends AbstractSql {
 		if(logger.isDebugEnabled())
 			logger.debug(sql);
 		return sql;
-	}
-	public PageSupport pageMode() {
-		return PageSupport.COMPLETE;
 	}
 
 	public int offset() {
