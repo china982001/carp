@@ -1,5 +1,7 @@
 package org.carp.test.encrypt;
 
+import java.io.File;
+
 import org.carp.CarpSessionBuilder;
 import org.carp.cfg.CarpConfig;
 import org.carp.security.PasswordDecryptor;
@@ -27,7 +29,7 @@ public class PasswordEncrypt {
 		System.out.println();
 		System.out.println();
 		System.out.println("Begin CustPassword Decryptor Case ....");
-		CarpConfig config =new CarpConfig();
+		CarpConfig config =new CarpConfig(new File("src/resources/carp.conf.xml"));
 		config.setDecryptor(new CustDecryptor());
 		CarpSessionBuilder builder = config.getSessionBuilder();
 		builder.getSession().close();;

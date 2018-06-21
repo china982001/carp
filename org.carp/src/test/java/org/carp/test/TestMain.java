@@ -1,5 +1,11 @@
 package org.carp.test;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.carp.CarpSessionBuilder;
 import org.carp.cfg.CarpConfig;
 import org.carp.test.anno.AnnoTest;
@@ -21,9 +27,21 @@ import org.carp.test.save.SaveTest;
 import org.carp.test.update.CarpUpdateCase;
 
 public class TestMain {
+	static {
+        try {
+            ConfigurationSource source;
+            File log4jFile = new File("src/resources/log4j2.xml");
+            if (log4jFile.exists()) {
+                source = new ConfigurationSource(new FileInputStream(log4jFile), log4jFile);
+                Configurator.initialize(null, source);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
  
 	public static void main(String[] args) throws Exception {
-		CarpConfig config = new CarpConfig("src/resources/carp.conf.xml");
+		CarpConfig config = new CarpConfig(new File("src/resources/carp.conf.xml"));
 		CarpSessionBuilder  builder = config.getSessionBuilder();
 		/**
 		 * 
