@@ -30,7 +30,7 @@ public interface DataSet {
 	public boolean next();
 	/**
 	 * 根据索引位置，当前光标指向的行的对应的字段值。
-	 * @param name 字段名称
+	 * @param index  index of column, from 0 to n eg: 0,1,2,3...
 	 * @return
 	 */
 	public Object getData(int index)throws Exception;
