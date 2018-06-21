@@ -18,6 +18,7 @@ package org.carp.jdbc.provider;
 import javax.sql.DataSource;
 
 import org.carp.cfg.CarpSetting;
+import org.carp.sql.CarpSql;
 
 /**
  * 数据库连接提供接口类
@@ -40,5 +41,8 @@ public interface ConnectionProvider {
 	 * Retrieve database dialect class
 	 * @return
 	 */
-	Class<?> getCarpSqlClass();
+	CarpSql getDialect();
+	
+	Class<? extends CarpSql> dialectClass();
+	
 }

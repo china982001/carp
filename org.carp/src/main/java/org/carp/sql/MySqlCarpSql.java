@@ -40,7 +40,7 @@ public class MySqlCarpSql extends AbstractSql {
 		return sql;
 	}
 
-	public int position() {
+	public int offset() {
 		return 0;
 	}
 

@@ -15,12 +15,8 @@
  */
 package org.carp.engine.event;
 
-import java.sql.Blob;
-import java.sql.Clob;
 import java.util.List;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import org.carp.beans.CarpBean;
 import org.carp.beans.ColumnsMetadata;
 import org.carp.beans.PrimarysMetadata;
@@ -31,7 +27,8 @@ import org.carp.engine.statement.CarpStatement;
 import org.carp.exception.CarpException;
 import org.carp.factory.BeansFactory;
 import org.carp.impl.CarpSessionImpl;
-import org.carp.sql.OracleCarpSql;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 数据操作基本事件类
@@ -67,6 +64,7 @@ public abstract class Event{
 	public java.io.Serializable getPrimaryValue(){
 		return null;
 	}
+	
 	/**
 	 * 构建Insert/update/delete/find sql语句
 	 * @throws CarpException
@@ -83,7 +81,7 @@ public abstract class Event{
 	 * @throws Exception
 	 */
 	private void executeStatement()throws Exception{
-		this.session.getPs().executeUpdate();
+		this.session.getStatement().executeUpdate();
 	}
 	
 	/**
@@ -97,7 +95,7 @@ public abstract class Event{
 		executeBefore(); 
 		//buildStatement(); //创建statement对象，
 		new CarpStatement(this.getSession()).createSessionStatement(sql);
-		processStatmentParameters(new ParametersProcessor(this.session.getPs())); //处理statement参数
+		processStatmentParameters(new ParametersProcessor(this.session.getStatement())); //处理statement参数
 		executeStatement(); //执行statement
 		executeAfter();
 		cascadeAfterOperator(); //statement操作后的级联处理
@@ -167,15 +165,12 @@ public abstract class Event{
 	 */
 	protected void processPrimaryValues(ParametersProcessor psProcess) throws Exception{
 		List<PrimarysMetadata> pms = bean.getPrimarys();
-		for(int i = 0, count = pms.size(); i < count; ++i){
-			PrimarysMetadata pk = pms.get(i);
+		for(PrimarysMetadata pk : pms){
 			Class<?> ft = pk.getFieldType();
 			Object value = pk.getValue(entity);
 			int _index = this.getNextIndex();
 			if(logger.isDebugEnabled()){
-				logger.debug("参数索引："+_index+" , 主键列名:"+pk.getColName()+" , FieldName:"+pk.getFieldName()+" , FieldType:"+pk.getFieldType().getName()+" ,FieldValue: "+value);
-				if(value != null)
-					logger.debug(value.getClass().getName());
+				logger.debug("PrimaryIndex:{}; PrimaryKey:{}; fieldName:{}; fieldType:{}; value:{}", _index,pk.getColName(),pk.getFieldName(),pk.getFieldType().getName(),value);
 			}
 			psProcess.setStatementParameters(value, ft, _index);
 		}

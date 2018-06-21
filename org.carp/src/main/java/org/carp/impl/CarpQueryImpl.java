@@ -15,6 +15,8 @@
  */
 package org.carp.impl;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -28,31 +30,30 @@ import java.util.List;
 import org.carp.CarpQuery;
 import org.carp.DataSet;
 import org.carp.engine.exec.BatchExecutor;
-import org.carp.engine.exec.CarpQueryExecutor;
+import org.carp.engine.exec.ClassQueryExecutor;
 import org.carp.engine.exec.DatasetQueryExecutor;
+import org.carp.engine.exec.Executor;
 import org.carp.engine.exec.ProcedureExecutor;
 import org.carp.engine.exec.QueryExecutor;
 import org.carp.engine.exec.UpdateExecutor;
 import org.carp.exception.CarpException;
 import org.carp.parameter.OUTParameter;
 import org.carp.parameter.Parameter;
-import org.carp.sql.AbstractSql;
-import org.carp.sql.CarpSql;
+import org.carp.script.SQL;
 
 /**
  * 查询类，执行查询操作
  * @author zhou
  *
  */
-public class CarpQueryImpl implements CarpQuery{
+public class CarpQueryImpl implements CarpQuery,Closeable{
 	private CarpSessionImpl session;//连接session
-	private CarpSql carpSql = null;
 	private String	          sql;		//需执行的sql语句
-	private PreparedStatement	ps;		//执行sql的java.sql.PreparedStatement的实例
+	private Executor		  executor = null; // sql语句执行器
+	private PreparedStatement	statement;		//执行sql的java.sql.PreparedStatement的实例
 	private int	              timeout = 0; //连接超时
 	private String[]	      returnNames; //执行select语句，返回的select 字段列表
 	private Class<?>[]	      returnTypes; //执行select语句，
-	private Class<?>	      cls;
 	private Class<?>[]	      clazzes; //store procedure resultset to class array(maybe has more resultset) 
 	private Parameter	      param	     = new Parameter();
 	private OUTParameter  outParameter = new OUTParameter();
@@ -60,48 +61,26 @@ public class CarpQueryImpl implements CarpQuery{
 	private int	              firstIndex	= -1;
 	private int	              maxCount	 = -1;
 	
-	
-	public CarpQueryImpl(CarpSessionImpl session, String sql) throws CarpException {
-		this(session,null,sql);
-	}
-
-	public CarpQueryImpl(CarpSessionImpl session, Class<?> cls) throws CarpException {
-		
-		this(session, cls, null);
-	}
-
-	public CarpQueryImpl(CarpSessionImpl session, Class<?> cls, String sql) throws CarpException {
-		try {
-			this.session = session;
-			this.cls = cls;
-			this.sql = sql;
-			this.fetchSize = this.session.getJdbcContext().getContext().getConfig().getFetchSize();
-			this.carpSql = AbstractSql.getCarpSql(this.session.getJdbcContext().getConfig(), cls);//this.session.getJdbcContext().getContext().getCarpSql(cls);
-		} catch (Exception ex) {
-			throw new CarpException("数据库连接为空或者Sql语句错误，请检查！", ex);
-		}
-	}
-	
-	public CarpQueryImpl(CarpSessionImpl session, String sql,Class<?>... classes) throws CarpException {
+	/**
+	 * 
+	 * @param session
+	 * @param sql
+	 * @param _dynamicSql
+	 * @param classes
+	 * @throws CarpException
+	 */
+	public CarpQueryImpl(CarpSessionImpl session, String sql, SQL _dynamicSql, Class<?>... classes) throws CarpException {
 		try {
 			this.session = session;
 			this.sql = sql;
-			this.carpSql = AbstractSql.getCarpSql(this.session.getJdbcContext().getConfig(), null);
-			clazzes = new Class<?>[classes.length];
-			for(int i=0; i<classes.length;++i){
-				clazzes[i] = classes[i];
+			this.clazzes = classes;
+			if(_dynamicSql != null){
+				this.sql = _dynamicSql.getSql();
+				_dynamicSql.processParameters(this);
 			}
 		} catch (Exception ex) {
 			throw new CarpException("数据库连接为空或者Sql语句错误，请检查！", ex);
 		}
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public CarpSql getCarpSql() {
-		return carpSql;
 	}
 	
 	/**
@@ -110,16 +89,15 @@ public class CarpQueryImpl implements CarpQuery{
 	 */
 	public List<?> list() throws CarpException {
 		List<Object> list = null;
-		if(this.getCls() == null){
-			throw new CarpException("Pojo class could not be null，but it was null! ");
-		}
+		if(this.getClazzes() == null || this.getClazzes().length == 0)
+			throw new CarpException("Pojo class could not be null，but it is null! ");
 		try {
-			CarpQueryExecutor executor = new CarpQueryExecutor(this);
+			ClassQueryExecutor executor = new ClassQueryExecutor(this);
 			list = executor.list();
 		} catch (Exception ex) {
 			throw new CarpException("Query error,may sql or parameters incorrect.", ex);
 		}finally{
-//			if(ps != null)try{ps.close();}catch(Exception e){}
+			if(statement != null)try{statement.close();}catch(Exception e){}
 		}
 		return list;
 	}
@@ -127,12 +105,11 @@ public class CarpQueryImpl implements CarpQuery{
 	public DataSet dataSet() throws CarpException {
 		try {
 			DatasetQueryExecutor executor = new DatasetQueryExecutor(this);
-			DataSet ds = executor.dataSet();
-			return ds;
+			return executor.dataSet();
 		} catch (Exception ex) {
-			throw new CarpException("Query error,may sql or parameters incorrect.", ex);
+			throw new CarpException("Query failure. SQL statement or parameter may be incorrect.", ex);
 		}finally{
-			if(ps != null)try{ps.close();}catch(Exception e){}
+			if(statement != null)try{statement.close();}catch(Exception e){}
 		}
 	}
 	
@@ -142,23 +119,25 @@ public class CarpQueryImpl implements CarpQuery{
 			ResultSet rs = executor.getResultSet();
 			return rs;
 		} catch (Exception ex) {
-			throw new CarpException("Query error,may sql or parameters incorrect.", ex);
+			throw new CarpException("Query failure. SQL statement or parameter may be incorrect.", ex);
 		}finally{
-			if(ps != null)try{ps.close();}catch(Exception e){}
+			if(statement != null)try{statement.close();}catch(Exception e){}
 		}
 	}
 	
 	@Override
-	public List<Object> listProcedureRs() throws Exception {
-		ProcedureExecutor executor = new ProcedureExecutor(this);
-		executor.executeStatement();
-		return executor.getRSObjectList();
+	public List<Object> executeProcudere() throws Exception {
+		ProcedureExecutor pe = new ProcedureExecutor(this);
+		pe.executeProcedure();
+		return pe.getRSObjectList();
 	}
 	
 	
 	public CarpQuery addBatch() throws CarpException {
 		try{
-			new BatchExecutor(this).addBatch();
+			if(this.executor == null)
+				this.executor = new BatchExecutor(this);
+			((BatchExecutor)this.executor).addBatch();
 		}catch(Exception ex){
 			throw new CarpException(ex); 
 		}
@@ -167,8 +146,7 @@ public class CarpQueryImpl implements CarpQuery{
 
 	public void executeBatch()throws CarpException{
 		try {
-			this.ps.executeBatch();
-			//this.ps.clearBatch();
+			this.statement.executeBatch();
 		} catch (SQLException ex) {
 			if(ex.getNextException()!=null)
 				ex.getNextException().printStackTrace();
@@ -183,26 +161,29 @@ public class CarpQueryImpl implements CarpQuery{
 
 	public int executeUpdate() throws CarpException {
 		int code = -1;
+		if(this.executor != null)// batch模式，无需执行executeUpdate方法.
+			return 0;
 		if(!this.session.isOpen())
 			throw new CarpException("connection was closed,could not execute!");
 		try{
 			code = new UpdateExecutor(this).getRowCount();
 		}catch(Exception ex){
-			throw new CarpException("执行错误，请检查Sql语句以及参数是否正确！",ex);
+			throw new CarpException("Query failure. SQL statement or parameter may be incorrect.",ex);
 		}finally{
-			if(ps != null)try{ps.close();}catch(Exception e){}
+			if(statement != null)try{statement.close();}catch(Exception e){}
 		}
 		return code;
 	}
 	
 	public void closeStatement(){
-		carpSql = null;
-//		sql = null;
-//		returnNames = null; //执行select语句，返回的select 字段列表
-//		returnTypes = null; //执行select语句，
-//		cls = null;
-		param = null;
-		try{if(ps != null && !ps.isClosed())ps.close();ps = null;}catch(Exception e){}
+		this.outParameter.clear();
+		this.outParameter = null;
+		this.param.clear();
+		this.param = null;
+		this.session = null;
+		this.sql = null;
+		this.executor = null;
+		try{if(statement != null && !statement.isClosed())statement.close();statement = null;}catch(Exception e){}
 	}
 
 	public String getQueryString() {
@@ -364,9 +345,9 @@ public class CarpQueryImpl implements CarpQuery{
 	public void setSql(String sql) {
     	this.sql = sql;
     }
-
+	
 	public PreparedStatement getStatement() {
-    	return ps;
+    	return statement;
     }
 
 	public int getTimeout() {
@@ -390,15 +371,11 @@ public class CarpQueryImpl implements CarpQuery{
     }
 
 	public void setStatement(PreparedStatement ps) {
-    	this.ps = ps;
+    	this.statement = ps;
     }
 
 	public CarpSessionImpl getSession() {
 		return session;
-	}
-
-	public Class<?> getCls() {
-		return cls;
 	}
 
 	public void setReturnNames(String[] returnNames) {
@@ -421,5 +398,10 @@ public class CarpQueryImpl implements CarpQuery{
 	@Override
 	public OUTParameter getOutParameter(){
 		return this.outParameter;
+	}
+
+	@Override
+	public void close() throws IOException {
+		this.closeStatement();
 	}
 }

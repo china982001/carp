@@ -25,7 +25,7 @@ import org.carp.beans.PrimarysMetadata;
 import org.carp.engine.ParametersProcessor;
 import org.carp.engine.cascade.FindCascade;
 import org.carp.engine.metadata.QueryMetaData;
-import org.carp.engine.result.ResultSetProcessor;
+import org.carp.engine.result.RSProcessor;
 import org.carp.engine.statement.CarpStatement;
 import org.carp.exception.CarpException;
 import org.carp.impl.CarpSessionImpl;
@@ -62,7 +62,7 @@ public class FindEvent extends Event{
 		executeBefore();
 //		buildStatement(); //创建statement对象，
 		new CarpStatement(this.getSession()).createSessionStatement(this.getSql());
-		processStatmentParameters(new ParametersProcessor(this.getSession().getPs())); //处理statement参数
+		processStatmentParameters(new ParametersProcessor(this.getSession().getStatement())); //处理statement参数
 		executeStatement(); //执行statement
 		executeAfter();
 		cascadeAfterOperator(); //statement操作后的级联处理
@@ -107,15 +107,15 @@ public class FindEvent extends Event{
 	private void executeStatement() throws Exception{
 		ResultSet rs =  null;
 		try{
-			rs = getSession().getPs().executeQuery();
-			ResultSetProcessor rsp = new ResultSetProcessor(cls,new QueryMetaData(cls,rs),rs);
-			this.setEntity(rsp.get());
-			if(this.getEntity() == null)
+			rs = getSession().getStatement().executeQuery();
+			RSProcessor rsp = new RSProcessor(cls,new QueryMetaData(cls,rs),rs);
+			List<?> list= rsp.list();
+			if(list.size() != 1)
 				throw new CarpException("Object does not exist.");
+			this.setEntity(list.get(0));
 		}finally{
 			try{ rs.close(); }catch(Exception ex){}
-			try{ getSession().getPs().close(); }catch(Exception ex){}
-			
+			try{ getSession().getStatement().close(); }catch(Exception ex){}
 		}
 	}
 	

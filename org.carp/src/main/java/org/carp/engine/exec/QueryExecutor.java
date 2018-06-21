@@ -16,11 +16,7 @@
 package org.carp.engine.exec;
 
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
-import org.carp.engine.metadata.ColumnInfo;
 import org.carp.engine.metadata.MetaData;
 import org.carp.impl.CarpQueryImpl;
 
@@ -49,26 +45,6 @@ public class QueryExecutor extends Executor{
 		return rs;
 	}
 	
-	/**
-	 * 取得查询字段数组
-	 * @return
-	 */
-	public String[] getReturnNames(){
-		return this.getMetadata().getColumnsMap().keySet().toArray(new String[0]);
-	}
-	/**
-	 * 取得查询字段的类型数组
-	 * @return
-	 */
-	public Class<?>[] getReturnTypes(){
-		Collection<ColumnInfo> colls = this.getMetadata().getColumnsMap().values();
-		List<Class<?>> clz = new ArrayList<Class<?>>();
-		for(ColumnInfo col : colls){
-			clz.add(col.getJavaType());
-		}
-		return clz.toArray(new Class<?>[0]);
-	}
-
 	@Override
 	protected void parserMetaData() throws Exception {
 		this.setMetadata(new MetaData(rs));

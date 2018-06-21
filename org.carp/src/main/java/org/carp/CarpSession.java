@@ -92,72 +92,29 @@ public interface CarpSession extends AutoCloseable{
 	 * @throws CarpException
 	 */
 	Object get(Class<?> cls, Map<String, Object> key)throws CarpException;
-	/**
-	 * 创建数据集查询对象，
-	 * @param sql 查询sql
-	 * @return 数据集查询对象
-	 * @throws CarpException
-	 */
-	CarpQuery creatDataSetQuery(String sql)throws CarpException;
-	/**
-	 * 创建数据集查询对象，
-	 * @param sql 查询sql
-	 * @return 数据集查询对象
-	 * @throws CarpException
-	 */
-	CarpQuery creatDataSetQuery(SQL sql)throws CarpException;
-	/**
-	 * 创建可执行查询对象
-	 * @param sql 可执行sql(delete，update，insert)
-	 * @return 可执行查询对象
-	 * @throws CarpException
-	 */
-	CarpQuery creatUpdateQuery(String sql)throws CarpException;
-	/**
-	 * 创建可执行查询对象
-	 * @param sql 可执行sql(delete，update，insert)
-	 * @return 可执行查询对象
-	 * @throws CarpException
-	 */
-	CarpQuery creatUpdateQuery(SQL sql)throws CarpException;
-	/**
-	 * 创建查询对象
-	 * @param cls 查询类
-	 * @return 查询对象
-	 * @throws CarpException
-	 */
-	CarpQuery creatQuery(Class<?> cls)throws CarpException;
-	/**
-	 * 创建查询对象
-	 * @param cls 查询类
-	 * @param sql 查询sql
-	 * @return 查询对象
-	 * @throws CarpException
-	 */
-	CarpQuery creatQuery(Class<?> cls,String sql)throws CarpException;
-	//void flush() throws CarpException;
-	/**
-	 * 创建查询对象
-	 * @param cls 查询类
-	 * @param sql 查询sql
-	 * @return 查询对象
-	 * @throws CarpException
-	 */
-	CarpQuery creatQuery(Class<?> cls,SQL sql)throws CarpException;
 	
 	/**
-	 * Create stored procedure query objects to execute stored procedures.
-	 * If a stored procedure has a return result set and the returned result set can be converted to an object collection, 
-	 * you need to pass in the class of object to support multiple result sets, Each result set corresponds to a class. 
-	 * Make sure that the field name in the class matches the field name in the result set. 
-	 * Carp will automatically encapsulate each result set into an object collection.
-	 * 
-	 * @param sql  stored procedure
-	 * @param classes  Object's class
-	 * @return CarpQuery object
+	 * 创建查询对象
+	 * @param cls 查询类
+	 * @return 查询对象
 	 * @throws CarpException
 	 */
-	CarpQuery createProcedureQuery(String sql,Class<?>... classes)throws CarpException;
+	CarpQuery createQuery(Class<?> clazz)throws CarpException;
+	
+	/**
+	 * 创建数据集查询对象，
+	 * @param sql 查询sql
+	 * @return 数据集查询对象
+	 * @throws CarpException
+	 */
+	CarpQuery createQuery(String sql, Class<?>... clzes)throws CarpException;
+	/**
+	 * 创建数据集查询对象，
+	 * @param sql 查询sql
+	 * @return 数据集查询对象
+	 * @throws CarpException
+	 */
+	CarpQuery createQuery(SQL sql, Class<?>... clzes)throws CarpException;
 	
 	/**
 	 * 启动事务

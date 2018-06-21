@@ -27,13 +27,13 @@ public class TableMetadata {
 	private String table;
 	private String schema;
 	private String remark;
-	private List<PrimarysMetadata> primaryList = new ArrayList<PrimarysMetadata>(1);
-	private List<ColumnsMetadata> columnList = new ArrayList<ColumnsMetadata>(16);
-	private List<DICMetadata> dicList = new ArrayList<DICMetadata>(1);
-	private List<MTOMetadata> mtoList = new ArrayList<MTOMetadata>(2);
-	private List<OTMMetadata> otmList = new ArrayList<OTMMetadata>(2);
-	private List<OTOMetadata> otoList = new ArrayList<OTOMetadata>(2);
-	private List<MappingMetadata> mapList = new ArrayList<MappingMetadata>(2);
+	private List<PrimarysMetadata> primaryList = new ArrayList<PrimarysMetadata>();
+	private List<ColumnsMetadata> columnList = new ArrayList<ColumnsMetadata>();
+	private List<DICMetadata> dicList = new ArrayList<DICMetadata>();
+	private List<MTOMetadata> mtoList = new ArrayList<MTOMetadata>();
+	private List<OTMMetadata> otmList = new ArrayList<OTMMetadata>();
+	private List<OTOMetadata> otoList = new ArrayList<OTOMetadata>();
+	private List<MappingMetadata> mapList = new ArrayList<MappingMetadata>();
 	
 	public Class<?> getCls() {
 		return cls;

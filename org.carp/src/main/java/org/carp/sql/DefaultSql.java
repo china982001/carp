@@ -15,7 +15,6 @@
  */
 package org.carp.sql;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.carp.exception.CarpException;
@@ -27,12 +26,8 @@ public class DefaultSql extends AbstractSql{
 		throw new CarpException("不支持序列的数据库类型！");
 	}
 
-	public int position() {
+	public int offset() {
 		return 0;
-	}
-
-	public void setQueryParameters(PreparedStatement ps, int firstIndex,
-			int maxIndex, int paramsCount) throws SQLException {		
 	}
 
 	@Override
@@ -45,14 +40,6 @@ public class DefaultSql extends AbstractSql{
 	 */
 	public PageSupport pageMode(){
 		return PageSupport.NONE;
-	}
-	
-	/**
-	 * 支持滚动结果集,因为数据库本身不支持或部分支持分页
-	 */
-	@Override
-	public boolean enableScrollableResultSet() {
-		return true;
 	}
 
 	public void setQueryParameters(CarpQueryImpl query) throws SQLException {

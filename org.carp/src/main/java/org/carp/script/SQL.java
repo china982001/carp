@@ -20,6 +20,7 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Ref;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
@@ -73,7 +74,7 @@ public class SQL {
 	 * @param query.  query session 
 	 * @throws Exception
 	 */
-	public void processParameters(CarpQuery query) throws Exception{
+	public void processParameters(CarpQuery query) throws SQLException{
 		for(int i = 0; i < this.values.size(); ++i){
 			SQLParam p = (SQLParam)this.values.get(i);
 			if(p.value instanceof Integer){

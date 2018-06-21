@@ -16,7 +16,6 @@
 package org.carp.engine.exec;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.carp.engine.SQLParameter;
@@ -34,8 +33,10 @@ import org.carp.impl.CarpQueryImpl;
 public abstract class Executor {
 	private CarpQueryImpl _query = null;
 	private MetaData metadata; //结果集元数据
+	private SQLParameter sqlParams;
 	public Executor(CarpQueryImpl query) throws Exception{
 		this._query = query;
+		this.sqlParams = new SQLParameter(this._query);
 		process();
 	}
 	
@@ -44,7 +45,11 @@ public abstract class Executor {
 	}
 	
 	/**
-	 * 处理过程
+	 * Execute the creation, binding, and display of the SQL statement. <br/>
+	 * Execute the creation of the Statement object and set the parameters.<br/>
+	 * Execution of the injection operation of SQL parameters.<br/>
+	 * When the Select operation is executed, the ResultSet metadata is resolved, 
+	 * and the returned columns and column type data are processed.
 	 * @throws Exception
 	 */
 	protected void process() throws Exception{
@@ -53,7 +58,8 @@ public abstract class Executor {
 		helper.showSql();
 		new CarpStatement(this._query).createQueryStatement(); //创建Statement对象
 		//设置Statement参数
-		new SQLParameter(this._query).processSQLParameters();
+//		new SQLParameter(this._query).processSQLParameters();
+		sqlParams.processSQLParameters();
 		executeStatement();//执行Statement
 		parserMetaData();//metadata
 		setReturnNamesAndTypes();
@@ -66,8 +72,16 @@ public abstract class Executor {
 	 */
 	abstract protected void executeStatement()throws Exception;
 	
+	/**
+	 * Parse the column information of the result set
+	 * @throws Exception
+	 */
 	abstract protected void parserMetaData()throws Exception;
 
+	public SQLParameter getSQLParameter(){
+		return this.sqlParams;
+	}
+	
 	public MetaData getMetadata() {
 		return metadata;
 	}
@@ -78,12 +92,11 @@ public abstract class Executor {
 	protected void setReturnNamesAndTypes(){
 		if(this.metadata == null)
 			return;
-		_query.setReturnNames(this.getMetadata().getColumnsMap().keySet().toArray(new String[0]));
-		Collection<ColumnInfo> colls = this.getMetadata().getColumnsMap().values();
 		List<Class<?>> clz = new ArrayList<Class<?>>();
-		for(ColumnInfo col : colls){
+		for(ColumnInfo col : this.getMetadata().getColumnsMap().values()){
 			clz.add(col.getJavaType());
 		}
 		_query.setReturnTypes(clz.toArray(new Class<?>[0]));
+		_query.setReturnNames(this.getMetadata().getColumnsMap().keySet().toArray(new String[0]));
 	}
 }

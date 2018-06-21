@@ -15,17 +15,11 @@
  */
 package org.carp.engine.event;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
 import java.sql.Blob;
 import java.sql.Clob;
-import java.sql.ResultSet;
 import java.util.List;
 
 import org.carp.beans.ColumnsMetadata;
-import org.carp.beans.PrimarysMetadata;
 import org.carp.engine.ParametersProcessor;
 import org.carp.engine.cascade.Cascade;
 import org.carp.engine.cascade.UpdateCascade;
@@ -87,7 +81,7 @@ public class UpdateEvent extends Event {
 	 * @throws Exception
 	 */
 	private void processBlob()throws Exception{
-		if(!this.getSession().getJdbcContext().getContext().getCarpSqlClass().equals(OracleCarpSql.class))
+		if(!this.getSession().getJdbcContext().getContext().dialectClass().equals(OracleCarpSql.class))
 			return;
 		List<ColumnsMetadata>  cols = this.getBean().getColumns();
 		for(ColumnsMetadata col : cols){
@@ -111,21 +105,6 @@ public class UpdateEvent extends Event {
 				col.setValue(this.getEntity(), clob);
 			}
 		}
-	}
-	
-	private void setBlobValue(OutputStream src,java.sql.Blob blob)throws Exception{
-		InputStream  stream = blob.getBinaryStream();
-		byte[] b = new byte[4096];
-		for(int len = -1; (len = stream.read(b, 0, 4096))!=-1;)
-			src.write(b, 0, len);
-		src.flush();src.close();stream.close();
-	}
-	private void setClobValue(Writer src,java.sql.Clob clob)throws Exception{
-		Reader  stream = clob.getCharacterStream();
-		char[] b = new char[4096];
-		for(int len = -1; (len = stream.read(b, 0, 4096))!=-1;)
-			src.write(b, 0, len);
-		src.flush();src.close();stream.close();
 	}
 	
 	@Override

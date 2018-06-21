@@ -22,7 +22,6 @@ import java.sql.Statement;
 import org.carp.assemble.Assemble;
 import org.carp.beans.PrimarysMetadata;
 import org.carp.impl.CarpSessionImpl;
-import org.carp.sql.AbstractSql;
 import org.carp.type.TypeMapping;
 
 /**
@@ -36,15 +35,14 @@ public class SequenceGenerator implements Generator{
 	 */
 	public Serializable generate(CarpSessionImpl session,Object entity,PrimarysMetadata pm) throws Exception {
 		Object key = null;
-		String sql = AbstractSql.getCarpSql(session.getJdbcContext().getConfig(), entity.getClass()).getSequenceSql(pm.getSequence());//session.getJdbcContext().getContext().getCarpSql(entity.getClass()).getSequenceSql(pm.getSequence());
-		Statement st = session.getConnection().createStatement();
-		ResultSet rs = st.executeQuery(sql);
-		while(rs.next()){
-			Assemble assemble = TypeMapping.getAssembleByFieldType(pm.getFieldType());//(Assemble)TypeMapping.getAssembleClass(pm.getFieldType()).newInstance();
-			key = assemble.setFieldValue(rs, entity, pm.getField(), 1);
+		String sql = session.getDialect().getSequenceSql(pm.getSequence());
+		try(Statement st = session.getConnection().createStatement();
+				ResultSet rs = st.executeQuery(sql);){
+			while(rs.next()){
+				Assemble assemble = TypeMapping.getAssembleByFieldType(pm.getFieldType());
+				key = assemble.setFieldValue(rs, entity, pm.getField(), 1);
+			}
 		}
-		rs.close();
-		st.close();
 		return (java.io.Serializable)key;
 	}
 }

@@ -27,7 +27,6 @@ import org.carp.beans.OTOMetadata;
 import org.carp.exception.CarpException;
 import org.carp.factory.BeansFactory;
 import org.carp.impl.CarpSessionImpl;
-import org.carp.type.TypeMapping;
 import org.carp.util.EntityUtil;
 
 /**
@@ -94,7 +93,7 @@ public class SaveCascade implements Cascade{
 				if(childObject == null)
 					continue;
 				if(EntityUtil.getValue(childObject, f) == null)
-					TypeMapping.getAssembleByFieldType(f.getType()).setFieldValue(childObject, f, id);
+					EntityUtil.setFieldValue(childObject, f, id);
 				_session.save(childObject);
 			}
 		}
@@ -112,9 +111,8 @@ public class SaveCascade implements Cascade{
 					if(obj == null)
 						continue;
 					CarpBean bean = BeansFactory.getBean(oto.getFieldType());
-					if(bean.getPrimaryValue(obj)==null){
-						TypeMapping.getAssembleByFieldType(bean.getPrimarys().get(0).getFieldType()).setFieldValue(obj, bean.getPrimarys().get(0).getField(), _key);
-					}
+					if(bean.getPrimaryValue(obj)==null)
+						EntityUtil.setFieldValue(obj, bean.getPrimarys().get(0).getField(), _key);
 					_session.save(obj);
 				}
 			}

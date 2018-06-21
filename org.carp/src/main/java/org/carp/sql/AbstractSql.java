@@ -24,7 +24,6 @@ import org.carp.beans.CarpBean;
 import org.carp.beans.ColumnsMetadata;
 import org.carp.beans.MappingMetadata;
 import org.carp.beans.PrimarysMetadata;
-import org.carp.cfg.CarpSetting;
 import org.carp.exception.CarpException;
 import org.carp.factory.BeansFactory;
 
@@ -36,51 +35,10 @@ public abstract class AbstractSql implements CarpSql{
 	private final static Map<String,String> selectMap = new ConcurrentHashMap<String, String>();
 	private final static Map<String,String> selectPageMap = new ConcurrentHashMap<String, String>();
 	
+	private String  schema;
 	
-	private final static Map<Class<?>, CarpSql> carpSqlMap = new ConcurrentHashMap<Class<?>, CarpSql>();
-	
-	public static CarpSql getCarpSql(CarpSetting setting, Class<?> cls) throws CarpException{
-		if(cls == null)
-			cls = DefaultSql.class;
-		CarpSql dialect = carpSqlMap.get(cls);
-		if(dialect == null){
-			try {
-				dialect = setting.getDatabaseDialect().newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
-				throw new CarpException("Instance database CarpSql failed. Cause:"+e,e); 
-			}
-			dialect.setSchema(setting.getSchema());
-			if(cls != DefaultSql.class)
-				dialect.setClass(cls);
-			carpSqlMap.put(cls, dialect);
-		}
-		return dialect;
-	}
-	
-	private CarpBean bean;
-	private String _schema;
-	private Class<?> cls;
-
-	
-	public String getSchema() {
-		return this._schema;
-	}
-
-	public void setSchema(String schema) {
-		this._schema = schema;
-	}
-
-	/**
-	 * 取得pojo类的Bean信息
-	 */
-	public CarpBean getBeanInfo(){
-		return this.bean;
-	}
-	
-	public void setClass(Class<?> cls) throws CarpException{
-		this.cls = cls;
-		if(cls != null)
-			this.bean = BeansFactory.getBean(cls);
+	public void setSchema(String schema){
+		this.schema = schema;
 	}
 	
 	/**
@@ -89,20 +47,15 @@ public abstract class AbstractSql implements CarpSql{
 	public PageSupport pageMode() {
 		return PageSupport.COMPLETE;
 	}
-	/**
-	 * 默认不支持滚动结果集，如果数据库本身不支持或部分支持分页，则需要重载该方法，以便于使用滚动模式
-	 */
-	public boolean enableScrollableResultSet() {
-		return false;
-	}
-
+	
 	/**
 	 * 返回查询分页sql
 	 */
-	public String getPageSql() throws CarpException {
+	public String getPageSql(Class<?> clazz) throws CarpException {
+		CarpBean bean = BeansFactory.getBean(clazz);
 		String queryPageSql = selectPageMap.get(bean.getTable());
 		if(queryPageSql == null)
-			queryPageSql = this.getPageSql(this.getQuerySql()); 
+			queryPageSql = this.getPageSql(this.getQuerySql(clazz)); 
 		return queryPageSql; 
 	}
 	
@@ -110,14 +63,15 @@ public abstract class AbstractSql implements CarpSql{
 	 * 根据主键查询记录的sql语句
 	 * @throws CarpException 
 	 */
-	public String getLoadSql() throws CarpException{
+	public String getLoadSql(Class<?> clazz) throws CarpException{
+		CarpBean bean = BeansFactory.getBean(clazz);
 		String loadSql = loadMap.get(bean.getTable());
 		if(loadSql == null){
 			List<PrimarysMetadata> pks = bean.getPrimarys();
 			if(pks.size() == 0)
 				throw new CarpException("Primary key not exist, can't find by key.");
 			StringBuilder sql = new StringBuilder("SELECT * FROM  ");
-			this.appendSchema(sql);
+			this.appendSchema(bean,sql);
 			sql.append(bean.getTable()).append(" WHERE ");
 			for(int i = 0, count = pks.size(); i < count; ++i){
 				if(i!=0)
@@ -142,22 +96,23 @@ public abstract class AbstractSql implements CarpSql{
 	 * @throws CarpException 
 	 * 
 	 */
-	public String getQuerySql() throws CarpException{
+	public String getQuerySql(Class<?> clazz) throws CarpException{
+		CarpBean bean = BeansFactory.getBean(clazz);
 		if(bean == null)
-			throw new CarpException("Class:"+cls+" has not a assiosite mapping Table!");
+			throw new CarpException("Class:"+clazz+" has not a assiosite mapping Table!");
 		String querySql = selectMap.get(bean.getTable());
 		if(querySql == null){
 			StringBuilder sql = new StringBuilder("SELECT ");
 			for(PrimarysMetadata pk : bean.getPrimarys())
 				sql.append("T0_.").append(pk.getColName()).append(",");
-			this.appendColumens(sql, "T0_");
+			this.appendColumens(bean,sql, "T0_");
 			for(int i=0,count =bean.getMaps().size(); i<count; ++i){
 				MappingMetadata mapMeta = bean.getMaps().get(i);
 				sql.append(",").append("T").append(i+1).append("_.");
 				sql.append(mapMeta.getMapColumn()).append(" ").append(mapMeta.getMasterAlias());
 			}
 			sql.append(" FROM ");
-			this.appendSchema(sql);
+			this.appendSchema(bean,sql);
 			sql.append(bean.getTable()).append(" T0_ ");
 			for(int i=0,count =bean.getMaps().size(); i<count; ++i){
 				MappingMetadata mapMeta = bean.getMaps().get(i);
@@ -187,17 +142,18 @@ public abstract class AbstractSql implements CarpSql{
 	 * @return
 	 * @throws CarpException 
 	 */
-	public String getInsertSql() throws CarpException{
+	public String getInsertSql(Class<?> clazz) throws CarpException{
+		CarpBean bean = BeansFactory.getBean(clazz);
 		if(bean == null)
-			throw new CarpException("Class:"+cls+" has not a assiosite mapping Table!");
+			throw new CarpException("Class:"+clazz+" has not a assiosite mapping Table!");
 		String insertSql = insertMap.get(bean.getTable());
 		if(insertSql == null){
 			List<ColumnsMetadata> cms = bean.getColumns();
 			List<PrimarysMetadata> pks = bean.getPrimarys();
 			StringBuilder sql = new StringBuilder("INSERT INTO ");
-			this.appendSchema(sql);
+			this.appendSchema(bean,sql);
 			sql.append(bean.getTable()).append("(");
-			this.appendColumens(sql, null);
+			this.appendColumens(bean,sql, null);
 			for(PrimarysMetadata pk:pks){
 				if(pk.getBuild() != Generate.auto){
 					sql.append(",");
@@ -232,15 +188,16 @@ public abstract class AbstractSql implements CarpSql{
 	 * @return
 	 * @throws CarpException 
 	 */
-	public String getUpdateSql() throws CarpException{
+	public String getUpdateSql(Class<?> clazz) throws CarpException{
+		CarpBean bean = BeansFactory.getBean(clazz);
 		if(bean == null)
-			throw new CarpException("Class:"+cls+" has not a assiosite mapping Table!");
+			throw new CarpException("Class:"+clazz+" has not a assiosite mapping Table!");
 		String updateSql = updateMap.get(bean.getTable());
 		if(updateSql == null){
 			List<ColumnsMetadata> cms = bean.getColumns();
 			List<PrimarysMetadata> pks = bean.getPrimarys();
 			StringBuilder sql = new StringBuilder("UPDATE ");
-			this.appendSchema(sql);
+			this.appendSchema(bean,sql);
 			sql.append(bean.getTable()).append(" SET ");
 			for(int i = 0, count = cms.size(); i < count; ++i){
 				if(i!=0)
@@ -265,14 +222,15 @@ public abstract class AbstractSql implements CarpSql{
 	 * 取得执行update的delete语句,根据主键删除的delete语句
 	 * @throws CarpException 
 	 */
-	public String getDeleteSql() throws CarpException{
+	public String getDeleteSql(Class<?> clazz) throws CarpException{
+		CarpBean bean = BeansFactory.getBean(clazz);
 		if(bean == null)
-			throw new CarpException("Class:"+cls+" has not a assiosite mapping Table!");
+			throw new CarpException("Class:"+clazz+" has not a assiosite mapping Table!");
 		String deleteSql = deleteMap.get(bean.getTable());
 		if(deleteSql == null){
 			List<PrimarysMetadata> pks = bean.getPrimarys();
 			StringBuilder sql = new StringBuilder("DELETE FROM ");
-			this.appendSchema(sql);
+			this.appendSchema(bean,sql);
 			sql.append(bean.getTable()).append(" WHERE ");
 			for(int i = 0, count = pks.size(); i < count; ++i){
 				if(i!=0)
@@ -291,7 +249,7 @@ public abstract class AbstractSql implements CarpSql{
 	 * @param builder
 	 * @param tableAlias
 	 */
-	protected void appendColumens(StringBuilder builder, String tableAlias){
+	protected void appendColumens(CarpBean bean, StringBuilder builder, String tableAlias){
 		for(ColumnsMetadata cm : bean.getColumns()){
 			if(tableAlias != null)
 				builder.append(tableAlias).append(".");
@@ -306,34 +264,10 @@ public abstract class AbstractSql implements CarpSql{
 	 * @return
 	 * @throws CarpException 
 	 */
-	protected void appendSchema(StringBuilder sql) throws CarpException{
+	protected void appendSchema(CarpBean bean,StringBuilder sql) throws CarpException{
 		if(bean.getSchema() != null)
 			sql.append(bean.getSchema()).append(".");
-		else if(this._schema != null)
-			sql.append(this._schema).append(".");
-	}
-	
-	protected static Map<String, String> getInsertmap() {
-		return insertMap;
-	}
-	
-	protected static Map<String, String> getUpdatemap() {
-		return updateMap;
-	}
-	
-	protected static Map<String, String> getDeletemap() {
-		return deleteMap;
-	}
-	
-	protected static Map<String, String> getLoadmap() {
-		return loadMap;
-	}
-	
-	protected static Map<String, String> getSelectmap() {
-		return selectMap;
-	}
-	
-	protected static Map<String, String> getSelectpagemap() {
-		return selectPageMap;
+		else if(this.schema != null)
+			sql.append(this.schema).append(".");
 	}
 }

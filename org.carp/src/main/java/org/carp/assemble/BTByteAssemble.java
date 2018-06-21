@@ -16,6 +16,7 @@
 package org.carp.assemble;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.util.List;
 
@@ -58,6 +59,12 @@ public class BTByteAssemble extends AbstractAssemble{
 		if(value != null)
 			f.set(entity, Byte.valueOf(value+""));
 		f.setAccessible(isAccess);
+		return value;
+	}
+	@Override
+	public Object setMethodValue(ResultSet rs, Object entity, Method m, int index) throws Exception {
+		Object value = rs.getByte(index);
+		m.invoke(entity, value);
 		return value;
 	}
 }

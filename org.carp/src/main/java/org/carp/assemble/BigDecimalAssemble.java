@@ -16,6 +16,7 @@
 package org.carp.assemble;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.util.List;
@@ -50,5 +51,12 @@ public class BigDecimalAssemble extends AbstractAssemble {
 			m = new BigDecimal(value.toString());
 		this.setFieldValue(entity, f, m);
 		return m;
+	}
+
+	@Override
+	public Object setMethodValue(ResultSet rs, Object entity, Method m, int index) throws Exception {
+		Object value = rs.getBigDecimal(index);
+		m.invoke(entity, value);
+		return value;
 	}
 }

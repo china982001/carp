@@ -45,14 +45,11 @@ import org.carp.assemble.BooleanAssemble;
 import org.carp.assemble.ByteAssemble;
 import org.carp.assemble.BytesAssemble;
 import org.carp.assemble.ClobAssemble;
-import org.carp.assemble.DateAssemble;
 import org.carp.assemble.DoubleAssemble;
 import org.carp.assemble.FloatAssemble;
-import org.carp.assemble.InputStreamAssemble;
 import org.carp.assemble.IntegerAssemble;
 import org.carp.assemble.LongAssemble;
 import org.carp.assemble.ObjectAssemble;
-import org.carp.assemble.ReaderAssemble;
 import org.carp.assemble.RefAssemble;
 import org.carp.assemble.SQLDateAssemble;
 import org.carp.assemble.ShortAssemble;
@@ -108,6 +105,7 @@ public class TypeMapping {
 	private final static Map<Class<?>,Parameter> javaTypeMap = new HashMap<Class<?>,Parameter>(30); 
 	private final static Map<Integer,Parameter> sqlTypeMap = new HashMap<Integer,Parameter>(30);
 	private final static Map<Integer,Class<?>> sqlJavaMap = new HashMap<Integer,Class<?>>();
+	private final static Map<Integer,Assemble> sqlToAsMap = new HashMap<Integer,Assemble>();
 	
 	
 	static{ 
@@ -125,7 +123,7 @@ public class TypeMapping {
 		fieldMap.put(Clob.class, new ClobAssemble());
 		fieldMap.put(String.class, new StringAssemble());
 		fieldMap.put(java.sql.Date.class, new SQLDateAssemble());
-		fieldMap.put(java.util.Date.class, new DateAssemble());
+		fieldMap.put(java.util.Date.class, new TimestampAssemble());
 		fieldMap.put(Time.class, new TimeAssemble());
 		fieldMap.put(Timestamp.class, new TimestampAssemble());
 		fieldMap.put(float.class, new BTFloatAssemble());
@@ -136,8 +134,6 @@ public class TypeMapping {
 		fieldMap.put(boolean.class, new BooleanAssemble());
 		fieldMap.put(Boolean.class, new BooleanAssemble());
 		fieldMap.put(Object.class, new ObjectAssemble());
-		fieldMap.put(InputStream.class, new InputStreamAssemble());
-		fieldMap.put(Reader.class, new ReaderAssemble());
 		fieldMap.put(Ref.class, new RefAssemble());
 		fieldMap.put(Array.class, new ArrayAssemble());
 		fieldMap.put(java.sql.Struct.class, new StructAssemble());
@@ -176,7 +172,7 @@ public class TypeMapping {
 		javaTypeMap.put(Array.class, new ArrayParameter());
 		javaTypeMap.put(java.sql.Struct.class, new StructParameter());
 		
-		//sql types to PreparedStatement Parameter mapping
+		//sql types to PreparedStatement Parameter mapping,For the map collection to insert data using
 		sqlTypeMap.put(java.sql.Types.ARRAY, new ArrayMapParameter());
 		sqlTypeMap.put(java.sql.Types.BIGINT, new LongMapParameter());
 		sqlTypeMap.put(java.sql.Types.BINARY, new BytesMapParameter());
@@ -230,6 +226,34 @@ public class TypeMapping {
 		sqlJavaMap.put(Types.TINYINT, Byte.class);
 		sqlJavaMap.put(Types.VARBINARY, InputStream.class);
 		sqlJavaMap.put(Types.VARCHAR, String.class);
+		
+		//sql types to Assemble mapping
+		sqlToAsMap.put(Types.BIT, fieldMap.get(Boolean.class));
+		sqlToAsMap.put(Types.BIGINT, fieldMap.get(Long.class));
+		sqlToAsMap.put(Types.BINARY, fieldMap.get(byte[].class));
+		sqlToAsMap.put(Types.BLOB, fieldMap.get(byte[].class));
+		sqlToAsMap.put(Types.BOOLEAN, fieldMap.get(Boolean.class));
+		sqlToAsMap.put(Types.CHAR, fieldMap.get(String.class));
+		sqlToAsMap.put(Types.CLOB, fieldMap.get(String.class));
+		sqlToAsMap.put(Types.DATE, fieldMap.get(Date.class));
+		sqlToAsMap.put(Types.DECIMAL, fieldMap.get(BigDecimal.class));
+		sqlToAsMap.put(Types.DOUBLE, fieldMap.get(Double.class));
+		sqlToAsMap.put(Types.FLOAT, fieldMap.get(Double.class));
+		sqlToAsMap.put(Types.INTEGER, fieldMap.get(Integer.class));
+		sqlToAsMap.put(Types.JAVA_OBJECT, fieldMap.get(Object.class));
+		sqlToAsMap.put(Types.LONGVARBINARY, fieldMap.get(byte[].class));
+		sqlToAsMap.put(Types.LONGVARCHAR, fieldMap.get(String.class));
+		sqlToAsMap.put(Types.NUMERIC, fieldMap.get(BigDecimal.class));
+		sqlToAsMap.put(Types.OTHER, fieldMap.get(Object.class));
+		sqlToAsMap.put(Types.REAL, fieldMap.get(Float.class));
+		sqlToAsMap.put(Types.REF, fieldMap.get(Ref.class));
+		sqlToAsMap.put(Types.SMALLINT, fieldMap.get(Short.class));
+		sqlToAsMap.put(Types.STRUCT, fieldMap.get(Object.class));
+		sqlToAsMap.put(Types.TIME, fieldMap.get(Time.class));
+		sqlToAsMap.put(Types.TIMESTAMP, fieldMap.get(Timestamp.class));
+		sqlToAsMap.put(Types.TINYINT, fieldMap.get(Byte.class));
+		sqlToAsMap.put(Types.VARBINARY, fieldMap.get(byte[].class));
+		sqlToAsMap.put(Types.VARCHAR, fieldMap.get(String.class));
 	}
 	
 	public static Assemble getAssembleByFieldType(Class<?> cls){
@@ -248,4 +272,7 @@ public class TypeMapping {
 		return sqlJavaMap.get(sqlType);
 	}
 	
+	public static Assemble getAssembleBySqlType(int sqlType){
+		return sqlToAsMap.get(sqlType);
+	}
 }

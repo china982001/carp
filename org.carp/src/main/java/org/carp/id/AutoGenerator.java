@@ -35,13 +35,12 @@ public class AutoGenerator  implements Generator{
 	 */
 	public Serializable generate(CarpSessionImpl session,Object entity,PrimarysMetadata pm)throws Exception {
 		Object key = null;
-		ResultSet rs = session.getPs().getGeneratedKeys();
-		while(rs.next()){
-			Assemble assemble = TypeMapping.getAssembleByFieldType(pm.getFieldType());// (Assemble)TypeMapping.getAssembleClass(pm.getFieldType()).newInstance();
-			key = assemble.setFieldValue(rs, entity, pm.getField(), 1);
+		try(ResultSet rs = session.getStatement().getGeneratedKeys();){
+			while(rs.next()){
+				Assemble assemble = TypeMapping.getAssembleByFieldType(pm.getFieldType());// (Assemble)TypeMapping.getAssembleClass(pm.getFieldType()).newInstance();
+				key = assemble.setFieldValue(rs, entity, pm.getField(), 1);
+			}
 		}
-		rs.close();
-		rs = null;
 		return (java.io.Serializable)key;
 	}
 

@@ -1,11 +1,10 @@
 package org.carp.engine.helper;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import org.carp.exception.CarpException;
 import org.carp.impl.CarpSessionImpl;
-import org.carp.sql.AbstractSql;
 import org.carp.sql.CarpSql;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SessionSqlHelper extends SqlHelper {
 	private final static Logger logger = LoggerFactory.getLogger(SessionSqlHelper.class);
@@ -23,19 +22,17 @@ public class SessionSqlHelper extends SqlHelper {
 	
 	@Override
 	public String buildSql() throws CarpException {
-		CarpSql carpSql =  AbstractSql.getCarpSql(_session.getJdbcContext().getConfig(),cls);
+		CarpSql carpSql =  this._session.getDialect();
 		if(sqlType.equals("insert")){
-			sql = carpSql.getInsertSql();
+			sql = carpSql.getInsertSql(cls);
 		}else if(sqlType.equals("update")){
-			sql = carpSql.getUpdateSql();
+			sql = carpSql.getUpdateSql(cls);
 		}else if(sqlType.equals("delete")){
-			sql = carpSql.getDeleteSql();
+			sql = carpSql.getDeleteSql(cls);
 		}else{ // sqlType == find
-			sql = carpSql.getLoadSql();
+			sql = carpSql.getLoadSql(cls);
 		}
-		if(logger.isDebugEnabled()){
-			logger.debug("Query SQL: "+sql);
-		}
+		logger.debug("Query SQL: {}",sql);
 		return sql;
 	}
 

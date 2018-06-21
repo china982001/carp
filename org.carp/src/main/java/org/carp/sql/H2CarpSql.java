@@ -41,7 +41,7 @@ public class H2CarpSql extends AbstractSql {
 		return sql;
 	}
 
-	public int position() {
+	public int offset() {
 		// TODO Auto-generated method stub
 		return 2;
 	}

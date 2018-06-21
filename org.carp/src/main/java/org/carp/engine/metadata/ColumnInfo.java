@@ -18,21 +18,23 @@ package org.carp.engine.metadata;
 import java.lang.reflect.Field;
 
 import org.carp.assemble.Assemble;
+import org.carp.engine.metadata.ClassMetadata.MethodInfo;
 
 
 /**
- * 
+ * Metadata information definition class
  * @author zhou
  * @version 0.1
  */
 public final class ColumnInfo {
-	private String _colname;
-	private String _fieldname;
-	private int sqlType;
-	private Class<?> javaType;
-	private Assemble  _assemble;
-	private Field _field;
-	private int idx;
+	private String _colname;   // column name
+	private String _fieldname; //Column corresponding to the field name
+	private int sqlType;       //column type
+	private Class<?> javaType; //Java type corresponding to column type
+	private Assemble  _assemble; //Get data values from rs and assign this value to the corresponding field
+	private Field _field;      //filename's Field Object
+	private MethodInfo _method;    //setter method
+	private int idx;		   //Index value of the columninfo object in the collection, from 0. 0,1,2,3,......
 	public String getColname() {
 		return _colname;
 	}
@@ -69,6 +71,12 @@ public final class ColumnInfo {
 	public void setField(Field _field) {
 		this._field = _field;
 	}
+	public MethodInfo getMethod() {
+		return _method;
+	}
+	public void setMethod(MethodInfo _method) {
+		this._method = _method;
+	}
 	public int getIdx() {
 		return idx;
 	}
@@ -77,13 +85,13 @@ public final class ColumnInfo {
 	}
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("column index: [").append(this.idx).append("] ");
-		builder.append("column name: [").append(this._colname).append("] ");
-		builder.append("field name: [").append(this._fieldname).append("] ");
-		builder.append("sql type: [").append(this.sqlType).append("] ");
-		builder.append("java type: [").append(this.javaType).append("] ");
-		builder.append("Assemble: [").append(this._assemble).append("] ");
+		StringBuilder builder = new StringBuilder("ColumnInfo:[");
+		builder.append("ColumnIndex: \"").append(this.idx).append("\"; ");
+		builder.append("ColumnName: \"").append(this._colname).append("\"; ");
+		builder.append("FieldName: \"").append(this._fieldname).append("\"; ");
+		builder.append("SqlType: \"").append(this.sqlType).append("\"; ");
+		builder.append("JavaType: \"").append(this.javaType).append("\"; ");
+		builder.append("Assemble: \"").append(this._assemble.getClass().getName()).append("\"]");
 		return builder.toString();
 	}
 }

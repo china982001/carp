@@ -20,7 +20,7 @@ import org.carp.exception.CarpException;
 public class BeansProcess {
 	public static CarpBean parser(Class<?> cls) throws CarpException{
 		if(cls == null)
-			throw new CarpException("The parameters passed in cannot be empty. cls : "+cls);
+			throw new CarpException("The parameters cls is null. cls : "+cls);
 		CarpBean bean = new CarpBean(new TableMetadata());
 		new TableProcessor().parse(bean, cls);
 		if(bean.getTable()==null || bean.getTable().equals(""))

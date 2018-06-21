@@ -15,7 +15,6 @@
  */
 package org.carp.engine;
 
-import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 
 import org.carp.exception.CarpException;

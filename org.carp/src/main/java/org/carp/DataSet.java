@@ -29,17 +29,11 @@ public interface DataSet {
 	 */
 	public boolean next();
 	/**
-	 * 根据字段名称，当前光标指向的行的对应的字段值。
-	 * @param name 字段名称
-	 * @return
-	 */
-	public Object getData(String name);
-	/**
 	 * 根据索引位置，当前光标指向的行的对应的字段值。
 	 * @param name 字段名称
 	 * @return
 	 */
-	public Object getData(int index);
+	public Object getData(int index)throws Exception;
 	/**
 	 * 返回查询到的数据集合
 	 * @return
@@ -49,7 +43,7 @@ public interface DataSet {
 	 * 返回查询到的数据的title的名称列表。
 	 * @return
 	 */
-	public List<String> getTitle();
+	public String[] getColumns();
 	/**
 	 * 从返回的结果集中，根据索引号，返回该索引指向的记录。
 	 * @param index
@@ -60,7 +54,7 @@ public interface DataSet {
 	 * 返回查询到的结果集列的类型集合，按照seclect列表的顺序排列
 	 * @return
 	 */
-	public List<Class<?>> getColumnType();
+	public Class<?>[] getColumnsType();
 	/**
 	 * 返回的记录条数
 	 * @return

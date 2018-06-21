@@ -19,6 +19,7 @@ import java.sql.Connection;
 
 import javax.sql.DataSource;
 
+import org.carp.cfg.CarpSetting;
 import org.carp.exception.CarpException;
 import org.carp.sql.CarpSql;
 import org.carp.sql.DB2CarpSql;
@@ -41,17 +42,29 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractConnectionProvider implements ConnectionProvider {
 	private static final Logger logger = LoggerFactory.getLogger(AbstractConnectionProvider.class);
-	private Class<? extends CarpSql> 	carpSqlClass;
+	private CarpSetting config;
 	private String databaseName ="";
 	private int databaseVersion;
 	private DataSource dataSource;
+	private CarpSql dialect = null;
+	
+	public AbstractConnectionProvider(CarpSetting config)throws CarpException{
+		this.config = config;
+		createDataSource();
+		initDatabaseInfo();
+		initDatabaseDialect();
+	}
 	
 	/**
-	 * 提取数据库信息：数据库产品名，数据库版本号.
+	 * Initialize a data source to get a database connection
+	 */
+	protected abstract void createDataSource()throws CarpException;
+	/**
+	 * Gets the database metadata for automatically judging database dialect objects
 	 * 如：ORACLE,DB2，等
 	 * @throws CarpException
 	 */
-	protected void databaseProducename() throws CarpException{
+	protected void initDatabaseInfo() throws CarpException{
 		try(Connection conn = this.getDataSource().getConnection()){
 			this.databaseName = conn.getMetaData().getDatabaseProductName().toUpperCase();
 			this.databaseVersion = conn.getMetaData().getDatabaseMajorVersion();
@@ -64,9 +77,10 @@ public abstract class AbstractConnectionProvider implements ConnectionProvider {
 	}
 	
 	/**
-	 * 配置数据库所使用的CarpSql，如果不存在所对应的CarpSql实现类，则使用默认的DefaultSql类
+	 * Initialize the database dialect object or, if it does not exist, use the default dialect
 	 */
-	protected void dialect(){
+	protected void initDatabaseDialect()throws CarpException{
+		Class<? extends CarpSql> carpSqlClass = null;
 		if(this.getConfig().getDatabaseDialect()!=null)
 			carpSqlClass = this.getConfig().getDatabaseDialect();
 		else{
@@ -91,9 +105,8 @@ public abstract class AbstractConnectionProvider implements ConnectionProvider {
 				carpSqlClass = DefaultSql.class;
 			}
 		}
-		this.getConfig().setDatabaseDialect(this.carpSqlClass);
-		if(logger.isDebugEnabled())
-			logger.debug("database dialect : "+this.getCarpSqlClass());
+		this.getConfig().setDatabaseDialect(carpSqlClass);
+		logger.debug("database dialect : "+this.dialectClass().getName());
 	}
 
 	@Override
@@ -105,8 +118,25 @@ public abstract class AbstractConnectionProvider implements ConnectionProvider {
 		this.dataSource = dataSource;
 	}
 
+	public CarpSetting getConfig(){
+		return this.config;
+	}
+	/**
+	 * review Database dialect object
+	 */
+	public CarpSql getDialect(){
+		if(dialect == null)
+			try {
+				dialect = this.dialectClass().newInstance();
+			} catch (Exception e) {	}
+		return this.dialect;
+	}
+	
+	/**
+	 * review CarpSql implements class
+	 */
 	@Override
-	public Class<?> getCarpSqlClass() {
-		return carpSqlClass;
+	public Class<? extends CarpSql> dialectClass() {
+		return this.config.getDatabaseDialect();
 	}
 }

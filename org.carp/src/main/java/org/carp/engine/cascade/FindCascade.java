@@ -26,7 +26,6 @@ import org.carp.beans.OTMMetadata;
 import org.carp.beans.OTOMetadata;
 import org.carp.exception.CarpException;
 import org.carp.impl.CarpSessionImpl;
-import org.carp.sql.AbstractSql;
 
 /**
  * 查找单个对象的级联操作类
@@ -53,7 +52,7 @@ public class FindCascade implements Cascade{
 		List<DICMetadata> dics = _bean.getDics();
 		if(dics != null)
 			for(DICMetadata dic : dics){
-				dic.setValue(_data, _session.creatQuery(dic.getDicClass(), dic.getSql()).list());
+				dic.setValue(_data, _session.createQuery(dic.getSql(),dic.getDicClass()).list());
 			}
 		return this;
 	}
@@ -68,12 +67,13 @@ public class FindCascade implements Cascade{
 		if(otms != null)
 			for(OTMMetadata otm : otms){
 				if(otm.getCascade()== CarpAnnotation.Cascade.All || otm.getCascade()== CarpAnnotation.Cascade.Load){
-					String sql = AbstractSql.getCarpSql(_session.getJdbcContext().getConfig(),otm.getChildClass()).getQuerySql();//_session.getJdbcContext().getContext().getCarpSql(otm.getChildClass()).getQuerySql();
+					
+					String sql = _session.getJdbcContext().getContext().getDialect().getQuerySql(otm.getChildClass());//_session.getJdbcContext().getContext().getCarpSql(otm.getChildClass()).getQuerySql();
 					if(sql.toLowerCase().indexOf(" where ")>0)
 						sql += " and "+_bean.getTable()+"_."+otm.getFkey()+" = ?";
 					else
 						sql += " where "+otm.getFkey()+" = ?";
-					CarpQuery query = _session.creatQuery(otm.getChildClass(), sql);
+					CarpQuery query = _session.createQuery(sql,otm.getChildClass());
 					if(_bean.getPrimarys().get(0).getFieldType().equals(String.class))
 						query.setString(1, _key.toString());
 					else

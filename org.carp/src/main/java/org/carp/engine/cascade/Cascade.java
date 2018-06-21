@@ -19,7 +19,13 @@ import java.sql.SQLException;
 
 import org.carp.exception.CarpException;
 /**
- * 对象的级联操作
+ * The object of the cascade operation interface definition.
+ * Used to define the object in the add, delete, update, query of related object processing method
+ * There are four cascading methods:
+ * dictionary cascading 
+ * one to many cascades
+ * one to one cascadees
+ * many to one cascades
  * @author zhou
  * @since 0.2
  */

@@ -41,8 +41,10 @@ public class DerbyCarpSql extends AbstractSql {
 		return sql;
 	}
 
-	public int position() {
-		// TODO Auto-generated method stub
+	/**
+	 * 
+	 */
+	public int offset() {
 		return 2;
 	}
 

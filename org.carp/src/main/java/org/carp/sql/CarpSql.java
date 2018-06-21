@@ -17,33 +17,22 @@ package org.carp.sql;
 
 import java.sql.SQLException;
 
-import org.carp.beans.CarpBean;
 import org.carp.exception.CarpException;
 import org.carp.impl.CarpQueryImpl;
-
+/**
+ * Database-specific sql dialect definition interface.
+ * used to define different database paging query SQL, set paging limit parameters, 
+ * define database support for scrolling result set, define the default database schema
+ * @author zhou
+ * @version 0.3
+ */
 public interface CarpSql {
+	
 	/**
-	 * 取Schema
-	 * @return
-	 */
-	String getSchema();
-	/**
-	 * 设置Schema
+	 * set gloab defualt schema
 	 * @param schema
 	 */
 	void setSchema(String schema);
-	/**
-	 * 根据Class取得对应的Class Info
-	 * @return
-	 */
-	CarpBean getBeanInfo();
-		
-	/**
-	 * 设置pojo Class
-	 * @param cls
-	 */
-	void setClass(Class<?> cls)throws CarpException;
-	
 	/**
 	 * 根据序列名称，取得序列生成的sql
 	 * @param seq
@@ -64,13 +53,13 @@ public interface CarpSql {
 	 * @return
 	 * @throws Exception
 	 */
-	String getPageSql() throws CarpException;
+	String getPageSql(Class<?> cls) throws CarpException;
 	
 	/**
 	 * 确定绑定查询分页参数位置信息
 	 * @throws Exception
 	 */
-	int position();
+	int offset();
 	
 	/**
 	 * COMPLETE  完全支持 ,返回满足要求的记录
@@ -90,49 +79,43 @@ public interface CarpSql {
 	PageSupport pageMode();
 
 	/**
-	 * 是否支持滚动结果集
-	 * @return true/false 支持/不支持
-	 */
-	boolean enableScrollableResultSet();
-	/**
 	 * 根据Class，取得class对应的数据表的查询sql（不带有分页功能）
 	 * @return
 	 * @throws CarpException 
 	 */
-	String getQuerySql() throws CarpException;
+	String getQuerySql(Class<?> cls) throws CarpException;
 	
 	/**
 	 * 根据主键，取得单个对象的sql
 	 * @return
 	 */
-	String getLoadSql()throws CarpException;
+	String getLoadSql(Class<?> cls)throws CarpException;
 	
 	/**
 	 * 取得执行insert操作时的insert sql语句
 	 * @return
 	 * @throws CarpException 
 	 */
-	public String getInsertSql() throws CarpException;
+	public String getInsertSql(Class<?> cls) throws CarpException;
 	
 	/**
 	 * 取得执行update时候update sql语句
 	 * @return
 	 * @throws CarpException 
 	 */
-	public String getUpdateSql() throws CarpException;
+	public String getUpdateSql(Class<?> cls) throws CarpException;
 	
 	/**
 	 * 取得执行delete操作时的delete sql语句
 	 * @return
 	 * @throws CarpException 
 	 */
-	public String getDeleteSql() throws CarpException;
+	public String getDeleteSql(Class<?> cls) throws CarpException;
 	
 	/**
 	 * 设置查询参数
-	 * 因为不同的数据库，分页方式不同，有的分页索引在前，有的在后面，所以需要知道该sql的参数个数（除分页索引外）。
-	 * 从query对象中获取下列参数：
-	 * java.sql.PreparedStatement 
+	 * 因为不同的数据库，分页方式不同，有的分页索引在前，有的在后面，所以需要先知道该sql的条件参数个数，基于条件参数的索引值确定分页索引值（除分页索引外）。
+	 * 从query(java.sql.PreparedStatement)对象中获取下列参数：
 	 * firstIndex, 起始索引
 	 * maxIndex, 最大记录数
 	 * paramsCount 查询参数个数

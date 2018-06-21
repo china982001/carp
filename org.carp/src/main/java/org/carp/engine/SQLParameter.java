@@ -18,8 +18,6 @@ package org.carp.engine;
 import org.carp.impl.CarpQueryImpl;
 import org.carp.parameter.Parameter;
 import org.carp.parameter.Parameter.Param;
-import org.carp.sql.AbstractSql;
-import org.carp.sql.CarpSql;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,13 +50,12 @@ public class SQLParameter {
 	private void setSQLParameterValue() throws Exception{
 		Parameter param = query.getParameters();
 		ParametersProcessor psp = new ParametersProcessor(query.getStatement());
-		int pos = 0;
-		if(this.query.getFirstIndex() != -1){
-			pos = this.query.getCarpSql().position();
-		}
+		int offset = 0;
+		if(this.query.getFirstIndex() != -1)
+			offset = this.query.getSession().getDialect().offset();
 		for(int idx = 0, count = param.count(); idx < count; ++idx){
 			Param p = param.getParamList().get(idx);
-			psp.setStatementParameters(p.getValue(), p.getCls(), p.getIndex()+pos);
+			psp.setStatementParameters(p.getValue(), p.getCls(), p.getIndex()+offset);
 		}
 	}
 	
@@ -68,13 +65,11 @@ public class SQLParameter {
 	 */
 	private void setLimitQueryParameters() throws Exception{
 		if(query.getFetchSize() != 0){
-			if(logger.isDebugEnabled())
-				logger.debug("fetch size : "+query.getFetchSize());
+			logger.debug("fetch size : "+query.getFetchSize());
 			query.getStatement().setFetchSize(query.getFetchSize());
 		}
 		if(query.getTimeout()!=0){
-			if(logger.isDebugEnabled())
-				logger.debug("query timeout : "+query.getTimeout());
+			logger.debug("query timeout : "+query.getTimeout());
 			query.getStatement().setQueryTimeout(query.getTimeout());
 		}
 		if(query.getFirstIndex()!=-1 && query.getMaxCount()!=-1 ){
@@ -82,8 +77,7 @@ public class SQLParameter {
 				logger.debug("first index : "+query.getFirstIndex());
 				logger.debug("max rownum : "+query.getMaxCount());
 			}
-			CarpSql carpSql = AbstractSql.getCarpSql(query.getSession().getJdbcContext().getConfig(), query.getCls());
-			carpSql.setQueryParameters(query);
+			this.query.getSession().getDialect().setQueryParameters(query);
 		}
 	}
 }

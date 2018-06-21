@@ -63,7 +63,7 @@ public class DeleteCascade implements Cascade{
 				if(isCascadeDelete(otm.getCascade())){
 					CarpBean childBean = BeansFactory.getBean(otm.getChildClass());
 					String csql = "select * from "+childBean.getTable()+" where "+otm.getFkey()+" = ?";
-					CarpQuery query = _session.creatQuery(otm.getChildClass(),csql);
+					CarpQuery query = _session.createQuery(csql,otm.getChildClass());
 					if(_bean.getPrimarys().get(0).getFieldType().equals(String.class)){
 						query.setString(1, _key.toString());
 					}else{

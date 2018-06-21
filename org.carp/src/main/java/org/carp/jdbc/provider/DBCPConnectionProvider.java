@@ -31,34 +31,30 @@ import org.carp.security.PasswordDecryptor;
  * @since 0.1
  */
 public class DBCPConnectionProvider extends AbstractConnectionProvider {
-	private CarpSetting carp;
 	public DBCPConnectionProvider(CarpSetting carp) throws CarpException {
-		this.carp = carp;
-		build();
-		this.databaseProducename();
-		this.dialect();
+		super(carp);
 	}
 
 	/**
 	 * create dbcp datasource by PoolingDataSource
 	 * @throws CarpException
 	 */
-//	private void build() throws CarpException {
+//	protected void createDataSource() throws CarpException {
 //		BasicDataSource bds;
 //		try {
-//			carp.getConnPoolProperty().put("user", carp.getUserName());
-//			carp.getConnPoolProperty().put("url", carp.getUrl());
-//			carp.getConnPoolProperty().put("driverClassName", carp.getDriverClass());
-//			String password = carp.getPassword();
-//			if(carp.isPwdEncode()){
-//				IPasswordDecryptor decryptor = carp.getDecryptor();
-//				if(carp.getDecryptor() == null)
+//			this.getConfig().getConnPoolProperty().put("user", this.getConfig().getUserName());
+//			this.getConfig().getConnPoolProperty().put("url", this.getConfig().getUrl());
+//			this.getConfig().getConnPoolProperty().put("driverClassName", this.getConfig().getDriverClass());
+//			String password = this.getConfig().getPassword();
+//			if(this.getConfig().isPwdEncode()){
+//				IPasswordDecryptor decryptor = this.getConfig().getDecryptor();
+//				if(this.getConfig().getDecryptor() == null)
 //					decryptor = new PasswordDecryptor();
 //				password = decryptor.decrypt(password);
 //			}
-//			carp.getConnPoolProperty().put("password", password);
-//			if (carp.getCatalog() != null && !carp.getCatalog().equals(""))
-//				carp.getConnPoolProperty().put("defaultCatalog", carp.getCatalog());
+//			this.getConfig().getConnPoolProperty().put("password", password);
+//			if (this.getConfig().getCatalog() != null && !this.getConfig().getCatalog().equals(""))
+//				this.getConfig().getConnPoolProperty().put("defaultCatalog", this.getConfig().getCatalog());
 //			ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(carp.getUrl(),carp.getConnPoolProperty());
 //			PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
 //			ObjectPool<PoolableConnection> connectionPool = new GenericObjectPool<>(poolableConnectionFactory);
@@ -75,36 +71,32 @@ public class DBCPConnectionProvider extends AbstractConnectionProvider {
 	 * create dbcp datasource by BasicDataSource
 	 * @throws CarpException
 	 */
-	private void build() throws CarpException {
+	protected void createDataSource() throws CarpException {
 		BasicDataSource bds;
 		try {
-			carp.getConnPoolProperty().put("username", carp.getUserName());
-			carp.getConnPoolProperty().put("url", carp.getUrl());
-			if(carp.getDriverClass() != null)
-				carp.getConnPoolProperty().put("driverClassName", carp.getDriverClass());
-			String password = carp.getPassword();
-			if(carp.isPwdEncode()){
-				IPasswordDecryptor decryptor = carp.getDecryptor();
-				if(carp.getDecryptor() == null)
+			this.getConfig().getConnPoolProperty().put("username", this.getConfig().getUserName());
+			this.getConfig().getConnPoolProperty().put("url", this.getConfig().getUrl());
+			if(this.getConfig().getDriverClass() != null)
+				this.getConfig().getConnPoolProperty().put("driverClassName", this.getConfig().getDriverClass());
+			String password = this.getConfig().getPassword();
+			if(this.getConfig().isPwdEncode()){
+				IPasswordDecryptor decryptor = this.getConfig().getDecryptor();
+				if(this.getConfig().getDecryptor() == null)
 					decryptor = new PasswordDecryptor();
 				password = decryptor.decrypt(password);
 			}
-			carp.getConnPoolProperty().put("password", password);
-			if (carp.getCatalog() != null && !carp.getCatalog().equals(""))
-				carp.getConnPoolProperty().put("defaultCatalog", carp.getCatalog());
-			bds = BasicDataSourceFactory.createDataSource(carp.getConnPoolProperty());
-			Enumeration<Object> enums = carp.getExtProperty().keys();
+			this.getConfig().getConnPoolProperty().put("password", password);
+			if (this.getConfig().getCatalog() != null && !this.getConfig().getCatalog().equals(""))
+				this.getConfig().getConnPoolProperty().put("defaultCatalog", this.getConfig().getCatalog());
+			bds = BasicDataSourceFactory.createDataSource(this.getConfig().getConnPoolProperty());
+			Enumeration<Object> enums = this.getConfig().getExtProperty().keys();
 			while (enums.hasMoreElements()) {
 				String key = (String) enums.nextElement();
-				bds.addConnectionProperty(key, carp.getExtProperty().getProperty(key));
+				bds.addConnectionProperty(key, this.getConfig().getExtProperty().getProperty(key));
 			}
 			this.setDataSource(bds);
 		} catch (Exception e) {
 			throw new CarpException("Create dbcp BasicDataSource failed. Cause:"+e.getMessage(),e);
 		}
-	}
-
-	public CarpSetting getConfig() {
-		return this.carp;
 	}
 }

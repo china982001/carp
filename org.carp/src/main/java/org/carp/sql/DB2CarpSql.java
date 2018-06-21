@@ -18,9 +18,9 @@ package org.carp.sql;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import org.carp.impl.CarpQueryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DB2CarpSql extends AbstractSql {
 	private static final Logger logger = LoggerFactory.getLogger(DB2CarpSql.class);
@@ -41,7 +41,7 @@ public class DB2CarpSql extends AbstractSql {
 		return sql;
 	}
 
-	public int position() {
+	public int offset() {
 		return 0;
 	}
 

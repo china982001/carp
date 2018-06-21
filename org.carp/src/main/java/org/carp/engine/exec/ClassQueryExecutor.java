@@ -18,7 +18,7 @@ package org.carp.engine.exec;
 import java.util.List;
 
 import org.carp.engine.metadata.QueryMetaData;
-import org.carp.engine.result.ResultSetProcessor;
+import org.carp.engine.result.RSProcessor;
 import org.carp.impl.CarpQueryImpl;
 
 /**
@@ -26,9 +26,9 @@ import org.carp.impl.CarpQueryImpl;
  * @author zhou
  *
  */
-public class CarpQueryExecutor extends QueryExecutor{
-	private ResultSetProcessor rsp;
-	public CarpQueryExecutor(CarpQueryImpl query)throws Exception{
+public class ClassQueryExecutor extends QueryExecutor{
+	private RSProcessor rsp;
+	public ClassQueryExecutor(CarpQueryImpl query)throws Exception{
 		super(query);
 	}
 	
@@ -40,17 +40,18 @@ public class CarpQueryExecutor extends QueryExecutor{
 	public List<Object> list()throws Exception{
 		List<Object> list = null;
 		try{
-			rsp = new ResultSetProcessor(this.getQuery(),this.getMetadata(),this.getResultSet());
+			rsp = new RSProcessor(this.getQuery().getClazzes()[0],this.getMetadata(),this.getResultSet());
 			list = rsp.list();
 		}finally{
 			this.getResultSet().close();
+			this.getMetadata().getColumnsMap().clear();
+			this.setMetadata(null);
 		}
 		return list;
 	}
 
 	@Override
 	protected void parserMetaData() throws Exception {
-		this.setMetadata(new QueryMetaData(this.getQuery().getCls(),this.getResultSet()));
-		//this.getQuery().setReturnNames(getReturnNames());
+		this.setMetadata(new QueryMetaData(this.getQuery().getClazzes()[0],this.getResultSet()));
 	}
 }

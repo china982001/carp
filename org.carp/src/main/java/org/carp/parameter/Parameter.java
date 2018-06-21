@@ -64,7 +64,6 @@ public final class Parameter {
 		Object value;
 		Class<?> cls;
 		int sqlType = 0; // out parameter's sqlType
-		byte type = 0; //Procedure Parameter IN/OUT type IN be 0 , OUT be 1. default 0
 		public Param(Integer idx,Object value, Class<?> cls){
 			this.index = idx;
 			this.value = value;
@@ -73,7 +72,6 @@ public final class Parameter {
 		public Param(Integer idx, int sqlType){
 			this.index = idx;
 			this.sqlType = sqlType;
-			this.type = 1;
 		}
 		public Integer getIndex() {
 			return index;
@@ -86,9 +84,6 @@ public final class Parameter {
 		}
 		public int getSqlType(){
 			return sqlType;
-		}
-		public byte getType(){
-			return type;
 		}
 	}
 }

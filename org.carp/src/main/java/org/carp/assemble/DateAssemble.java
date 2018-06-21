@@ -16,6 +16,7 @@
 package org.carp.assemble;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.util.Date;
 import java.util.List;
@@ -51,5 +52,12 @@ public class DateAssemble extends AbstractAssemble{
 		}
 		this.setFieldValue(entity, f, date);
 		return date;
+	}
+	@Override
+	public Object setMethodValue(ResultSet rs, Object entity, Method m, int index) throws Exception {
+		java.sql.Date value = rs.getDate(index);
+		if(value != null)
+			m.invoke(entity, new Date(value.getTime()));
+		return value;
 	}
 }

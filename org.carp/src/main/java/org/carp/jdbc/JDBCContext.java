@@ -61,10 +61,8 @@ public class JDBCContext {
 	public void close() throws SQLException{
 		if(conn != null && !conn.isClosed())
 			try{
-//				conn.rollback();
-//				conn.setAutoCommit(true);
 				conn.close();				
-			}catch(Exception e){throw new SQLException("关闭连接失败！");}
+			}catch(Exception e){throw new SQLException("Failure to close connection.");}
 		conn = null;
 		this.isClose = true;
 	}

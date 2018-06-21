@@ -33,6 +33,7 @@ import org.carp.intercept.Interceptor;
 import org.carp.jdbc.JDBCContext;
 import org.carp.jdbc.provider.ConnectionProvider;
 import org.carp.script.SQL;
+import org.carp.sql.CarpSql;
 import org.carp.transaction.Transaction;
 
 /**
@@ -42,7 +43,7 @@ import org.carp.transaction.Transaction;
  */
 public class CarpSessionImpl implements CarpSession{
 	private JDBCContext jdbcContext;
-	private PreparedStatement ps = null;
+	private PreparedStatement statement = null;
 	private String sql;
 	private Transaction tx ;
 	private Interceptor interceptor;
@@ -85,7 +86,7 @@ public class CarpSessionImpl implements CarpSession{
 	 * @throws CarpException
 	 */
 	public int delete(Object obj) throws CarpException {
-		return this.delete(null, obj);
+		return this.conDelete(null, obj);
 	}
 	
 	/**
@@ -96,7 +97,7 @@ public class CarpSessionImpl implements CarpSession{
 	 */
 	public int delete(Class<?> cls, Serializable id) throws CarpException{
 		Object obj = id;
-		return this.delete(cls, obj);
+		return this.conDelete(cls, obj);
 	}
 	
 	/**
@@ -108,15 +109,15 @@ public class CarpSessionImpl implements CarpSession{
 	 */
 	public int delete(Class<?> cls, Map<String, Object> key) throws CarpException{
 		Object obj = key;
-		return this.delete(cls, obj);
+		return this.conDelete(cls, obj);
 	}
 	
-	private int delete(Class<?> cls, Object obj) throws CarpException{
+	private int conDelete(Class<?> cls, Object obj) throws CarpException{
 		if(!isOpen())
 			throw new CarpException("Connection could not used！could not execute delete");
 		try{
 			CarpEventFactory.deleteEvent(this, cls, obj).execute();
-//			CarpEvent event = CarpEventFactory.createDeleteEvent(this,cls, obj);
+//			Event event = CarpEventFactory.createDeleteEvent(this,cls, obj);
 //			event.execute();
 		}catch(Exception ex){
 			throw new CarpException("delete failed."+obj,ex);
@@ -126,15 +127,15 @@ public class CarpSessionImpl implements CarpSession{
 
 	public Object get(Class<?> cls, Serializable id)throws CarpException {
 		Object key = id;
-		return this.get(cls, key);
+		return this.conGet(cls, key);
 	}
 	
 	public Object get(Class<?> cls, Map<String, Object> key)throws CarpException {
 		Object values = key;
-		return this.get(cls, values);
+		return this.conGet(cls, values);
 	}
 	
-	private Object get(Class<?> cls, Object key)throws CarpException {
+	private Object conGet(Class<?> cls, Object key)throws CarpException {
 		try{
 			Event event = new FindEvent(this,cls,key);
 			event.execute();
@@ -193,6 +194,7 @@ public class CarpSessionImpl implements CarpSession{
 			throw new CarpException("connection was closed,could not execute save!");
 		try{
 			new MapEvent(this,table,map).execute();
+//			return null;
 		}catch(Exception ex){
 			throw new CarpException("The serialization of data to the database failed. Cause:"+ex,ex);
 		}
@@ -213,10 +215,11 @@ public class CarpSessionImpl implements CarpSession{
 			if(this.jdbcContext.isClose())
 				throw new CarpException("Session closed!");
 			rollbackTransaction();
-			if(ps!=null)
-				ps.close();
-			ps = null;
+			if(statement!=null)
+				statement.close();
+			statement = null;
 			this.jdbcContext.close();
+			this.jdbcContext = null;
 		}catch(Exception ex){
 			throw new CarpException("close sesssion failed！",ex);
 		}
@@ -228,62 +231,25 @@ public class CarpSessionImpl implements CarpSession{
 		}
 	}
 
-	public CarpQuery creatDataSetQuery(String sql) throws CarpException{
+	@Override
+	public CarpQuery createQuery(Class<?> clazz) throws CarpException {
+		return this.conCreateQuery(null,null,clazz);
+	}
+
+	@Override
+	public CarpQuery createQuery(String sql, Class<?>... clzes) throws CarpException {
+		return this.conCreateQuery(sql,null,clzes);
+	}
+
+	@Override
+	public CarpQuery createQuery(SQL sql, Class<?>... clzes) throws CarpException {
+		return this.conCreateQuery(null,sql,clzes);
+	}
+	
+	private CarpQueryImpl conCreateQuery(String sql, SQL _dynamicSql, Class<?>... clazzes)throws CarpException{
 		if(!isOpen())
-			throw new CarpException("Connection could not used！could not create Query");
-		return new CarpQueryImpl(this,sql);//CarpQueryFactory.createCarpQueryWithSql(this, sql);
-	}
-	public CarpQuery creatDataSetQuery(SQL _dynamicSql) throws CarpException{
-		if(!isOpen())
-			throw new CarpException("Connection could not used！could not create Query");
-		return this.creatQuery(null, _dynamicSql);//new CarpQueryImpl(this,sql);//CarpQueryFactory.createCarpQueryWithSql(this, sql);
-	}
-	
-	public CarpQuery creatUpdateQuery(String sql) throws CarpException{
-		return this.creatQuery(null, sql);
-	}
-	public CarpQuery creatUpdateQuery(SQL sql) throws CarpException{
-		return this.creatQuery(null, sql);
-	}
-	
-	public CarpQuery creatQuery(Class<?> cls) throws CarpException{
-		return this.conCreatQuery(cls, null, null);
-	}
-	
-	public CarpQuery creatQuery(Class<?> cls,String sql) throws CarpException{
-		return this.conCreatQuery(cls, sql, null);
-	}
-	public CarpQuery creatQuery(Class<?> cls, SQL _dynamicSql) throws CarpException{
-		return this.conCreatQuery(cls, null, _dynamicSql);
-	}
-	
-	private CarpQuery conCreatQuery(Class<?> cls,String sql, SQL _dynamicSql) throws CarpException{
-		if(!isOpen())
-			throw new CarpException("Connection can't used！could not create Query");
-		try{
-			if(_dynamicSql != null){
-				sql = _dynamicSql.getSql();
-			}
-			CarpQuery query = new CarpQueryImpl(this,cls,sql);
-			if(_dynamicSql != null){
-				_dynamicSql.processParameters(query);
-			}
-			return query;  //new CarpQueryImpl(this,cls,sql);//CarpQueryFactory.createCarpQuery(this, cls, sql);
-		}catch(Exception ex){
-			throw new CarpException("query failed. Cause:",ex);
-		}
-	}
-	
-	public CarpQuery createProcedureQuery(String sql,Class<?>... classes)throws CarpException{
-		if(!isOpen())
-			throw new CarpException("Connection can't used！could not create Query");
-		if(sql == null || sql.isEmpty())
-			throw new CarpException("Parameter sql is null.");
-		try{
-			return  new CarpQueryImpl(this, sql, classes);
-		}catch(Exception ex){
-			throw new CarpException("query failed. Caust: ",ex);
-		}
+			throw new CarpException("Unable to open database connection, cannot create CarpQuery object");
+		return new CarpQueryImpl(this,sql,_dynamicSql,clazzes);
 	}
 	
 	public String getSql() {
@@ -294,12 +260,12 @@ public class CarpSessionImpl implements CarpSession{
 		this.sql = sql;
 	}
 
-	public PreparedStatement getPs() {
-		return ps;
+	public PreparedStatement getStatement() {
+		return statement;
 	}
 
-	public void setPs(PreparedStatement ps) {
-		this.ps = ps;
+	public void setStatement(PreparedStatement ps) {
+		this.statement = ps;
 	}
 
 
@@ -313,4 +279,12 @@ public class CarpSessionImpl implements CarpSession{
 	public Interceptor getInterceptor() {
 		return interceptor;
 	}
+
+	public CarpSql getDialect(){
+		return this.jdbcContext.getContext().getDialect();
+	}
+	public Class<? extends CarpSql> dialectClass(){
+		return this.jdbcContext.getContext().dialectClass();
+	}
+
 }

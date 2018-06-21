@@ -16,6 +16,7 @@
 package org.carp.assemble;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.util.List;
 
@@ -44,6 +45,13 @@ public class URLAssemble extends AbstractAssemble{
 			String colname) throws Exception {
 		Object value = rs.getRef(colname);
 		this.setFieldValue(entity, f, value);
+		return value;
+	}
+
+	@Override
+	public Object setMethodValue(ResultSet rs, Object entity, Method m, int index) throws Exception {
+		Object value = rs.getURL(index);
+		m.invoke(entity, value);
 		return value;
 	}
 }

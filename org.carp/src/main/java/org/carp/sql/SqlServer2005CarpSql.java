@@ -63,7 +63,7 @@ public class SqlServer2005CarpSql extends AbstractSql {
 	}
 
 
-	public int position() {
+	public int offset() {
 		return 0;
 	}
 

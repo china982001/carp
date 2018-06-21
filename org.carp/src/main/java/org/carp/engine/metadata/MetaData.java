@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.carp.type.TypeMapping;
+import org.carp.util.EntityUtil;
 
 /**
  * 元数据类
@@ -46,15 +47,13 @@ public class MetaData {
 	private void parserResultSetMeta(ResultSetMetaData rsmd)throws Exception{
 		columnCount = rsmd.getColumnCount();
 		for(int i = 1; i <= columnCount; ++i){
-			
 			String col = rsmd.getColumnLabel(i).toUpperCase();
 			ColumnInfo info = new ColumnInfo();
 			info.setColname(col);
-			int sqlType = rsmd.getColumnType(i);
-			info.setSqlType(sqlType);
-			Class<?> typeCls = TypeMapping.getJavaTypeBySqlType(sqlType);
-			info.setJavaType(typeCls);
-			info.setAssemble(TypeMapping.getAssembleByFieldType(typeCls));
+			info.setFieldname(EntityUtil.getFieldName(col));
+			info.setSqlType(rsmd.getColumnType(i));
+			info.setJavaType(TypeMapping.getJavaTypeBySqlType(info.getSqlType()));
+			info.setAssemble(TypeMapping.getAssembleBySqlType(info.getSqlType()));
 			info.setIdx(i-1);
 			colsMap.put(col, info);
 			if(logger.isDebugEnabled())

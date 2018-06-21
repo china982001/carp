@@ -15,12 +15,7 @@
  */
 package org.carp.engine.metadata;
 
-import java.lang.reflect.Field;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.carp.type.TypeMapping;
@@ -33,10 +28,6 @@ import org.carp.util.EntityUtil;
  * @since 0.1
  */
 public class QueryMetaData extends MetaData{
-	private List<String> nameList = new ArrayList<String>();
-	private List<Field> fieldList = new ArrayList<Field>();
-	private Map<String,Field> fields = new HashMap<String,Field>();
-	
 	public QueryMetaData(Class<?> cls, ResultSet rs)throws Exception{
 		super(rs);
 		processMetadata(cls);
@@ -50,22 +41,16 @@ public class QueryMetaData extends MetaData{
 	private void processMetadata(Class<?> cls)throws Exception{
 		Set<String> cols = this.getColumnsMap().keySet();
 		logger.debug("Parsing field information for the class: [{}]",cls.getName());
+		ClassMetadata cmd = ClassFactory.getClassMetadata(cls);
 		for(String col : cols){
 			if("CARP_ROW_NUM".equals(col))
 				continue;
-			String name = EntityUtil.getFieldName(col);//this.getFieldName(col.toLowerCase());
 			ColumnInfo info = this.getColumnsMap().get(col);
-			info.setFieldname(name);
-			nameList.add(name);
-			Field f = cls.getDeclaredField(name);
-			info.setField(f);
-			fieldList.add(f);
-			fields.put(col, f);
-			
-			info.setJavaType(f.getType());
-			info.setAssemble(TypeMapping.getAssembleByFieldType(f.getType()));
+			info.setMethod(cmd.getMethod(EntityUtil.getSetter(info.getFieldname())));
+			info.setJavaType(info.getMethod().getClazz());
+			info.setAssemble(TypeMapping.getAssembleByFieldType(info.getJavaType()));
 			if(logger.isDebugEnabled())
-				logger.debug("ColumnName: {} , FieldName: {} , FieldType: {}",col,name,f.getType().getName());
+				logger.debug("ClassMetaData:[ColumnName:\"{}\"; FieldName:\"{}\"; Assemble:\"{}\"]",col,info.getFieldname(),info.getAssemble().getClass().getName());
 		}
 	}
 	

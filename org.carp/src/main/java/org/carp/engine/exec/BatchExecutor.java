@@ -17,10 +17,13 @@ package org.carp.engine.exec;
 
 import java.sql.SQLException;
 
+import org.carp.engine.helper.QuerySqlHelper;
+import org.carp.engine.helper.SqlHelper;
+import org.carp.engine.statement.CarpStatement;
 import org.carp.impl.CarpQueryImpl;
 
 /**
- * 更新执行器类
+ * Batch mode actuator，used to perform batch methods.
  * @author zhou
  * @since 0.2
  */
@@ -33,12 +36,21 @@ public class BatchExecutor extends Executor{
 	protected void executeStatement() throws Exception {
 	}
 
+	@Override
+	protected void process() throws Exception {
+		SqlHelper helper = new QuerySqlHelper(this.getQuery());
+		helper.buildSql();
+		helper.showSql();
+		new CarpStatement(this.getQuery()).createQueryStatement(); //创建Statement对象
+	}
+
 	/**
-	 * 返回受影响的行数
-	 * @return
+	 * Adds a set of parameters to this PreparedStatement object's batch of commands.
 	 * @throws SQLException 
 	 */
-	public void addBatch() throws SQLException {
+	public void addBatch() throws Exception {
+		//设置Statement参数
+		this.getSQLParameter().processSQLParameters();
 		this.getQuery().getStatement().addBatch();
 		this.getQuery().clearParameters();
 	}

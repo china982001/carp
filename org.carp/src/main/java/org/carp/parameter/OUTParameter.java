@@ -30,7 +30,7 @@ import java.util.Map;
  * @version 0.3
  */
 public final class OUTParameter {
-	private final Map<Integer,Object> params = new HashMap<>(2);
+	private final Map<Integer,Object> params = new HashMap<>();
 	
 	/**
 	 * set parameter value
@@ -112,4 +112,7 @@ public final class OUTParameter {
 		return this.params.size();
 	}
 	
+	public void clear(){
+		this.params.clear();
+	}
 }

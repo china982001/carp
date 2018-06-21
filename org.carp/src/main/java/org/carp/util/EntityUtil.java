@@ -79,6 +79,13 @@ public class EntityUtil {
 		return f;
 	}
 
+	public static void setFieldValue(Object entity,Field f,Object value) throws Exception{
+		boolean isAccess = f.isAccessible();
+		f.setAccessible(true);
+		f.set(entity, value);
+		f.setAccessible(isAccess);
+	}
+	
 	public static void setValue(Object obj, Object value, String name, Class<?> parameterType) {
 		try {
 			Method m = getMethod(obj.getClass(), getSetter(name), new Class<?>[] { parameterType });
@@ -127,5 +134,9 @@ public class EntityUtil {
 	public static String getSetter(String name) {
 		name = name.substring(0, 1).toUpperCase() + name.substring(1);
 		return "set" + name;
+	}
+	
+	public static String getSetterFromColumn(String colname) {
+		return getSetter(getFieldName(colname));
 	}
 }

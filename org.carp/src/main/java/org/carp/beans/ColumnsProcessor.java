@@ -23,6 +23,11 @@ import org.slf4j.Logger;
 import org.carp.annotation.Column;
 import org.carp.exception.CarpException;
 
+/**
+ * 
+ * @author zhou
+ * @version 0.1
+ */
 public class ColumnsProcessor  implements AnnotationProcessor{
 	private static final Logger logger = LoggerFactory.getLogger(ColumnsProcessor.class);
 	public void parse(CarpBean bean, Class<?> cls)  throws CarpException{

@@ -29,33 +29,29 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
  * @since 0.1
  */
 public class C3p0ConnectionProvider extends AbstractConnectionProvider {
-	private CarpSetting carp;
 
 	public C3p0ConnectionProvider(CarpSetting carp) throws CarpException {
-		this.carp = carp;
-		build();
-		this.databaseProducename();
-		this.dialect();
+		super(carp);
 	}
 
 	/**
 	 * create c3p0 datasource
 	 * @throws CarpException
 	 */
-	private void build() throws CarpException {
+	protected void createDataSource() throws CarpException {
 		ComboPooledDataSource bds = new ComboPooledDataSource();
-		if(carp.getDriverClass() != null)
+		if(this.getConfig().getDriverClass() != null)
 			try {
-				bds.setDriverClass(carp.getDriverClass());
+				bds.setDriverClass(this.getConfig().getDriverClass());
 			} catch (Exception e) {
 				throw new CarpException("Loaded DriverClass failed. Cause:"+e.getMessage(),e);
 			}
-		bds.setJdbcUrl(carp.getUrl());
-		bds.setUser(carp.getUserName());
-		String password = carp.getPassword();
-		if(carp.isPwdEncode()){
-			IPasswordDecryptor decryptor = carp.getDecryptor();
-			if(carp.getDecryptor() == null)
+		bds.setJdbcUrl(this.getConfig().getUrl());
+		bds.setUser(this.getConfig().getUserName());
+		String password = this.getConfig().getPassword();
+		if(this.getConfig().isPwdEncode()){
+			IPasswordDecryptor decryptor = this.getConfig().getDecryptor();
+			if(this.getConfig().getDecryptor() == null)
 				decryptor = new PasswordDecryptor();
 			password = decryptor.decrypt(password);
 		}
@@ -93,27 +89,23 @@ public class C3p0ConnectionProvider extends AbstractConnectionProvider {
 	}
 
 	private boolean isNotNull(String key){
-		return carp.getConnPoolProperty().containsKey(key);
+		return this.getConfig().getConnPoolProperty().containsKey(key);
 	}
 	private String getValue(String key,String defaultValue){
-		return carp.getConnPoolProperty().getProperty(key, defaultValue);
+		return this.getConfig().getConnPoolProperty().getProperty(key, defaultValue);
 	}
 	
 	private int getIntValue(String key,int defaultValue){
-		String value = carp.getConnPoolProperty().getProperty(key);
+		String value = this.getConfig().getConnPoolProperty().getProperty(key);
 		if(value == null)
 			return defaultValue;
 		return Integer.parseInt(value);
 	}
 	
 	private boolean getBoolValue(String key,boolean defaultValue){
-		String value = carp.getConnPoolProperty().getProperty(key);
+		String value = this.getConfig().getConnPoolProperty().getProperty(key);
 		if(value == null)
 			return defaultValue;
 		return Boolean.getBoolean(value);
-	}
-	
-	public CarpSetting getConfig() {
-		return this.carp;
 	}
 }

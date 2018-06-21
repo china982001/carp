@@ -25,7 +25,6 @@ import org.carp.jdbc.datasource.CarpDataSource;
  * @since 0.1
  */
 public class JDBCConnectionProvider extends AbstractConnectionProvider {
-	private CarpSetting carp;
 	
 	/**
 	 * 构造函数
@@ -33,12 +32,12 @@ public class JDBCConnectionProvider extends AbstractConnectionProvider {
 	 * @throws CarpException
 	 */
 	public JDBCConnectionProvider(CarpSetting carp) throws CarpException{
-		this.carp = carp;
-		this.setDataSource(new CarpDataSource(carp));
-		databaseProducename();
-		dialect();
+		super(carp);
 	}
-	public CarpSetting getConfig() {
-		return this.carp;
+
+	@Override
+	protected void createDataSource() throws CarpException {
+		this.setDataSource(new CarpDataSource(this.getConfig()));
+		
 	}
 }

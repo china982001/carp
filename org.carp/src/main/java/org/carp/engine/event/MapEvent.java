@@ -133,11 +133,11 @@ public class MapEvent{
 	 * @throws Exception
 	 */
 	protected void processStatmentParameters() throws Exception{
-		ParametersProcessor psp = new ParametersProcessor(this.session.getPs());
+		ParametersProcessor psp = new ParametersProcessor(this.session.getStatement());
 		for(int i = 0, count = this.columns.length; i < count; ++i){
 			String col = (String)this.columns[i];
 			int type = this.tab.getType(this.tab.columns.indexOf(col.toUpperCase()));
-			logger.debug("ParamColumn:"+col+" , ColumnType:"+type+" , ColumnIndex:"+i);
+			logger.debug("ParamColumn:{}; ColumnType:{}; ColumnIndex:{}",col,type,i);
 			psp.setStatementParameters(this.map.get(col), type, i+1);
 		}
 	}
@@ -148,7 +148,7 @@ public class MapEvent{
 	 */
 	private void buildStatement()throws Exception{
 		if(!sql.equals(this.session.getSql())){
-			this.session.setPs(this.session.getConnection().prepareStatement(sql));
+			this.session.setStatement(this.session.getConnection().prepareStatement(sql));
 			this.session.setSql(sql);
 		}
 	}
@@ -158,7 +158,7 @@ public class MapEvent{
 	 * @throws Exception
 	 */
 	private int executeStatement()throws Exception{
-		return this.session.getPs().executeUpdate();
+		return this.session.getStatement().executeUpdate();
 	}
 	
 	private void displaySql(){

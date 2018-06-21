@@ -25,33 +25,24 @@ import org.carp.exception.CarpException;
  */
 public class DataSourceConnectionProvider extends AbstractConnectionProvider {
 	private static final Logger logger = LoggerFactory.getLogger(DataSourceConnectionProvider.class);
-	private CarpSetting carp;
 
 	/**
-	 * 
 	 * @param carp
 	 * @throws CarpException
 	 */
 	public DataSourceConnectionProvider(CarpSetting carp) throws CarpException{
-		this.carp = carp;
-		loadDataSourceFromAppServer();
-		databaseProducename();
-		dialect();
-		if(logger.isDebugEnabled())
-			logger.debug("database dialect : "+this.getCarpSqlClass());
-	}
-	public CarpSetting getConfig() {
-		return this.carp;
+		super(carp);
 	}
 	
 	/**
 	 * 从服务器数据源配置中加载数据源
 	 * @throws CarpException
 	 */
-	private void loadDataSourceFromAppServer()throws CarpException{
+	protected void createDataSource() throws CarpException {
 		try{
 			javax.naming.InitialContext context = new javax.naming.InitialContext();
-			this.setDataSource((javax.sql.DataSource)context.lookup(carp.getDataSource()));
+			this.setDataSource((javax.sql.DataSource)context.lookup(this.getConfig().getDataSource()));
+			logger.info("DataSource : {}"+this.getConfig().getDataSource());
 		}catch(Exception ex){
 			throw new CarpException(ex);
 		}

@@ -56,9 +56,6 @@ public class SaveEvent extends Event {
 		//如果主键生成方式为sequence ，custom，需要生成主键，设置实体对象的Primary Key值
 		generateKeyBefore();
 		this.processPrimaryValues(psProcess);//设置主键id
-		
-		
-		
 	}
 	
 	/**
@@ -68,16 +65,14 @@ public class SaveEvent extends Event {
 	 */
 	protected void processPrimaryValues(ParametersProcessor psProcess) throws Exception{
 		List<PrimarysMetadata> pms = this.getBean().getPrimarys();
-		for(int i = 0, count = pms.size(); i < count; ++i){
-			PrimarysMetadata pk = pms.get(i);
+		for(PrimarysMetadata pk : pms){
+//			PrimarysMetadata pk = pms.get(i);
 			if(pk.getBuild() != Generate.auto){
 				Class<?> ft = pk.getFieldType();
 				Object value = pk.getValue(this.getEntity());
 				int _index = this.getNextIndex();
 				if(logger.isDebugEnabled()){
-					logger.debug("参数索引："+_index+" , 主键列名:"+pk.getColName()+" , FieldName:"+pk.getFieldName()+" , FieldType:"+pk.getFieldType().getName()+" ,FieldValue: "+value);
-					if(value != null)
-						logger.debug(value.getClass().getName());
+					logger.debug("PrimaryIndex:{}; PrimaryKey:{}; fieldName:{}; fieldType:{}; value:{}", _index,pk.getColName(),pk.getFieldName(),pk.getFieldType().getName(),value);
 				}
 				id = (Serializable)value;
 				psProcess.setStatementParameters(value, ft, _index);
@@ -150,8 +145,7 @@ public class SaveEvent extends Event {
 	 * @throws Exception
 	 */
 	private void processBlob()throws Exception{
-		
-		if(!this.getSession().getJdbcContext().getContext().getCarpSqlClass().equals(OracleCarpSql.class))
+		if(!this.getSession().getJdbcContext().getContext().dialectClass().equals(OracleCarpSql.class))
 			return;
 		List<ColumnsMetadata>  cols = this.getBean().getColumns();
 		for(ColumnsMetadata col : cols){

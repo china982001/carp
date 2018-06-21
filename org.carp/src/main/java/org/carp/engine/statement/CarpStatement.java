@@ -35,7 +35,7 @@ public class CarpStatement {
 	public PreparedStatement createQueryStatement() throws SQLException, CarpException{
 		PreparedStatement ps = null;
 		if(query.getStatement() == null){
-			if(this.query.getCarpSql().enableScrollableResultSet())
+			if(this.query.getSession().getJdbcContext().getConfig().isEnableScrollableResultSet())
 				ps = query.getSession().getConnection().prepareStatement(query.getSql(),ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 			else
 				ps = query.getSession().getConnection().prepareStatement(query.getSql());
@@ -43,6 +43,21 @@ public class CarpStatement {
 		}else
 			ps = query.getStatement();
 		return ps;
+	}
+	
+	/**
+	 * 创建查询CallableStatement对象， 根据配置，自适应是否创建滚动结果集.
+	 * @return
+	 * @throws Exception
+	 */
+	public PreparedStatement createProcedureStatement() throws Exception{
+		if(query.getStatement() == null){
+			if(this.query.getSession().getJdbcContext().getConfig().isEnableScrollableResultSet())
+				query.setStatement(query.getSession().getConnection().prepareCall(query.getSql(),ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY));
+			else
+				query.setStatement(query.getSession().getConnection().prepareCall(query.getSql()));
+		}
+		return query.getStatement();
 	}
 	
 	/**
@@ -54,9 +69,11 @@ public class CarpStatement {
 	 */
 	public PreparedStatement createSessionStatement(String sql) throws SQLException, CarpException{
 		if(!sql.equals(this.session.getSql())){
-			this.session.setPs(this.session.getConnection().prepareStatement(sql));
+			if(this.session.getStatement() != null)
+				this.session.getStatement().close();
+			this.session.setStatement(this.session.getConnection().prepareStatement(sql));
 			this.session.setSql(sql);
 		}
-		return this.session.getPs();
+		return this.session.getStatement();
 	}
 }

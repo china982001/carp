@@ -15,6 +15,7 @@
  */
 package org.carp;
 
+import java.io.Closeable;
 import java.math.BigDecimal;
 import java.sql.Ref;
 import java.sql.ResultSet;
@@ -31,7 +32,7 @@ import org.carp.parameter.OUTParameter;
  * @author zhou
  * @version 0.1
  */
-public interface CarpQuery{
+public interface CarpQuery extends Closeable{
 	/**
 	 * When SQL's select statement is executed, the result set record is converted to a collection of object objects,
 	 * and the object collection is returned.
@@ -121,6 +122,7 @@ public interface CarpQuery{
      * close used PreparedStatement
      */
     void closeStatement();
+
     /**
      * 
      * @param index
@@ -217,5 +219,5 @@ public interface CarpQuery{
      * @return
      * @throws Exception
      */
-    List<Object> listProcedureRs() throws Exception;
+    List<Object> executeProcudere() throws Exception;
 }

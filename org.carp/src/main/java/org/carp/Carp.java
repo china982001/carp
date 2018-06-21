@@ -16,7 +16,6 @@
 package org.carp;
 
 import java.io.InputStream;
-import java.io.Reader;
 import java.sql.Blob;
 import java.sql.Clob;
 
