@@ -70,6 +70,17 @@ public class DataSetImpl  implements DataSet{
 		return row.get(index).get(idx);
 	}
 	
+	public Object getData(String colname)throws Exception{
+		if(index == -1)
+			throw new RuntimeException("Execute the next method to determine if there is data.");
+		int col_index = this.columns.length;
+		int idx = getColumnIndex(colname);
+		if(idx < 0 || idx >=col_index){
+			throw new ArrayIndexOutOfBoundsException("Index out of range. Index should be >= 0 and < "+col_index+", but idx = "+idx);
+		}
+		return row.get(index).get(idx);
+	}
+	
 	public List<List<Object>> getData() {
 		return row;
 	}
@@ -86,5 +97,15 @@ public class DataSetImpl  implements DataSet{
 	
 	public int count(){
 		return dataCount + 1;
+	}
+	private int getColumnIndex(String colname){
+		int idx = -1;
+		for(int i=0, size = this.getColumns().length; i<size; ++i){
+			if(this.getColumns()[i].toUpperCase().equals(colname.toUpperCase())){
+				idx = i;
+				break;
+			}
+		}
+		return idx;
 	}
 }

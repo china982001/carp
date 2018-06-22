@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.carp.beans.PrimarysMetadata;
 import org.carp.engine.ParametersProcessor;
+import org.carp.engine.cascade.Cascade;
 import org.carp.engine.cascade.FindCascade;
 import org.carp.engine.metadata.QueryMetaData;
 import org.carp.engine.result.RSProcessor;
@@ -60,7 +61,6 @@ public class FindEvent extends Event{
 		cascadeBeforeOperator(); //statement操作前的级联处理
 		buildSql(); //生成sql语句
 		executeBefore();
-//		buildStatement(); //创建statement对象，
 		new CarpStatement(this.getSession()).createSessionStatement(this.getSql());
 		processStatmentParameters(new ParametersProcessor(this.getSession().getStatement())); //处理statement参数
 		executeStatement(); //执行statement
@@ -121,7 +121,7 @@ public class FindEvent extends Event{
 	
 	@Override
 	public void cascadeAfterOperator() throws Exception {
-		org.carp.engine.cascade.Cascade cascade = new FindCascade(getSession(), getBean(), getEntity(), key);
+		Cascade cascade = new FindCascade(getSession(), getBean(), getEntity(), key);
 		cascade.cascadeDICOperator().cascadeOTMOperator().cascadeOTOOperator();
 	}
 

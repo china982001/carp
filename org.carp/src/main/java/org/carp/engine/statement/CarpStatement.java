@@ -3,6 +3,7 @@ package org.carp.engine.statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.carp.exception.CarpException;
 import org.carp.impl.CarpQueryImpl;
@@ -71,7 +72,7 @@ public class CarpStatement {
 		if(!sql.equals(this.session.getSql())){
 			if(this.session.getStatement() != null)
 				this.session.getStatement().close();
-			this.session.setStatement(this.session.getConnection().prepareStatement(sql));
+			this.session.setStatement(this.session.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS));
 			this.session.setSql(sql);
 		}
 		return this.session.getStatement();

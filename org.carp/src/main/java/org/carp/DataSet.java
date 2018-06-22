@@ -34,6 +34,14 @@ public interface DataSet {
 	 * @return
 	 */
 	public Object getData(int index)throws Exception;
+	
+	/**
+	 * Gets the value from the row of the current index, by the parameter colname name
+	 * @param colname
+	 * @return
+	 * @throws Exception
+	 */
+	public Object getData(String colname)throws Exception;
 	/**
 	 * 返回查询到的数据集合
 	 * @return

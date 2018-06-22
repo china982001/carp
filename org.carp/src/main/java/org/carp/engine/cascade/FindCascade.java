@@ -50,10 +50,9 @@ public class FindCascade implements Cascade{
 	 */
 	public Cascade cascadeDICOperator() throws CarpException{
 		List<DICMetadata> dics = _bean.getDics();
-		if(dics != null)
-			for(DICMetadata dic : dics){
-				dic.setValue(_data, _session.createQuery(dic.getSql(),dic.getDicClass()).list());
-			}
+		for(DICMetadata dic : dics){
+			dic.setValue(_data, _session.createQuery(dic.getSql(),dic.getDicClass()).list());
+		}
 		return this;
 	}
 	
@@ -64,23 +63,21 @@ public class FindCascade implements Cascade{
 	 */
 	public Cascade cascadeOTMOperator() throws Exception{
 		List<OTMMetadata> otms = _bean.getOtms();
-		if(otms != null)
-			for(OTMMetadata otm : otms){
-				if(otm.getCascade()== CarpAnnotation.Cascade.All || otm.getCascade()== CarpAnnotation.Cascade.Load){
-					
-					String sql = _session.getJdbcContext().getContext().getDialect().getQuerySql(otm.getChildClass());//_session.getJdbcContext().getContext().getCarpSql(otm.getChildClass()).getQuerySql();
-					if(sql.toLowerCase().indexOf(" where ")>0)
-						sql += " and "+_bean.getTable()+"_."+otm.getFkey()+" = ?";
-					else
-						sql += " where "+otm.getFkey()+" = ?";
-					CarpQuery query = _session.createQuery(sql,otm.getChildClass());
-					if(_bean.getPrimarys().get(0).getFieldType().equals(String.class))
-						query.setString(1, _key.toString());
-					else
-						query.setLong(1, new Long(_key.toString()));
-					otm.setValue(_data, query.list());
-				}
+		for(OTMMetadata otm : otms){
+			if(otm.getCascade()== CarpAnnotation.Cascade.All || otm.getCascade()== CarpAnnotation.Cascade.Load){
+				String sql = _session.getJdbcContext().getContext().getDialect().getQuerySql(otm.getChildClass());
+				if(sql.toLowerCase().indexOf(" where ")>0)
+					sql += " and "+_bean.getTable()+"_."+otm.getFkey()+" = ?";
+				else
+					sql += " where "+otm.getFkey()+" = ?";
+				CarpQuery query = _session.createQuery(sql,otm.getChildClass());
+				if(_bean.getPrimarys().get(0).getFieldType().equals(String.class))
+					query.setString(1, _key.toString());
+				else
+					query.setLong(1, new Long(_key.toString()));
+				otm.setValue(_data, query.list());
 			}
+		}
 		return this;
 	}
 	
@@ -90,12 +87,11 @@ public class FindCascade implements Cascade{
 	 */
 	public Cascade cascadeOTOOperator() throws CarpException{
 		List<OTOMetadata> otos = _bean.getOtos();
-		if(otos != null)
-			for(OTOMetadata oto : otos){
-				if(oto.getCascade()== CarpAnnotation.Cascade.All|| oto.getCascade()== CarpAnnotation.Cascade.Load){
-					oto.setValue(_data, _session.get(oto.getFieldType(), _key.toString()));
-				}
+		for(OTOMetadata oto : otos){
+			if(oto.getCascade()== CarpAnnotation.Cascade.All|| oto.getCascade()== CarpAnnotation.Cascade.Load){
+				oto.setValue(_data, _session.get(oto.getFieldType(), _key.toString()));
 			}
+		}
 		return this;
 	}
 	
