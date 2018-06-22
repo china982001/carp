@@ -19,33 +19,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
-import java.util.List;
 
 public class BigDecimalAssemble extends AbstractAssemble {
-	public void setValue(ResultSet rs, List<Object> data, int index)
-			throws Exception {
-		data.add(rs.getBigDecimal(index));
-	}
-
-	public void setValue(ResultSet rs, List<Object> data, String colname)
-			throws Exception {
-		data.add(rs.getBigDecimal(colname));
-	}
-
+	@Override
 	public Object setFieldValue(ResultSet rs, Object entity, Field f, int index)
 			throws Exception {
 		Object value = rs.getObject(index);
-		java.math.BigDecimal m = null;
-		if (value != null)
-			m = new BigDecimal(value.toString());
-		this.setFieldValue(entity, f, m);
-		return m;
-	}
-
-	@Override
-	public Object setFieldValue(ResultSet rs, Object entity, Field f,
-			String colname) throws Exception {
-		Object value = rs.getObject(colname);
 		java.math.BigDecimal m = null;
 		if (value != null)
 			m = new BigDecimal(value.toString());

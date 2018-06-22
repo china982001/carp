@@ -18,35 +18,12 @@ package org.carp.assemble;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
-import java.util.List;
 
 public class IntegerAssemble extends AbstractAssemble{
-//		entity.getClass().getMethod(this.getSetter(fieldName), new Class[]{fieldClass}).invoke(entity, new Object[]{value});
-
-	public void setValue(ResultSet rs, List<Object> data, int index)throws Exception {
-		data.add(rs.getInt(index));
-	}
-
 	@Override
-	public void setValue(ResultSet rs, List<Object> data, String colname)
-			throws Exception {
-		data.add(rs.getInt(colname));
-	}
-
 	public Object setFieldValue(ResultSet rs, Object entity, Field f, int index)
 			throws Exception {
 		Object value = rs.getObject(index);
-		Integer b = null;
-		if(value != null)
-			b = new Integer(value.toString());
-		this.setFieldValue(entity, f, b);
-		return b;
-	}
-
-	@Override
-	public Object setFieldValue(ResultSet rs, Object entity, Field f,
-			String colname) throws Exception {
-		Object value = rs.getObject(colname);
 		Integer b = null;
 		if(value != null)
 			b = new Integer(value.toString());

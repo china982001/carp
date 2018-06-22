@@ -18,35 +18,13 @@ package org.carp.assemble;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
-import java.util.List;
 
 
 public class BTDoubleAssemble extends AbstractAssemble{
-
-	public void setValue(ResultSet rs, List<Object> data, int index)throws Exception {
-		data.add(rs.getDouble(index));
-	}
-
 	@Override
-	public void setValue(ResultSet rs, List<Object> data, String colname)
-			throws Exception {
-		data.add(rs.getDouble(colname));
-	}
-	
 	public Object setFieldValue(ResultSet rs, Object entity, Field f, int index)
 			throws Exception {
 		Object value = rs.getObject(index);
-		Double b = null;
-		if(value != null)
-			b = new Double(value.toString());
-		this.setFieldValue(entity, f, b);
-		return b;
-	}
-
-	@Override
-	public Object setFieldValue(ResultSet rs, Object entity, Field f,
-			String colname) throws Exception {
-		Object value = rs.getObject(colname);
 		Double b = null;
 		if(value != null)
 			b = new Double(value.toString());

@@ -85,43 +85,6 @@ public class EntityUtil {
 		f.set(entity, value);
 		f.setAccessible(isAccess);
 	}
-	
-	public static void setValue(Object obj, Object value, String name, Class<?> parameterType) {
-		try {
-			Method m = getMethod(obj.getClass(), getSetter(name), new Class<?>[] { parameterType });
-			if (value == null)
-				m.invoke(obj, new Object[] { value });
-			else if (parameterType.equals(int.class))
-				m.invoke(obj, new Object[] { new Integer(value + "").intValue() });
-			else if (parameterType.equals(Integer.class))
-				m.invoke(obj, new Object[] { new Integer(value + "") });
-			else if (parameterType.equals(long.class))
-				m.invoke(obj, new Object[] { new Long(value + "").longValue() });
-			else if (parameterType.equals(Long.class))
-				m.invoke(obj, new Object[] { new Long(value + "") });
-			else if (parameterType.equals(short.class))
-				m.invoke(obj, new Object[] { new Short(value + "").shortValue() });
-			else if (parameterType.equals(Short.class))
-				m.invoke(obj, new Object[] { new Short(value + "") });
-			else if (parameterType.equals(byte.class))
-				m.invoke(obj, new Object[] { new Byte(value + "").byteValue() });
-			else if (parameterType.equals(Byte.class))
-				m.invoke(obj, new Object[] { new Byte(value + "") });
-			else if (parameterType.equals(String.class))
-				m.invoke(obj, new Object[] { value + "" });
-			else if (parameterType.equals(float.class))
-				m.invoke(obj, new Object[] { new Float(value + "").floatValue() });
-			else if (parameterType.equals(Float.class))
-				m.invoke(obj, new Object[] { new Float(value + "") });
-			else if (parameterType.equals(Double.class))
-				m.invoke(obj, new Object[] { new Double(value + "") });
-			else if (parameterType.equals(double.class))
-				m.invoke(obj, new Object[] { new Double(value + "").doubleValue() });
-			else
-				m.invoke(obj, new Object[] { value });
-		} catch (Exception e) {
-		}
-	}
 
 	public static Method getMethod(Class<?> cls, String name, Class<?>[] parameterTypes) {
 		try {
@@ -134,9 +97,5 @@ public class EntityUtil {
 	public static String getSetter(String name) {
 		name = name.substring(0, 1).toUpperCase() + name.substring(1);
 		return "set" + name;
-	}
-	
-	public static String getSetterFromColumn(String colname) {
-		return getSetter(getFieldName(colname));
 	}
 }

@@ -16,7 +16,6 @@
 package org.carp.engine.cascade;
 
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 
 import org.carp.beans.CarpBean;
@@ -36,10 +35,10 @@ public class UpdateCascade implements Cascade{
 	private CarpBean _bean;
 	private Object _data;
 	private Object _key; 
-	public UpdateCascade(CarpSessionImpl session, CarpBean bean, Object data, Object key){
+	public UpdateCascade(CarpSessionImpl session, CarpBean bean, Object entity, Object key){
 		this._session = session;
 		this._bean = bean;
-		this._data = data;
+		this._data = entity;
 		this._key = key;
 	}
 	
@@ -58,22 +57,19 @@ public class UpdateCascade implements Cascade{
 	 */
 	public Cascade cascadeOTMOperator() throws Exception{
 		List<OTMMetadata> otms = _bean.getOtms();
-		if(otms != null)
-			for(OTMMetadata otm : otms){
-				if(this.isCascadeUpdate(otm.getCascade())){
-					java.util.Collection<?> collection = (java.util.Collection<?>)otm.getValue(_data);
-					if(collection !=null && !collection.isEmpty()){
-						for(Iterator<?> it = collection.iterator(); it.hasNext();){
-							Object childObject = it.next();
-							if(childObject != null){
-								Class<?> cls = EntityUtil.getField(childObject.getClass(), otm.getForeignName()).getType();
-								EntityUtil.setValue(childObject, _key, otm.getForeignName(), cls);
-								_session.update(childObject);
-							}
-						}
+		for(OTMMetadata otm : otms){
+			if(this.isCascadeUpdate(otm.getCascade())){
+				java.util.Collection<?> collection = (java.util.Collection<?>)otm.getValue(_data);
+				if(collection !=null && !collection.isEmpty()){
+					for(Object childObject : collection){
+						EntityUtil.setFieldValue(childObject,EntityUtil.getField(childObject.getClass(), otm.getForeignName()),_key);
+//						Class<?> cls = EntityUtil.getField(childObject.getClass(), otm.getForeignName()).getType();
+//						EntityUtil.setValue(childObject, _key, otm.getForeignName(), cls);
+						_session.update(childObject);
 					}
 				}
 			}
+		}
 		return this;
 	}
 	
@@ -83,14 +79,13 @@ public class UpdateCascade implements Cascade{
 	 */
 	public Cascade cascadeOTOOperator() throws CarpException{
 		List<OTOMetadata> otos = _bean.getOtos();
-		if(otos != null)
-			for(OTOMetadata oto : otos){
-				if(this.isCascadeUpdate(oto.getCascade())){
-					Object obj = oto.getValue(_data);
-					if(obj != null)
-						_session.update(obj);
-				}
+		for(OTOMetadata oto : otos){
+			if(this.isCascadeUpdate(oto.getCascade())){
+				Object obj = oto.getValue(_data);
+				if(obj != null)
+					_session.update(obj);
 			}
+		}
 		return this;
 	}
 	

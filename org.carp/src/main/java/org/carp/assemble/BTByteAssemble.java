@@ -18,7 +18,6 @@ package org.carp.assemble;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
-import java.util.List;
 
 /**
  * byte类型字段组装类
@@ -26,25 +25,7 @@ import java.util.List;
  *
  */
 public class BTByteAssemble extends AbstractAssemble{
-
-	public void setValue(ResultSet rs, List<Object> data, int index)
-			throws Exception {
-		data.add(rs.getByte(index));
-	}
 	@Override
-	public void setValue(ResultSet rs, List<Object> data, String colname)
-	throws Exception {
-		data.add(rs.getByte(colname));
-	}
-	
-	@Override
-	public Object setFieldValue(ResultSet rs, Object entity, Field f,
-			String colname) throws Exception {
-		byte b = rs.getByte(colname);
-		this.setFieldValue(entity, f, b);
-		return b;
-	}
-
 	public Object setFieldValue(ResultSet rs, Object entity, Field f, int index)
 			throws Exception {
 		byte b = rs.getByte(index);

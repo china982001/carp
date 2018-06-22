@@ -26,23 +26,6 @@ import java.sql.ResultSet;
  *
  */
 public interface Assemble {	
-	/**
-	 * 将索引为index列的值添加到集合中
-	 * @param rs 结果集
-	 * @param data 数据集合
-	 * @param index 列索引
-	 * @throws Exception
-	 */
-//	void setValue(ResultSet rs,List<Object> data, int index)throws Exception;
-//
-//	/**
-//	 * 将colname列的值添加到集合中
-//	 * @param rs 查询结果集
-//	 * @param data 数据集合
-//	 * @param colname 被读取的列名
-//	 * @throws Exception
-//	 */
-//	public void setValue(ResultSet rs, List<Object> data, String colname)throws Exception;
 	
 	/**
 	 * 设置实体的Field值
@@ -54,17 +37,6 @@ public interface Assemble {
 	 * @throws Exception
 	 */
 	Object setFieldValue(ResultSet rs, Object entity,Field f,int index) throws Exception;
-//	
-//	/**
-//	 * 设置实体的Field值
-//	 * @param rs 查询结果集
-//	 * @param entity  实体对象
-//	 * @param f  对象的属性域
-//	 * @param colname 列名
-//	 * @return  读取的字段值
-//	 * @throws Exception
-//	 */
-//	Object setFieldValue(ResultSet rs, Object entity,Field f,String colname) throws Exception;
 	/**
 	 * 设置实体对象的field值 
 	 * @param entity 实体对象
@@ -75,5 +47,14 @@ public interface Assemble {
 	 */
 	Object setFieldValue(Object entity,Field f,Object value) throws Exception;
 	
+	/**
+	 * set method value 
+	 * @param rs ResultSet Object， getValue by index from rs
+	 * @param entity  Assigned entity object
+	 * @param m  Assigned entity method
+	 * @param index column index of ResultSet
+	 * @return
+	 * @throws Exception
+	 */
 	Object setMethodValue(ResultSet rs, Object entity, Method m, int index)throws Exception;
 }

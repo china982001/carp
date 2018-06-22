@@ -18,30 +18,13 @@ package org.carp.assemble;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
-import java.util.List;
 
 public class BlobAssemble extends AbstractAssemble {
 
-	public void setValue(ResultSet rs, List<Object> data, int index)
-			throws Exception {
-		data.add(rs.getBlob(index));
-	}
-
-	public void setValue(ResultSet rs, List<Object> data, String colname)
-			throws Exception {
-		data.add(rs.getBlob(colname));
-	}
-
+	@Override
 	public Object setFieldValue(ResultSet rs, Object entity, Field f, int index)
 			throws Exception {
 		Object value = rs.getBlob(index);
-		this.setFieldValue(entity, f, value);
-		return value;
-	}
-
-	public Object setFieldValue(ResultSet rs, Object entity, Field f,
-			String colname) throws Exception {
-		Object value = rs.getBlob(colname);
 		this.setFieldValue(entity, f, value);
 		return value;
 	}

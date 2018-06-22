@@ -19,18 +19,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.util.Date;
-import java.util.List;
 
 public class DateAssemble extends AbstractAssemble{
-
-	public void setValue(ResultSet rs, List<Object> data, int index)throws Exception {
-		data.add(rs.getDate(index));
-	}
 	@Override
-	public void setValue(ResultSet rs, List<Object> data, String colname)
-			throws Exception {
-		data.add(rs.getDate(colname));
-	}
 	public Object setFieldValue(ResultSet rs, Object entity, Field f, int index)
 			throws Exception {
 		java.sql.Timestamp value = rs.getTimestamp(index);
@@ -42,17 +33,6 @@ public class DateAssemble extends AbstractAssemble{
 		return date;
 	}
 
-	@Override
-	public Object setFieldValue(ResultSet rs, Object entity, Field f,
-			String colname) throws Exception {
-		java.sql.Timestamp value = rs.getTimestamp(colname);
-		Date date = null;
-		if(value != null){
-			date = new Date(value.getTime());
-		}
-		this.setFieldValue(entity, f, date);
-		return date;
-	}
 	@Override
 	public Object setMethodValue(ResultSet rs, Object entity, Method m, int index) throws Exception {
 		java.sql.Date value = rs.getDate(index);

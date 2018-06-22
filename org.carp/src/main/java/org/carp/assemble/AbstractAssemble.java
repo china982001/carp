@@ -16,8 +16,6 @@
 package org.carp.assemble;
 
 import java.lang.reflect.Field;
-import java.sql.ResultSet;
-import java.util.List;
 
 /**
  * Assign the table column value to the property value of the corresponding object
@@ -27,17 +25,7 @@ import java.util.List;
  */
 public abstract class AbstractAssemble implements Assemble{
 
-	/**
-	 * @see
-	 */
-	public abstract void setValue(ResultSet rs, List<Object> data, int index)throws Exception ;
-
-	public abstract void setValue(ResultSet rs, List<Object> data, String colname)throws Exception ;
-
-	public abstract Object setFieldValue(ResultSet rs, Object entity, Field f, int index)throws Exception ;
-
-	public abstract Object setFieldValue(ResultSet rs, Object entity, Field f,String colname) throws Exception ;
-
+	@Override
 	public Object setFieldValue(Object entity, Field f, Object value)throws Exception {
 		boolean isAccess = f.isAccessible();
 		f.setAccessible(true);

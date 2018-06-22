@@ -18,20 +18,9 @@ package org.carp.assemble;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
-import java.util.List;
 
 public class BooleanAssemble extends AbstractAssemble{
-
-	public void setValue(ResultSet rs, List<Object> data, int index)
-			throws Exception {
-		data.add(rs.getBoolean(index));
-	}
 	@Override
-	public void setValue(ResultSet rs, List<Object> data, String colname)
-			throws Exception {
-		data.add(rs.getBoolean(colname));
-	}
-
 	public Object setFieldValue(ResultSet rs, Object entity, Field f, int index)
 			throws Exception {
 		Object value = rs.getBoolean(index);
@@ -39,13 +28,6 @@ public class BooleanAssemble extends AbstractAssemble{
 		return value;
 	}
 
-	@Override
-	public Object setFieldValue(ResultSet rs, Object entity, Field f,
-			String colname) throws Exception {
-		Object value = rs.getBoolean(colname);
-		this.setFieldValue(entity, f, value);
-		return value;
-	}
 	@Override
 	public Object setMethodValue(ResultSet rs, Object entity, Method m, int index) throws Exception {
 		Object value = rs.getBoolean(index);
