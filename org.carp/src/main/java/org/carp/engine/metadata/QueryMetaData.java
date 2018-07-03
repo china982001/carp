@@ -47,6 +47,8 @@ public class QueryMetaData extends MetaData{
 				continue;
 			ColumnInfo info = this.getColumnsMap().get(col);
 			info.setMethod(cmd.getMethod(EntityUtil.getSetter(info.getFieldname())));
+			if(info.getMethod() == null)
+				throw new NoSuchMethodException("Class: "+cls.getName()+" not exsit method:"+EntityUtil.getSetter(info.getFieldname()));
 			info.setJavaType(info.getMethod().getClazz());
 			info.setAssemble(TypeMapping.getAssembleByFieldType(info.getJavaType()));
 			if(logger.isDebugEnabled())
