@@ -67,7 +67,7 @@ public class WhereNode extends BaseNode {
 	private String trim(String content,String replace,boolean pre_suff){
 		if(pre_suff){//pre trim
 			if(content.startsWith(replace))
-				content = content.replaceFirst(replace, "").trim();
+				content = content.substring(replace.length()).trim();//content.replaceFirst(replace, "").trim();
 		}else{ //suff trim
 			if(content.endsWith(replace))
 				content = content.substring(0, content.lastIndexOf(replace)).trim();

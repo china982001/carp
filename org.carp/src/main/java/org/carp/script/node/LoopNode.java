@@ -54,6 +54,8 @@ public class LoopNode extends BaseNode {
 	@Override
 	public String parser(Map<String, Object> paramMap, List<Object> values)  throws Exception{
 		Object collection = paramMap.get(list);
+		if(collection == null)
+			throw new CarpException("The attribute 'list' of the loop'tag cannot be null");
 		String content = "";
 		content += bsign;
 		if(collection instanceof List){
@@ -89,7 +91,10 @@ public class LoopNode extends BaseNode {
 			throw new CarpException("Unsupported parameter type, only supports: list or map or array."
 					+ "For example: List list = ArrayList (); Set set = HashSet (); String[] strs = new String[20];");
 		}
-		content += esign;
+		if(!content.equals(bsign))
+			content += esign;
+		else
+			content = "";
 		return content;
 	}
 
