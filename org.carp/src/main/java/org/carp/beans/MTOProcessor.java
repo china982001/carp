@@ -34,7 +34,7 @@ public class MTOProcessor  implements AnnotationProcessor{
 			for(Annotation anno:annos){
 				if(anno instanceof ManyToOne){
 					ManyToOne mto = (ManyToOne)anno;
-					MTOMetadata mm = new MTOMetadata();
+					MTOMetadata mm = new MTOMetadata(cls, field);
 					table.addMTOMetadata(mm);
 					mm.setFieldName(mto.foreignField());
 					try {

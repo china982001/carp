@@ -31,6 +31,7 @@ import org.carp.sql.MySqlCarpSql;
 import org.carp.sql.OracleCarpSql;
 import org.carp.sql.PostgreSqlCarpSql;
 import org.carp.sql.SqlServer2005CarpSql;
+import org.carp.sql.SqlServerCarpSql;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,8 +100,13 @@ public abstract class AbstractConnectionProvider implements ConnectionProvider {
 			}else if(this.databaseName.indexOf("H2") != -1){//PostgreSql
 				carpSqlClass = H2CarpSql.class;
 			}else if(this.databaseName.indexOf("SQL SERVER") != -1){
-				carpSqlClass = SqlServer2005CarpSql.class;
-				// Unsupported Sql Server 2000 and below
+				if(databaseVersion >= 12)
+					carpSqlClass = SqlServerCarpSql.class;
+				else if(databaseVersion >= 9)
+					carpSqlClass = SqlServer2005CarpSql.class;
+//				else
+//					throw new CarpException("Unsupported MsSqlServer 2000 and below");
+				// Unsupported Sql Server 2008 and below
 			}else{//默认sql产生类
 				carpSqlClass = DefaultSql.class;
 			}

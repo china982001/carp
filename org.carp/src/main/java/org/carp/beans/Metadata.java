@@ -16,10 +16,24 @@
 package org.carp.beans;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
+import org.carp.util.EntityUtil;
+
+/**
+ * 
+ * @author zhou
+ * @version 0.1
+ */
 public abstract class Metadata {
+	private Method getterMethod;
+	private Method setterMethod;
 	private Field field;
-	
+	public Metadata(Class<?> clazz, Field f){
+		this.field = f;
+		this.getterMethod = EntityUtil.getMethod(clazz, EntityUtil.getGetter(f.getName()), new Class<?>[]{});
+		this.setterMethod = EntityUtil.getMethod(clazz, EntityUtil.getSetter(f.getName()), new Class<?>[]{f.getType()});
+	}
 	public Field getField() {
 		return field;
 	}
@@ -27,29 +41,15 @@ public abstract class Metadata {
 		this.field = f;
 	}
 	
-	public Object getValue(Object obj){
-		try {
-			Field f = getField();
-			boolean b = f.isAccessible();
-			f.setAccessible(true);
-			Object value = f.get(obj);
-			f.setAccessible(b);
-			return value;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	
+	public Object getMethodValue(Object entity) throws Exception{
+		if(this.getterMethod == null)
+			return null;
+		return this.getterMethod.invoke(entity, new Object[]{});
 	}
 	
-	public void setValue(Object obj,Object value){
-		try {
-			Field f = getField();
-			boolean b = f.isAccessible();
-			f.setAccessible(true);
-			f.set(obj, value);
-			f.setAccessible(b);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public void setMethodValue(Object entity, Object value)throws Exception{
+		if(this.setterMethod != null)
+			this.setterMethod.invoke(entity, new Object[]{value});
 	}
 }

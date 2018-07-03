@@ -36,7 +36,7 @@ public class FindEvent extends Event{
 	private Object key;
 	
 	public FindEvent(CarpSessionImpl session,Class<?> cls,Object key) throws CarpException{
-		super(session,cls,key,"find");
+		super(session,cls,key,Event.FIND_EVENT_TYPE);
 		this.cls = cls;
 		this.key = key;
 	}
@@ -61,7 +61,7 @@ public class FindEvent extends Event{
 		cascadeBeforeOperator(); //statement操作前的级联处理
 		buildSql(); //生成sql语句
 		executeBefore();
-		new CarpStatement(this.getSession()).createSessionStatement(this.getSql());
+		new CarpStatement(this.getSession()).createSessionStatement(this.getSql(),Event.FIND_EVENT_TYPE);
 		processStatmentParameters(new ParametersProcessor(this.getSession().getStatement())); //处理statement参数
 		executeStatement(); //执行statement
 		executeAfter();
@@ -145,4 +145,5 @@ public class FindEvent extends Event{
 	protected boolean validate() throws Exception {
 		return true;
 	}
+
 }

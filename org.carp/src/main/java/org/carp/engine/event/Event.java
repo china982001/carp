@@ -36,25 +36,31 @@ import org.slf4j.LoggerFactory;
  * @since 0.2
  */
 public abstract class Event{
+	//defined event type
+	public static final int INSERT_EVENT_TYPE = 1;
+	public static final int DELETE_EVENT_TYPE = 2;
+	public static final int UPDATE_EVENT_TYPE = 3;
+	public static final int FIND_EVENT_TYPE = 4;
+	
 	private static final Logger logger = LoggerFactory.getLogger(Event.class);
 	private CarpSessionImpl session;
 	private Object entity; //实体对象
 	private String sql; //sql语句
 	private int index = 0;  //sql语句的参数索引
 	private CarpBean bean;  //实体类对应的Bean对象
-	private String optType;
+	private int _eventType;
 	
-	public Event(CarpSessionImpl session,Object entity,String _optType) throws CarpException{
+	public Event(CarpSessionImpl session,Object entity, int eventType) throws CarpException{
 		this.session = session;
 		this.entity = entity;
 		bean = BeansFactory.getBean(this.entity.getClass());
-		this.optType = _optType;
+		this._eventType = eventType;
 	}
 	
-	public Event(CarpSessionImpl session,Class<?> cls,Object key,String _optType) throws CarpException{
+	public Event(CarpSessionImpl session,Class<?> cls,Object key,int eventType) throws CarpException{
 		this.session = session;
 		bean = BeansFactory.getBean(cls);
-		this.optType = _optType;
+		this._eventType = eventType;
 	}
 	
 	/**
@@ -71,7 +77,7 @@ public abstract class Event{
 	 */
 	protected void buildSql() throws Exception{
 		Class<?> cls = this.entity != null ? this.entity.getClass():bean.getTableClass();
-		SqlHelper helper = new SessionSqlHelper(this.session,optType,cls);
+		SqlHelper helper = new SessionSqlHelper(this.session,_eventType,cls);
 		sql = helper.buildSql();
 		helper.showSql();
 	}
@@ -94,7 +100,7 @@ public abstract class Event{
 		buildSql(); //生成sql语句
 		executeBefore(); 
 		//buildStatement(); //创建statement对象，
-		new CarpStatement(this.getSession()).createSessionStatement(sql);
+		new CarpStatement(this.getSession()).createSessionStatement(sql,_eventType);
 		processStatmentParameters(new ParametersProcessor(this.session.getStatement())); //处理statement参数
 		executeStatement(); //执行statement
 		executeAfter();
@@ -147,10 +153,11 @@ public abstract class Event{
 		for(int i = 0, count = columns.size(); i < count; ++i){
 			ColumnsMetadata column = columns.get(i);
 			Class<?> ft = column.getFieldType();
-			Object value = column.getValue(entity);
+			Object value = column.getMethodValue(entity);//column.getValue(entity);
 			int _index = this.getNextIndex();
 			if(logger.isDebugEnabled()){
-				logger.debug("参数索引："+ _index +" , ColumnName:"+column.getColName()+" , FieldName:"+column.getFieldName()+",FieldType:"+column.getFieldType().getName()+",FieldValue: "+value);
+				logger.debug("ParamIdx：{}, ColName:{}, Field:{}, Value:{}", 
+						_index,column.getColName(),column.getFieldName(),value);
 				if(value != null)
 					logger.debug("ValueType: "+value.getClass().getName());
 			}
@@ -167,7 +174,7 @@ public abstract class Event{
 		List<PrimarysMetadata> pms = bean.getPrimarys();
 		for(PrimarysMetadata pk : pms){
 			Class<?> ft = pk.getFieldType();
-			Object value = pk.getValue(entity);
+			Object value = pk.getMethodValue(entity);//pk.getValue(entity);
 			int _index = this.getNextIndex();
 			if(logger.isDebugEnabled()){
 				logger.debug("PrimaryIndex:{}; PrimaryKey:{}; fieldName:{}; fieldType:{}; value:{}", _index,pk.getColName(),pk.getFieldName(),pk.getFieldType().getName(),value);

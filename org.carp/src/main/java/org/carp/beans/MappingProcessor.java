@@ -44,8 +44,7 @@ public class MappingProcessor  implements AnnotationProcessor{
 			for(Annotation anno:annos){
 				if(anno instanceof Mapping){
 					Mapping mp = (Mapping)anno;
-					MappingMetadata mm = new MappingMetadata();
-					mm.setField(field);
+					MappingMetadata mm = new MappingMetadata(cls, field);
 					mm.setFieldName(field.getName());
 					mm.setFieldType(field.getType());
 					mm.setFkName(mp.foreignkey());

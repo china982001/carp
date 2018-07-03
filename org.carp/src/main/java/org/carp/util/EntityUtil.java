@@ -98,4 +98,8 @@ public class EntityUtil {
 		name = name.substring(0, 1).toUpperCase() + name.substring(1);
 		return "set" + name;
 	}
+	public static String getGetter(String name) {
+		name = name.substring(0, 1).toUpperCase() + name.substring(1);
+		return "get" + name;
+	}
 }

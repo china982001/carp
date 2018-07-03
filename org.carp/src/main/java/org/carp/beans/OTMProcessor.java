@@ -35,7 +35,7 @@ public class OTMProcessor  implements AnnotationProcessor{
 			for(Annotation anno:annos){
 				if(anno instanceof OneToMany){
 					OneToMany otm = (OneToMany)anno;
-					OTMMetadata om = new OTMMetadata();
+					OTMMetadata om = new OTMMetadata(cls, field);
 					om.setCascade(otm.cascade());
 					om.setChildClass(otm.childClass());
 					String containClass = field.getType().getName().toLowerCase();

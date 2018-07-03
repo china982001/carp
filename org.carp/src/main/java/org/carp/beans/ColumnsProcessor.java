@@ -37,7 +37,7 @@ public class ColumnsProcessor  implements AnnotationProcessor{
 			Annotation[] annos = field.getAnnotations();
 			for(Annotation anno:annos){
 				if(anno instanceof Column){
-					ColumnsMetadata cm = new ColumnsMetadata();
+					ColumnsMetadata cm = new ColumnsMetadata(cls,field);
 					table.addColumnsMetadata(cm);
 					Column ca = (Column)anno;
 					cm.setColName(ca.name().toUpperCase());
@@ -47,8 +47,7 @@ public class ColumnsProcessor  implements AnnotationProcessor{
 					cm.setNull(ca.Null());
 					cm.setPrecision(ca.precision());
 					cm.setRemark(ca.remark());
-					cm.setField(field);
-					logger.debug("Table Column:[column:{},file:{},length:{}]",cm.getColName(),cm.getFieldName(),cm.getLength());
+					logger.debug("Table Column:[column:{},field:{},length:{},type:{}]",cm.getColName(),cm.getFieldName(),cm.getLength(),cm.getFieldType().getName());
 				}
 			}
 		}

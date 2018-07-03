@@ -28,12 +28,12 @@ import org.carp.exception.CarpException;
 import org.carp.factory.BeansFactory;
 
 public abstract class AbstractSql implements CarpSql{
-	private final static Map<String,String> insertMap = new ConcurrentHashMap<String, String>();
-	private final static Map<String,String> updateMap = new ConcurrentHashMap<String, String>();
-	private final static Map<String,String> deleteMap = new ConcurrentHashMap<String, String>();
-	private final static Map<String,String> loadMap = new ConcurrentHashMap<String, String>();
-	private final static Map<String,String> selectMap = new ConcurrentHashMap<String, String>();
-	private final static Map<String,String> selectPageMap = new ConcurrentHashMap<String, String>();
+	protected final static Map<String,String> insertMap = new ConcurrentHashMap<String, String>();
+	protected final static Map<String,String> updateMap = new ConcurrentHashMap<String, String>();
+	protected final static Map<String,String> deleteMap = new ConcurrentHashMap<String, String>();
+	protected final static Map<String,String> loadMap = new ConcurrentHashMap<String, String>();
+	protected final static Map<String,String> selectMap = new ConcurrentHashMap<String, String>();
+	protected final static Map<String,String> selectPageMap = new ConcurrentHashMap<String, String>();
 	
 	private String  schema;
 	
@@ -54,8 +54,10 @@ public abstract class AbstractSql implements CarpSql{
 	public String getPageSql(Class<?> clazz) throws CarpException {
 		CarpBean bean = BeansFactory.getBean(clazz);
 		String queryPageSql = selectPageMap.get(bean.getTable());
-		if(queryPageSql == null)
-			queryPageSql = this.getPageSql(this.getQuerySql(clazz)); 
+		if(queryPageSql == null){
+			queryPageSql = this.getPageSql(this.getQuerySql(clazz));
+			selectPageMap.put(bean.getTable(), queryPageSql);
+		}
 		return queryPageSql; 
 	}
 	

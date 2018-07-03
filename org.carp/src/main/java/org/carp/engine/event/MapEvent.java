@@ -36,12 +36,12 @@ import org.slf4j.LoggerFactory;
  */
 public class MapEvent{
 	private static final Logger logger = LoggerFactory.getLogger(MapEvent.class);
+	private static final Map<String,Table> tableMap = new HashMap<String,Table>();
 	private CarpSessionImpl session;
 	private String table;
 	private Map<String,Object> map;
 	private Object[] columns;
 	private Table tab;
-	private static final Map<String,Table> tableMap = new java.util.concurrent.ConcurrentHashMap<String, Table>(new HashMap<String,Table>());
 	
 	
 	private String sql;
@@ -70,6 +70,7 @@ public class MapEvent{
 		this.session = session;
 		this.table = table;
 		this.map = map;
+		columns = this.map.keySet().toArray();
 		tab = initTable();
 	}
 	
@@ -78,9 +79,8 @@ public class MapEvent{
 	 * @return
 	 * @throws Exception
 	 */
-	private Table initTable() throws Exception{
+	private synchronized Table initTable() throws Exception{
 		Table t = tableMap.get(table);
-		columns = this.map.keySet().toArray();
 		if(t == null){
 			t = initTableColumns(table);
 			if(t.columns.isEmpty())
@@ -111,7 +111,7 @@ public class MapEvent{
 	 * @throws CarpException
 	 */
 	protected void buildSql() throws CarpException{
-		StringBuilder builder = new StringBuilder("insert into ");
+		StringBuilder builder = new StringBuilder("INSERT INTO ");
 		builder.append(table).append(" (");
 		String values = "";
 		for(int i = 0, count = this.columns.length; i < count; ++i){
@@ -122,7 +122,7 @@ public class MapEvent{
 			builder.append(this.columns[i]);
 			values += "?";
 		}
-		builder.append(") values (").append(values).append(")");
+		builder.append(") VALUES (").append(values).append(")");
 		sql = builder.toString();
 		displaySql();
 	}
@@ -162,8 +162,7 @@ public class MapEvent{
 	}
 	
 	private void displaySql(){
-		if(logger.isDebugEnabled())
-			logger.debug(sql);
+		logger.debug(sql);
 		if(session.getJdbcContext().getConfig().isShowSql()){
 			System.out.println("Carp SQL : "+sql);
 		}

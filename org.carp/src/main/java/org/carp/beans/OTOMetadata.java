@@ -15,9 +15,14 @@
  */
 package org.carp.beans;
 
+import java.lang.reflect.Field;
+
 import org.carp.annotation.CarpAnnotation.Cascade;
 
 public class OTOMetadata extends Metadata{
+	public OTOMetadata(Class<?> clazz, Field f) {
+		super(clazz, f);
+	}
 	private String fieldName;
 	private Class<?> fieldType;
 	private Cascade cascade;

@@ -15,7 +15,12 @@
  */
 package org.carp.beans;
 
+import java.lang.reflect.Field;
+
 public class MTOMetadata extends Metadata {
+	public MTOMetadata(Class<?> clazz, Field f) {
+		super(clazz, f);
+	}
 	private String colName;
 	private String fieldName;
 	private Class<?> fieldClass;

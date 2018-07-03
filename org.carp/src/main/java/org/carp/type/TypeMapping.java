@@ -184,7 +184,7 @@ public class TypeMapping {
 		sqlTypeMap.put(java.sql.Types.DATE, new DateMapParameter());
 		sqlTypeMap.put(java.sql.Types.DECIMAL, new DecimalMapParameter());
 		sqlTypeMap.put(java.sql.Types.DOUBLE, new DoubleMapParameter());
-		sqlTypeMap.put(java.sql.Types.FLOAT, new DoubleMapParameter());
+		sqlTypeMap.put(java.sql.Types.FLOAT, new FloatMapParameter());
 		sqlTypeMap.put(java.sql.Types.INTEGER, new IntegerMapParameter());
 		sqlTypeMap.put(java.sql.Types.JAVA_OBJECT, new ObjectMapParameter());
 		sqlTypeMap.put(java.sql.Types.LONGVARBINARY, new BytesMapParameter());

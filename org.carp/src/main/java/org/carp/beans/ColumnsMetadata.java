@@ -15,6 +15,7 @@
  */
 package org.carp.beans;
 
+import java.lang.reflect.Field;
 
 /**
  * Table's column metadata class, use to mark field's property.
@@ -23,6 +24,9 @@ package org.carp.beans;
  */
 public class ColumnsMetadata extends Metadata{
 	
+	public ColumnsMetadata(Class<?> clazz, Field f) {
+		super(clazz, f);
+	}
 	/**
 	 * column name
 	 */

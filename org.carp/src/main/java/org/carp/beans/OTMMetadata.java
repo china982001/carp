@@ -15,10 +15,15 @@
  */
 package org.carp.beans;
 
+import java.lang.reflect.Field;
+
 import org.carp.annotation.CarpAnnotation.Cascade;
 import org.carp.annotation.CarpAnnotation.Container;
 
 public class OTMMetadata extends Metadata{
+	public OTMMetadata(Class<?> clazz, Field f) {
+		super(clazz, f);
+	}
 	private String fkey;
 	private String foreignName;
 	private String fieldName;

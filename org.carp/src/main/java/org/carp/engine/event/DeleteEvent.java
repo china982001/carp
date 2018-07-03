@@ -23,7 +23,7 @@ import org.carp.impl.CarpSessionImpl;
 
 public class DeleteEvent extends Event{
 	public DeleteEvent(CarpSessionImpl session, Object entity) throws CarpException{
-		super(session,entity,"delete");
+		super(session,entity,Event.DELETE_EVENT_TYPE);
 	}
 
 	/**

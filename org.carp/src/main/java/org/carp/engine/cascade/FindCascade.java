@@ -48,10 +48,11 @@ public class FindCascade implements Cascade{
 	 * 字典级联操作
 	 * @throws CarpException
 	 */
-	public Cascade cascadeDICOperator() throws CarpException{
+	public Cascade cascadeDICOperator() throws Exception{
 		List<DICMetadata> dics = _bean.getDics();
 		for(DICMetadata dic : dics){
-			dic.setValue(_data, _session.createQuery(dic.getSql(),dic.getDicClass()).list());
+			dic.setMethodValue(_data, _session.createQuery(dic.getSql(),dic.getDicClass()).list());
+//			dic.setValue(_data, _session.createQuery(dic.getSql(),dic.getDicClass()).list());
 		}
 		return this;
 	}
@@ -75,7 +76,8 @@ public class FindCascade implements Cascade{
 					query.setString(1, _key.toString());
 				else
 					query.setLong(1, new Long(_key.toString()));
-				otm.setValue(_data, query.list());
+				otm.setMethodValue(_data, query.list());
+//				otm.setValue(_data, query.list());
 			}
 		}
 		return this;
@@ -85,11 +87,12 @@ public class FindCascade implements Cascade{
 	 * 一对一级联操作
 	 * @throws CarpException
 	 */
-	public Cascade cascadeOTOOperator() throws CarpException{
+	public Cascade cascadeOTOOperator() throws Exception{
 		List<OTOMetadata> otos = _bean.getOtos();
 		for(OTOMetadata oto : otos){
 			if(oto.getCascade()== CarpAnnotation.Cascade.All|| oto.getCascade()== CarpAnnotation.Cascade.Load){
-				oto.setValue(_data, _session.get(oto.getFieldType(), _key.toString()));
+				oto.setMethodValue(_data, _session.get(oto.getFieldType(), _key.toString()));
+//				oto.setValue(_data, _session.get(oto.getFieldType(), _key.toString()));
 			}
 		}
 		return this;

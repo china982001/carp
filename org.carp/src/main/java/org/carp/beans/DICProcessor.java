@@ -34,7 +34,7 @@ public class DICProcessor  implements AnnotationProcessor{
 			for(Annotation anno:annos){
 				if(anno instanceof Dic){
 					Dic dic = (Dic)anno;
-					DICMetadata dm = new DICMetadata();
+					DICMetadata dm = new DICMetadata(cls, field);
 					String containClass = field.getType().getName();
 					if(containClass.toLowerCase().indexOf("list") > 0)
 						dm.setContainer(CarpAnnotation.Container.List);
@@ -45,7 +45,6 @@ public class DICProcessor  implements AnnotationProcessor{
 					dm.setDicClass(dic.dicClass());
 					dm.setFieldName(field.getName());
 					dm.setSql(dic.sql());
-					dm.setField(field);
 					table.addDICMetadata(dm);
 					if(logger.isDebugEnabled()){
 						logger.debug("DIC ### field: "+field.getName()

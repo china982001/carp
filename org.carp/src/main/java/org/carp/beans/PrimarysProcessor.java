@@ -35,7 +35,7 @@ public class PrimarysProcessor  implements AnnotationProcessor{
 			for(Annotation anno:annos){
 				if(anno instanceof Id){
 					Id pka = (Id)anno;
-					PrimarysMetadata pkm = new PrimarysMetadata();
+					PrimarysMetadata pkm = new PrimarysMetadata(cls, field);
 					pkm.setColName(pka.name().toUpperCase());
 					pkm.setFieldName(field.getName());
 					pkm.setField(field);

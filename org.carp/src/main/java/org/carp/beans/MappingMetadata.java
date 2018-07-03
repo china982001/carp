@@ -20,6 +20,10 @@ import java.lang.reflect.Field;
 
 
 public class MappingMetadata extends Metadata{
+	public MappingMetadata(Class<?> clazz, Field f) {
+		super(clazz, f);
+	}
+
 	/**
 	 * 注解域的field名称
 	 */

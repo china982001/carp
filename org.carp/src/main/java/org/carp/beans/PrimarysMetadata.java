@@ -15,10 +15,15 @@
  */
 package org.carp.beans;
 
+import java.lang.reflect.Field;
+
 import org.carp.annotation.CarpAnnotation.Generate;
 import org.carp.id.Generator;
 
 public class PrimarysMetadata extends Metadata {
+	public PrimarysMetadata(Class<?> clazz, Field f) {
+		super(clazz, f);
+	}
 	private Generate build;
 	private Class<? extends Generator> builder;
 	private String colName;

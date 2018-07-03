@@ -33,7 +33,7 @@ public class OTOProcessor  implements AnnotationProcessor{
 			for(Annotation anno:annos){
 				if(anno instanceof OneToOne){
 					OneToOne oto = (OneToOne)anno;
-					OTOMetadata om = new OTOMetadata();
+					OTOMetadata om = new OTOMetadata(cls, field);
 					om.setFieldName(field.getName());
 					om.setField(field);
 					om.setCascade(oto.cascade());

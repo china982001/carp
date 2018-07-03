@@ -20,11 +20,68 @@ import java.sql.SQLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.carp.beans.CarpBean;
+import org.carp.beans.MappingMetadata;
+import org.carp.beans.PrimarysMetadata;
 import org.carp.exception.CarpException;
+import org.carp.factory.BeansFactory;
 import org.carp.impl.CarpQueryImpl;
 
 public class SqlServer2005CarpSql extends AbstractSql {
 	private static final Logger logger = LoggerFactory.getLogger(SqlServer2005CarpSql.class);
+	
+	
+	
+	@Override
+	public String getPageSql(Class<?> clazz) throws CarpException {
+		CarpBean bean = BeansFactory.getBean(clazz);
+		if(bean == null)
+			throw new CarpException("Class:"+clazz+" has not a assiosite mapping Table!");
+		String querySql = selectPageMap.get(bean.getTable());
+		if(querySql == null){
+			StringBuilder sql = new StringBuilder("SELECT ROW_NUMBER() OVER( ORDER BY ");
+			for(int i=0, count=bean.getPrimarys().size();i < count; ++i){
+				PrimarysMetadata pm = bean.getPrimarys().get(i);
+				if(i != 0)
+					sql.append(",");
+				sql.append("T0_.").append(pm.getColName());
+			}
+			sql.append(") AS CARP_ROW_NUM,");
+			for(PrimarysMetadata pk : bean.getPrimarys())
+				sql.append("T0_.").append(pk.getColName()).append(",");
+			this.appendColumens(bean,sql, "T0_");
+			for(int i=0,count =bean.getMaps().size(); i<count; ++i){
+				MappingMetadata mapMeta = bean.getMaps().get(i);
+				sql.append(",").append("T").append(i+1).append("_.");
+				sql.append(mapMeta.getMapColumn()).append(" ").append(mapMeta.getMasterAlias());
+			}
+			sql.append(" FROM ");
+			this.appendSchema(bean,sql);
+			sql.append(bean.getTable()).append(" T0_");
+			for(int i=0,count =bean.getMaps().size(); i<count; ++i){
+				MappingMetadata mapMeta = bean.getMaps().get(i);
+				sql.append(", ");
+				sql.append((mapMeta.getMapSchema() != null) ? mapMeta.getMapSchema() +"." : "");
+				sql.append(mapMeta.getMapTable()).append(" T").append(i+1).append("_ ");
+			}
+			if(!bean.getMaps().isEmpty()){
+				sql.append(" WHERE ");
+				for(int i=0,count = bean.getMaps().size(); i<count; ++i){
+					MappingMetadata mm = bean.getMaps().get(i);
+					if(i!=0)
+						sql.append(" AND ");
+					sql.append("T0_.").append(mm.getFkColumn()).append(" = ");
+					sql.append("T").append(i+1).append("_.").append(mm.getPkColumm());
+				}
+			}
+			querySql = sql.toString();
+			selectPageMap.put(bean.getTable(), querySql);
+		}
+		
+		return querySql;
+	}
+
+
 	/**
 	 * 取得执行分页查询时，select查询的分页sql语句
 	 * @param sql
@@ -47,16 +104,7 @@ public class SqlServer2005CarpSql extends AbstractSql {
 			buf.append(sql.substring(6));
 		buf.append(") _t where _t.carp_row_num between ? and ?");
 		sql = buf.toString();
-//		
-//		int index = sql.toLowerCase().indexOf("select ")+6;
-//		String left = sql.trim().substring(6).trim();
-//		String firstColumn = left.substring(0, left.indexOf(","));
-//		StringBuilder str = new StringBuilder("select tt.* from ( select row_number() over( order by ");
-//		str.append(firstColumn);
-//		str.append(") row_num, ");
-//		str.append(sql.substring(index));
-//		str.append(") tt  where tt.row_num > ? and tt.row_num <= ?");
-//		sql = str.toString();
+
 		if(logger.isDebugEnabled())
 			logger.debug(sql);
 		return sql;

@@ -59,7 +59,7 @@ public class UpdateCascade implements Cascade{
 		List<OTMMetadata> otms = _bean.getOtms();
 		for(OTMMetadata otm : otms){
 			if(this.isCascadeUpdate(otm.getCascade())){
-				java.util.Collection<?> collection = (java.util.Collection<?>)otm.getValue(_data);
+				java.util.Collection<?> collection = (java.util.Collection<?>)otm.getMethodValue(_data);//otm.getValue(_data);
 				if(collection !=null && !collection.isEmpty()){
 					for(Object childObject : collection){
 						EntityUtil.setFieldValue(childObject,EntityUtil.getField(childObject.getClass(), otm.getForeignName()),_key);
@@ -77,11 +77,11 @@ public class UpdateCascade implements Cascade{
 	 * 一对一级联操作
 	 * @throws CarpException
 	 */
-	public Cascade cascadeOTOOperator() throws CarpException{
+	public Cascade cascadeOTOOperator() throws Exception{
 		List<OTOMetadata> otos = _bean.getOtos();
 		for(OTOMetadata oto : otos){
 			if(this.isCascadeUpdate(oto.getCascade())){
-				Object obj = oto.getValue(_data);
+				Object obj = oto.getMethodValue(_data);//oto.getValue(_data);
 				if(obj != null)
 					_session.update(obj);
 			}

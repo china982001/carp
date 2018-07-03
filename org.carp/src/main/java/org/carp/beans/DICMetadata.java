@@ -15,9 +15,14 @@
  */
 package org.carp.beans;
 
+import java.lang.reflect.Field;
+
 import org.carp.annotation.CarpAnnotation.Container;
 
 public class DICMetadata extends Metadata{
+	public DICMetadata(Class<?> clazz, Field f) {
+		super(clazz, f);
+	}
 	private String fieldName;
 	private Class<?> dicClass;
 	private Container container;

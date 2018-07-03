@@ -30,7 +30,7 @@ import org.carp.sql.OracleCarpSql;
 public class UpdateEvent extends Event {
 //	private static final Logger logger = LoggerFactory.getLogger(UpdateEvent.class);
 	public UpdateEvent(CarpSessionImpl session,Object entity) throws CarpException{
-		super(session,entity,"update");
+		super(session,entity,Event.UPDATE_EVENT_TYPE);
 	}
 	
 
@@ -86,23 +86,23 @@ public class UpdateEvent extends Event {
 		List<ColumnsMetadata>  cols = this.getBean().getColumns();
 		for(ColumnsMetadata col : cols){
 			if(col.getFieldType().equals(Blob.class)){
-				Object value = col.getValue(this.getEntity());
+				Object value = col.getMethodValue(this.getEntity());//col.getValue(this.getEntity());
 				if(value == null)
 					continue;
 				Blob blob = (Blob)value;
 				byte[] bytes = blob.getBytes(1, (int)blob.length());
 				blob = this.getSession().getConnection().createBlob();
 				blob.setBytes(1, bytes);
-				col.setValue(this.getEntity(), blob);
+				col.setMethodValue(this.getEntity(), blob);//col.setValue(this.getEntity(), blob);
 			}else if(col.getFieldType().equals(Clob.class)){
-				Object value = col.getValue(this.getEntity());
+				Object value = col.getMethodValue(this.getEntity());//col.getValue(this.getEntity());
 				if(value == null)
 					continue;
 				Clob clob = (Clob)value;
 				String tmp = clob.getSubString(1, (int)clob.length());
 				clob = this.getSession().getConnection().createClob();
 				clob.setString(1, tmp);
-				col.setValue(this.getEntity(), clob);
+				col.setMethodValue(this.getEntity(), clob);//col.setValue(this.getEntity(), clob);
 			}
 		}
 	}
@@ -112,7 +112,7 @@ public class UpdateEvent extends Event {
 		List<ColumnsMetadata> cols = this.getBean().getColumns();
 		for(int i = 0, count = cols.size(); i<count; ++i){
 			ColumnsMetadata m = cols.get(i);
-			Object value = m.getValue(this.getEntity());
+			Object value = m.getMethodValue(this.getEntity());//m.getValue(this.getEntity());
 			if(!m.isNull() && value == null)
 				throw new CarpException("Field: "+m.getFieldName()+" could not was NULL.");
 			if(m.getLength() != 0 && value.toString().length() > m.getLength())

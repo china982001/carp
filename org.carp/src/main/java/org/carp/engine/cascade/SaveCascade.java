@@ -64,7 +64,7 @@ public class SaveCascade implements Cascade{
 		if(otms != null)
 			for(OTMMetadata otm : otms){
 				if(this.isCascadeSave(otm.getCascade())){
-					java.util.Collection<?> collection = (java.util.Collection<?>)otm.getValue(_data);
+					java.util.Collection<?> collection = (java.util.Collection<?>)otm.getMethodValue(_data);//otm.getValue(_data);
 					this.processCascade(collection, otm);
 				}
 			}
@@ -107,7 +107,7 @@ public class SaveCascade implements Cascade{
 		if(otos != null && !otos.isEmpty())
 			for(OTOMetadata oto : otos){
 				if(this.isCascadeSave(oto.getCascade())){
-					Object obj = oto.getValue(_data);
+					Object obj = oto.getMethodValue(_data);//oto.getValue(_data);
 					if(obj == null)
 						continue;
 					CarpBean bean = BeansFactory.getBean(oto.getFieldType());
