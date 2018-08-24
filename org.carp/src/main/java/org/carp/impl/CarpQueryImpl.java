@@ -119,9 +119,7 @@ public class CarpQueryImpl implements CarpQuery,Closeable{
 			ResultSet rs = executor.getResultSet();
 			return rs;
 		} catch (Exception ex) {
-			throw new CarpException("Query failure. SQL statement or parameter may be incorrect.", ex);
-		}finally{
-			if(statement != null)try{statement.close();}catch(Exception e){}
+			throw new CarpException(ex);
 		}
 	}
 	

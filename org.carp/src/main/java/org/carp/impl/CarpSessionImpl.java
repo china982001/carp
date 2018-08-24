@@ -177,7 +177,7 @@ public class CarpSessionImpl implements CarpSession{
 			throw new CarpException("connection was closed,could not execute save!");
 		try{
 			Serializable[] ids = new Serializable[objs.length];
-			for(int i=0,count=objs.length; i<=count; ++i){
+			for(int i=0,count=objs.length; i < count; ++i){
 				Event event = new SaveEvent(this,objs[i]);
 				event.execute();
 				ids[i] = event.getPrimaryValue();
