@@ -29,6 +29,7 @@ public class NodeFactory {
 			case "default":return new SwitchDefaultNode();
 			case "where":return new WhereNode();
 			case "assign":return new AssignNode();
+			case "out":return new OutNode();
 			default: throw new CarpException("Wrong tagname:"+nodeName+". Only the following tags are supported: if, loop, switch,case, default,where");
 		}
 	}
