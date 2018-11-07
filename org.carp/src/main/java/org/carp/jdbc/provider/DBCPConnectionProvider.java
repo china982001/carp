@@ -74,10 +74,13 @@ public class DBCPConnectionProvider extends AbstractConnectionProvider {
 	protected void createDataSource() throws CarpException {
 		BasicDataSource bds;
 		try {
+			
 			this.getConfig().getConnPoolProperty().put("username", this.getConfig().getUserName());
 			this.getConfig().getConnPoolProperty().put("url", this.getConfig().getUrl());
-			if(this.getConfig().getDriverClass() != null)
+			if(this.getConfig().getDriverClass() != null){
 				this.getConfig().getConnPoolProperty().put("driverClassName", this.getConfig().getDriverClass());
+				this.getClass().getClassLoader().loadClass(this.getConfig().getDriverClass());
+			}
 			String password = this.getConfig().getPassword();
 			if(this.getConfig().isPwdEncode()){
 				IPasswordDecryptor decryptor = this.getConfig().getDecryptor();

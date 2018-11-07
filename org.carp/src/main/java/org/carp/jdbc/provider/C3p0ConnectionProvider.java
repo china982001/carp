@@ -43,6 +43,7 @@ public class C3p0ConnectionProvider extends AbstractConnectionProvider {
 		if(this.getConfig().getDriverClass() != null)
 			try {
 				bds.setDriverClass(this.getConfig().getDriverClass());
+				this.getClass().getClassLoader().loadClass(this.getConfig().getDriverClass());
 			} catch (Exception e) {
 				throw new CarpException("Loaded DriverClass failed. Cause:"+e.getMessage(),e);
 			}

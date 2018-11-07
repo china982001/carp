@@ -40,10 +40,10 @@ public class CarpDataSource implements DataSource{
 	private Properties p = new Properties();
 	
 	public CarpDataSource(CarpSetting carp) throws CarpException{
-		//DriverManager.getDrivers();
 		this._carp = carp;
 		try {
-			//Class.forName(carp.getDriverClass());
+			if(carp.getDriverClass() != null && !carp.getDriverClass().equals(""))
+				Class.forName(carp.getDriverClass());
 		}catch (Exception ex) {
 			throw new CarpException("Can't load driver class. please check classpath. Cause:"+ex,ex);
 		}
