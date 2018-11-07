@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.carp.engine.ParametersProcessor;
+import org.carp.engine.statement.CarpStatement;
 import org.carp.exception.CarpException;
 import org.carp.impl.CarpSessionImpl;
 import org.slf4j.Logger;
@@ -147,10 +148,7 @@ public class MapEvent{
 	 * @throws Exception
 	 */
 	private void buildStatement()throws Exception{
-		if(!sql.equals(this.session.getSql())){
-			this.session.setStatement(this.session.getConnection().prepareStatement(sql));
-			this.session.setSql(sql);
-		}
+		new CarpStatement(this.session).createSessionStatement(sql, Event.INSERT_EVENT_TYPE);
 	}
 	/**
 	 * execute insert operation
